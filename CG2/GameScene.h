@@ -8,6 +8,7 @@
 #include "Audio.h"
 #include <xaudio2.h>
 #pragma comment(lib,"xaudio2.lib")
+#include <sstream>
 #include "Sprite.h"
 
 #include "Player.h"
@@ -37,6 +38,14 @@ public: // メンバ関数
 
 	void Reset();
 
+	/// <summary>
+	/// 敵発生データの読み込み
+	/// </summary>
+	void loadEnemyPopData();
+	/// <summary>
+	/// 敵発生コマンドの更新
+	/// </summary>
+	void UpdateEnemyPopCommand();
 private: // メンバ変数
 	WinApp* winApp_ = nullptr;
 	DX12base& dx12base_ = DX12base::GetInstance();
@@ -93,5 +102,8 @@ private: // メンバ変数
 	Sprite* num8_ = nullptr;
 	Sprite* num9_ = nullptr;
 	Sprite* num10_ = nullptr;
-
+// 敵発生コマンド
+	std::stringstream enemyPopCommand;
+	bool waitFlag = false;
+	float waitTime_;
 };
