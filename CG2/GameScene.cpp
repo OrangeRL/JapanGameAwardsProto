@@ -1,6 +1,6 @@
 #include "GameScene.h"
 #include <cassert>
-//git確認
+
 
 GameScene::GameScene() {
 
@@ -22,20 +22,22 @@ void GameScene::Initialize(WinApp* winApp) {
 	);
 
 	viewProjection_.Initialize();
-	viewProjection_.eye = {0 , 100 , -100};
+	viewProjection_.eye = {0 ,100 , -100};
 
+	enemy = new Enemy();
+	enemy->Initialize(&viewProjection_, &matProjection_);
 }
 
 void GameScene::Update() {
 	
 	viewProjection_.UpdateView();
 	//シーン管理
-	
+	enemy->Update();
 }
 
 void GameScene::Draw() {
 	//3D描画
-
+	enemy->Draw();
 
 	//スプライト描画
 	Sprite::PreDraw(dx12base_.GetCmdList().Get());

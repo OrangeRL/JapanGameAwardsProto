@@ -16,29 +16,14 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection) 
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
 
-	gameObject->worldTransform.translation = { 0 , 0 , 10 };
-	gameObject->worldTransform.scale = { 40 , 2 , 2 };
+	gameObject->worldTransform.translation = { 0 , 0 , 75 };
+	gameObject->worldTransform.scale = { 2 , 2 , 2};
 
 }
 
 void Enemy::Update() {
 
-	if (ct <= 0) {
-		moveSpeed = g * (timer / 50);
-
-		gameObject->worldTransform.translation.z -= moveSpeed;
-
-		timer++;
-		if (gameObject->worldTransform.translation.z < -50) {
-			timer = 0;
-			gameObject->worldTransform.translation.z = 100;
-			ct = 50;
-		}
-	}
-	else {
-		ct--;
-	}
-
+	
 	gameObject->Update();
 
 }

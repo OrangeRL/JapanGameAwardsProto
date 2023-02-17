@@ -18,15 +18,9 @@ public:
 	WorldTransform GetWorldTransform();
 
 private:
-	GameObject3D* gameObject = nullptr;
+	GameObject3D* gameObject = nullptr; // À•W‚â‘å‚«‚³“™‚ª“ü‚Á‚Ä‚¢‚é
 
-	float moveSpeed = 0;
-
-	const float g = 3;
-
-	float timer = 0;
-
-	float ct = 0;
+	float moveSpeed = 0; //ˆÚ“®‘¬“x
 
 };
 
