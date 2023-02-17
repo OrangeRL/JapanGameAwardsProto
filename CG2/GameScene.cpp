@@ -22,8 +22,10 @@ void GameScene::Initialize(WinApp* winApp) {
 	);
 
 	viewProjection_.Initialize();
-	viewProjection_.eye = {0 , 100 , -100};
+	viewProjection_.eye = {0 , 0 , -100};
 
+	player = new Player();
+	player->Initialize(&viewProjection_, &matProjection_);
 	enemy = new Enemy();
 	enemy->Initialize(&viewProjection_, &matProjection_);
 }
@@ -32,11 +34,13 @@ void GameScene::Update() {
 	
 	viewProjection_.UpdateView();
 	//シーン管理
+	player->Update();
 	enemy->Update();
 }
 
 void GameScene::Draw() {
 	//3D描画
+	player->Draw();
 	enemy->Draw();
 
 	//スプライト描画
