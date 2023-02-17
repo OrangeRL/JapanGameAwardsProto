@@ -1,6 +1,6 @@
 #include "GameScene.h"
 #include <cassert>
-//git確認
+//git確認用
 
 GameScene::GameScene() {
 
