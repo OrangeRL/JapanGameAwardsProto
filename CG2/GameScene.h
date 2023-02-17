@@ -15,6 +15,7 @@
 #include "Goal.h"
 #include "Particle.h"
 #include "Enemy.h"
+#include "PlayerBullet.h"
 
 class GameScene {
 
@@ -53,6 +54,7 @@ private: // メンバ変数
 	bool isPlayingBGM = false;
 
 	Player* player = nullptr;
+	PlayerBullet* playerBullet = nullptr;
 
 	Particle* particle = nullptr;
 

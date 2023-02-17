@@ -29,7 +29,6 @@ void Player::Initialize(ViewProjection* viewProjection , XMMATRIX* matProjection
 void Player::Update() {
 
 	Move();
-	Collision();
 
 	if (isDead == false) {
 		gameObject->Update();
@@ -62,8 +61,6 @@ void Player::Rotate() {
 
 void Player::Move() {
 
-
-
 	moveSpeed = 0.5f;
 	move = { 0,0,0 };
 
@@ -77,33 +74,17 @@ void Player::Move() {
 		if (input.PushKey(DIK_D)) { move = { moveSpeed,0,0 }; }
 		else if (input.PushKey(DIK_A)) { move = { -moveSpeed,0,0 }; }
 
-	/*	if (input.PushKey(DIK_D) && input.PushKey(DIK_W)) { move = { moveSpeed,moveSpeed,0 }; }
+		if (input.PushKey(DIK_D) && input.PushKey(DIK_W)) { move = { moveSpeed,moveSpeed,0 }; }
 		else if (input.PushKey(DIK_D) && input.PushKey(DIK_S)) { move = { moveSpeed,-moveSpeed,0 }; }
 
 		if (input.PushKey(DIK_A) && input.PushKey(DIK_W)) { move = { -moveSpeed,moveSpeed,0 }; }
-		if (input.PushKey(DIK_A) && input.PushKey(DIK_S)) { move = { -moveSpeed,-moveSpeed,0 }; }*/
+		if (input.PushKey(DIK_A) && input.PushKey(DIK_S)) { move = { -moveSpeed,-moveSpeed,0 }; }
 	}
 
 
 	gameObject->worldTransform.translation += move;
 
 	
-	if (isHitMap == false) {
-		velocity = {
-			moveSpeed * cosf(angle.y) ,
-			0 ,
-			moveSpeed * -sinf(angle.y)
-		};
-	}
-	else {
-		velocity = {
-			moveSpeed * -cosf(-angle.y) ,
-			0 ,
-			moveSpeed * -sinf(-angle.y)
-		};
-	}
-
-
 }
 
 void Player::Collision() {

@@ -37,14 +37,17 @@ void GameScene::Initialize(WinApp* winApp) {
 	particle = new Particle;
 	particle->Initialize(&viewProjection_, &matProjection_, player);
 
-	
+	playerBullet = new PlayerBullet();
+	playerBullet->Initialize(&viewProjection_, &matProjection_);
 }
 
 void GameScene::Update() {
 	
 	viewProjection_.UpdateView();
-	viewProjection_.target = { player->GetWorldTransform().translation.x, 0, player->GetWorldTransform().translation.z };
-	viewProjection_.eye = { player->GetWorldTransform().translation.x, 0, player->GetWorldTransform().translation.z -30 };
+	viewProjection_.target = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z };
+	viewProjection_.eye = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z -30 };
+
+	playerBullet->Update({0,0,-100}, player->GetWorldTransform().translation);
 
 		player->Update();
 		particle->Update();
@@ -55,7 +58,7 @@ void GameScene::Draw() {
 
 		player->Draw();
 		particle->Draw();
-
+		playerBullet->Draw();
 	//スプライト描画
 	Sprite::PreDraw(dx12base_.GetCmdList().Get());
 	
