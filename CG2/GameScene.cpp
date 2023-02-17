@@ -22,7 +22,7 @@ void GameScene::Initialize(WinApp* winApp) {
 	);
 
 	viewProjection_.Initialize();
-	viewProjection_.eye = {0 ,100 , -100};
+	viewProjection_.eye = {0 , 100 , -100};
 
 	enemy = new Enemy();
 	enemy->Initialize(&viewProjection_, &matProjection_);
