@@ -70,6 +70,7 @@ private: // メンバ変数
 	Map* map = nullptr;
 
 	Goal* goal = nullptr;
+	//敵
 	std::list<std::unique_ptr<Enemy>> enemys;
 
 	GameObject3D* tutorialFloor = nullptr;
@@ -104,8 +105,11 @@ private: // メンバ変数
 	Sprite* num8_ = nullptr;
 	Sprite* num9_ = nullptr;
 	Sprite* num10_ = nullptr;
-// 敵発生コマンド
+
+// 敵発生コマンド関係
+//------------------------------------
 	std::stringstream enemyPopCommand;
 	bool waitFlag = false;
 	float waitTime_;
+//------------------------------------
 };

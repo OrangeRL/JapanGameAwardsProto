@@ -98,6 +98,7 @@ void GameScene::UpdateEnemyPopCommand()
 		}
 		//POPコマンド
 		if (world.find("POP") == 0){
+			//CSVに書いてある値を変数に入れる
 			//x座標
 			std::getline(line_stream, world, ',');
 			float x = (float)std::atof(world.c_str());
@@ -110,9 +111,12 @@ void GameScene::UpdateEnemyPopCommand()
 
 			//敵を発生させる
 			//-------ここにEnemy発生関数---------//
+			//複数化するためにuniq_ptrに変更
 			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
 			newEnemy->Initialize(&viewProjection_, &matProjection_);
+			//上で書いてある物をEnemyの座標としてセットする
 			newEnemy->Settransform(x, y, z);
+			//敵を登録
 			enemys.push_back(std::move(newEnemy));
 		}
 		//WAITコマンド
