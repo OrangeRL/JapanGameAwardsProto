@@ -10,6 +10,8 @@
 #pragma comment(lib,"xaudio2.lib")
 #include <sstream>
 #include "Sprite.h"
+#include <memory>
+#include <list>
 
 #include "Player.h"
 #include "Map.h"
@@ -68,7 +70,7 @@ private: // メンバ変数
 	Map* map = nullptr;
 
 	Goal* goal = nullptr;
-	Enemy* enemy = nullptr;
+	std::list<std::unique_ptr<Enemy>> enemys;
 
 	GameObject3D* tutorialFloor = nullptr;
 	GameObject3D* stageFloor = nullptr;

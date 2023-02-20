@@ -26,8 +26,6 @@ void GameScene::Initialize(WinApp* winApp) {
 
 	player = new Player();
 	player->Initialize(&viewProjection_, &matProjection_);
-	enemy = new Enemy();
-	enemy->Initialize(&viewProjection_, &matProjection_);
 	loadEnemyPopData();
 }
 
@@ -36,14 +34,19 @@ void GameScene::Update() {
 	viewProjection_.UpdateView();
 	//シーン管理
 	player->Update();
+	for (std::unique_ptr<Enemy>& enemy : enemys) {
+		enemy->Update();
+	}
 	UpdateEnemyPopCommand();
-	enemy->Update();
+	
 }
 
 void GameScene::Draw() {
 	//3D描画
 	player->Draw();
-	enemy->Draw();
+	for (std::unique_ptr<Enemy>& enemy : enemys) {
+		enemy->Draw();
+	}
 
 	//スプライト描画
 	Sprite::PreDraw(dx12base_.GetCmdList().Get());
@@ -107,7 +110,10 @@ void GameScene::UpdateEnemyPopCommand()
 
 			//敵を発生させる
 			//-------ここにEnemy発生関数---------//
-			enemy->Settransform(x, y, z);
+			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
+			newEnemy->Initialize(&viewProjection_, &matProjection_);
+			newEnemy->Settransform(x, y, z);
+			enemys.push_back(std::move(newEnemy));
 		}
 		//WAITコマンド
 		else if (world.find("WAIT") == 0)
