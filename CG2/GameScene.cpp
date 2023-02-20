@@ -34,7 +34,10 @@ void GameScene::Update() {
 	viewProjection_.UpdateView();
 	//シーン管理
 	player->Update();
-	for (std::unique_ptr<Enemy>& enemy : enemys) {
+	for (std::unique_ptr<Enemy>& enemy : enemys1) {
+		enemy->Update();
+	}
+	for (std::unique_ptr<Enemy>& enemy : enemys2) {
 		enemy->Update();
 	}
 	UpdateEnemyPopCommand();
@@ -44,10 +47,12 @@ void GameScene::Update() {
 void GameScene::Draw() {
 	//3D描画
 	player->Draw();
-	for (std::unique_ptr<Enemy>& enemy : enemys) {
+	for (std::unique_ptr<Enemy>& enemy : enemys1) {
 		enemy->Draw();
 	}
-
+	for (std::unique_ptr<Enemy>& enemy : enemys2) {
+		enemy->Draw();
+	}
 	//スプライト描画
 	Sprite::PreDraw(dx12base_.GetCmdList().Get());
 
@@ -97,7 +102,7 @@ void GameScene::UpdateEnemyPopCommand()
 			continue;
 		}
 		//POPコマンド
-		if (world.find("POP") == 0){
+		if (world.find("POP_E1") == 0){
 			//CSVに書いてある値を変数に入れる
 			//x座標
 			std::getline(line_stream, world, ',');
@@ -117,7 +122,28 @@ void GameScene::UpdateEnemyPopCommand()
 			//上で書いてある物をEnemyの座標としてセットする
 			newEnemy->Settransform(x, y, z);
 			//敵を登録
-			enemys.push_back(std::move(newEnemy));
+			enemys1.push_back(std::move(newEnemy));
+		}
+		if (world.find("POP_E2") == 0) {
+			//CSVに書いてある値を変数に入れる
+			//x座標
+			std::getline(line_stream, world, ',');
+			float x = (float)std::atof(world.c_str());
+			//y座標
+			std::getline(line_stream, world, ',');
+			float y = (float)std::atof(world.c_str());
+			//z座標
+			std::getline(line_stream, world, ',');
+			float z = (float)std::atof(world.c_str());
+			//敵を発生させる
+			//-------ここにEnemy発生関数---------//
+			//複数化するためにuniq_ptrに変更
+			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
+			newEnemy->Initialize(&viewProjection_, &matProjection_);
+			//上で書いてある物をEnemyの座標としてセットする
+			newEnemy->Settransform(x, y, z);
+			//敵を登録
+			enemys2.push_back(std::move(newEnemy));
 		}
 		//WAITコマンド
 		else if (world.find("WAIT") == 0)

@@ -71,7 +71,8 @@ private: // メンバ変数
 
 	Goal* goal = nullptr;
 	//敵
-	std::list<std::unique_ptr<Enemy>> enemys;
+	std::list<std::unique_ptr<Enemy>> enemys1;
+	std::list<std::unique_ptr<Enemy>> enemys2;
 
 	GameObject3D* tutorialFloor = nullptr;
 	GameObject3D* stageFloor = nullptr;
