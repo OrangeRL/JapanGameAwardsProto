@@ -43,8 +43,8 @@ private: // メンバ変数
 	DX12base& dx12base_ = DX12base::GetInstance();
 	Input& input_ = Input::GetInstance();
 	XMMATRIX matProjection_ = {};
-	SoundManager soundManager_;
 
+	SoundManager soundManager_;
 	ViewProjection viewProjection_;
 
 	//音声読み込み

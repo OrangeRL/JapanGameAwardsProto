@@ -15,22 +15,31 @@ public:
 	void Update(Vector3 playerPos, Vector3 bossPos);
 	//描画
 	void Draw();
+
+	bool IsDead() const { return isDead_; }
 private:	//メンバ関数
 	//攻撃
 	void Attack(Vector3 playerPos, Vector3 bossPos);
 private:	//メンバ変数
 	//弾数
-	const int bulletNum = 300;
+	const int bulletNum = 10;
 	//ゲームオブジェクト
-	GameObject3D* gameObject[300];
+	GameObject3D* gameObject;
 	//表示フラグ
-	bool isShot[300];
+	bool isShot;
 	//カウント
 	int bulletCount = 0;
 	//弾の移動速度
 	const float speed = -1.0f;
 	//弾のベクトル
-	Vector3 velocity[300];
+	Vector3 velocity;
 	//弾の移動範囲
 	float canMoveArea = 120;
+
+	//寿命
+	static const int32_t kLifeTime = 60 * 5;
+	//デスタイマー
+	int32_t deathTimer_ = kLifeTime;
+	//デスフラグ
+	bool isDead_;
 };

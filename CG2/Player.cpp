@@ -13,7 +13,7 @@ Player::~Player() {
 	delete gameObject;
 }
 
-void Player::Initialize(ViewProjection* viewProjection , XMMATRIX* matProjection) {
+void Player::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection) {
 
 	gameObject = new GameObject3D();
 	gameObject->PreLoadModel("Resources/tofu/tofu.obj");
@@ -30,19 +30,31 @@ void Player::Update() {
 
 	Move();
 
-	if (isDead == false) {
+	//ƒfƒXƒtƒ‰ƒO‚Ì—§‚Á‚½’e‚ğíœ
+	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
+		return bullet->IsDead();
+		});
+
+	//’eXV
+	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Update({ 0,0,0 },GetWorldTransform().translation); }
+
+	if (isDead == false) 
+	{
 		gameObject->Update();
 	}
+
 }
 
 void Player::Draw() {
 	if (isDead == false) {
 		gameObject->Draw();
+		//’e•`‰æ
+		for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Draw(); }
 	}
 }
 
 void Player::Reset() {
-	gameObject->worldTransform.translation = {-40 , 0 , -40};
+	gameObject->worldTransform.translation = { -40 , 0 , -40 };
 	moveSpeed = 0;
 	isDead = false;
 }
@@ -51,10 +63,10 @@ void Player::Rotate() {
 
 	const float rotationSpeed = MathFunc::Utility::Deg2Rad(6.0f);
 
-	Vector3 rotation = {0 , 0 , 0};
+	Vector3 rotation = { 0 , 0 , 0 };
 
 	rotation.y = rotationSpeed;
-	
+
 	gameObject->worldTransform.rotation += rotation;
 
 }
@@ -81,12 +93,22 @@ void Player::Move() {
 		if (input.PushKey(DIK_A) && input.PushKey(DIK_S)) { move = { -moveSpeed,-moveSpeed,0 }; }
 	}
 
-
 	gameObject->worldTransform.translation += move;
-
-	
 }
-
+void Player::NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection) {
+	if (input.PushKey(DIK_SPACE))
+	{
+		const float kBulletSpeed = 1.0f;
+		Vector3 velocity(0, 0, kBulletSpeed);
+	
+		//’e‚ğ¶¬‚µA‰Šú‰»
+		std::unique_ptr<PlayerBullet>newBullet = std::make_unique<PlayerBullet>();
+		newBullet->Initialize(viewProjection, matProjection);
+		//’e‚ğ“o˜^‚·‚é
+		bullets_.push_back(std::move(newBullet));
+		
+	}
+}
 void Player::Collision() {
 	////enemy
 	//if (enemy->GetWorldTransform().translation.x - gameObject->worldTransform.translation.x < 40 &&

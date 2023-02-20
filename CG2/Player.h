@@ -2,6 +2,11 @@
 #include "GameObject3D.h"
 #include "Input.h"
 #include "MathFunc.h"
+#include "PlayerBullet2.h"
+#include "PlayerBullet.h"
+#include <memory>
+#include<list>
+
 
 class Map;
 class Goal;
@@ -26,7 +31,7 @@ public:
 	void SetMap(Map* map);
 	void SetGoal(Goal* goal);
 	void SetEnemy(Enemy* enemy);
-
+	void NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection);
 	int GetIsGoal();
 	void SetIsGoal(int flag);
 
@@ -38,13 +43,19 @@ public:
 	Vector3 GetAngle();
 	ViewProjection* GetViewProjection() { return viewProjection; }
 	WorldTransform GetWorldTransform();
-Vector3 centerVec = { 0,0,0 };
-Vector3 angle = {};
+	Vector3 centerVec = { 0,0,0 };
+	Vector3 angle = {};
+
+
+	//弾リストを取得
+	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
+
 	//メンバ関数
 private:
 	void Rotate();
 	void Move();
 	void Collision();
+
 
 	//メンバ変数
 private:
@@ -58,7 +69,7 @@ private:
 
 	Vector3 velocity = {};
 	//正面ベクトル
-	
+
 	const float accelaration = 0.0025f;
 
 	float moveSpeed = 0;
@@ -81,7 +92,13 @@ private:
 	Goal* goal = nullptr;
 	Enemy* enemy = nullptr;
 
-	
+
 	Vector3 move = {};
+
+	ViewProjection* viewProjection_;
+	XMMATRIX* matProjection_;
+	//弾
+	std::list<std::unique_ptr<PlayerBullet>>bullets_;
+	PlayerBullet* playerBullet = nullptr;
 };
 
