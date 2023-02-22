@@ -118,7 +118,7 @@ void GameScene::UpdateEnemyPopCommand()
 			//-------ここにEnemy発生関数---------//
 			//複数化するためにuniq_ptrに変更
 			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
-			newEnemy->Initialize(&viewProjection_, &matProjection_);
+			newEnemy->Initialize(&viewProjection_, &matProjection_,L"Resources/e.png");
 			//上で書いてある物をEnemyの座標としてセットする
 			newEnemy->Settransform(x, y, z);
 			//敵を登録
@@ -139,7 +139,7 @@ void GameScene::UpdateEnemyPopCommand()
 			//-------ここにEnemy発生関数---------//
 			//複数化するためにuniq_ptrに変更
 			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
-			newEnemy->Initialize(&viewProjection_, &matProjection_);
+			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png");
 			//上で書いてある物をEnemyの座標としてセットする
 			newEnemy->Settransform(x, y, z);
 			//敵を登録
