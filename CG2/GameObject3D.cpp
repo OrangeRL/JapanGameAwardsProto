@@ -139,8 +139,3 @@ void GameObject3D::SetViewProjection(ViewProjection* viewProjection) {
 void GameObject3D::SetMatProjection(XMMATRIX* matProjection) {
 	this->matProjection = matProjection;
 }
-
-void GameObject3D::SetTexture(const wchar_t* textureFileName)
-{
-	this->textureFileName = textureFileName;
-}

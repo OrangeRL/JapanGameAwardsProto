@@ -8,10 +8,10 @@ Enemy::~Enemy() {
 	delete gameObject;
 }
 
-void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName) {
+void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection) {
 
 	gameObject = new GameObject3D();
-	gameObject->PreLoadTexture(textureFileName);
+	gameObject->PreLoadTexture(L"Resources/white1x1.png");
 	gameObject->SetViewProjection(viewProjection);
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();

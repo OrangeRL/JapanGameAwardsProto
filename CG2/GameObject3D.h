@@ -31,7 +31,6 @@ public:
 	void SetViewProjection(ViewProjection* viewProjection);
 	void SetMatProjection(XMMATRIX* matProjection);
 
-	void SetTexture(const wchar_t* textureFileName);
 private:
 	void InitializeConstMapTransform();
 	void InitializeConstMapMaterial();
