@@ -70,7 +70,7 @@ void GameScene::loadEnemyPopData()
 {
 	//ファイルを開く
 	std::ifstream file;
-	file.open("Resources/enemyPop.csv");
+	file.open("Resources/enemy.csv");
 	assert(file.is_open());
 	//ファイルの内容を文字列ストリームにコピー
 	enemyPopCommand << file.rdbuf();
@@ -102,7 +102,7 @@ void GameScene::UpdateEnemyPopCommand()
 			continue;
 		}
 		//POPコマンド
-		if (world.find("POP_E1") == 0){
+		if (world.find("Enemy1") == 0){
 			//CSVに書いてある値を変数に入れる
 			//x座標
 			std::getline(line_stream, world, ',');
@@ -124,7 +124,7 @@ void GameScene::UpdateEnemyPopCommand()
 			//敵を登録
 			enemys1.push_back(std::move(newEnemy));
 		}
-		if (world.find("POP_E2") == 0) {
+		if (world.find("Enemy2") == 0) {
 			//CSVに書いてある値を変数に入れる
 			//x座標
 			std::getline(line_stream, world, ',');
