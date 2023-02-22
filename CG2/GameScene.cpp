@@ -26,8 +26,6 @@ void GameScene::Initialize(WinApp* winApp) {
 
 	player = new Player();
 	player->Initialize(&viewProjection_, &matProjection_);
-
-	loadEnemyMoveData();
 	loadEnemyPopData();
 }
 
@@ -42,8 +40,8 @@ void GameScene::Update() {
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
 		enemy->Update();
 	}
-	UpdateEnemyMoveCommand();
 	UpdateEnemyPopCommand();
+	
 }
 
 void GameScene::Draw() {
@@ -92,7 +90,7 @@ void GameScene::UpdateEnemyPopCommand()
 	}
 	//1行分の文字列を入れる
 	std::string line;
-	//発生コマンド実行
+	//コマンド実行
 	while (std::getline(enemyPopCommand,line)){
 		//1行分の文字列をストリームに変換
 		std::istringstream line_stream(line);
@@ -126,26 +124,24 @@ void GameScene::UpdateEnemyPopCommand()
 			//敵を登録
 			enemys1.push_back(std::move(newEnemy));
 		}
-		//POP_E2コマンド
-		else if (world.find("POP_E2") == 0) {
+		if (world.find("POP_E2") == 0) {
 			//CSVに書いてある値を変数に入れる
 			//x座標
 			std::getline(line_stream, world, ',');
-			pop_.x = (float)std::atof(world.c_str());
+			float x = (float)std::atof(world.c_str());
 			//y座標
 			std::getline(line_stream, world, ',');
-			pop_.y = (float)std::atof(world.c_str());
+			float y = (float)std::atof(world.c_str());
 			//z座標
 			std::getline(line_stream, world, ',');
-			pop_.z = (float)std::atof(world.c_str());
+			float z = (float)std::atof(world.c_str());
 			//敵を発生させる
 			//-------ここにEnemy発生関数---------//
 			//複数化するためにuniq_ptrに変更
-			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();;
+			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
 			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/e.png");
 			//上で書いてある物をEnemyの座標としてセットする
-			newEnemy->Settransform(pop_.x, pop_.y, pop_.z);
-			newEnemy->SetSpeed(speed_.x, speed_.y, speed_.z);
+			newEnemy->Settransform(x, y, z);
 			//敵を登録
 			enemys2.push_back(std::move(newEnemy));
 		}
@@ -158,84 +154,6 @@ void GameScene::UpdateEnemyPopCommand()
 			//待ち時間
 			waitFlag = true;
 			waitTime_ = waitTime;
-			//コマンドループを抜ける
-			break;
-		}
-	}
-}
-
-void GameScene::loadEnemyMoveData()
-{
-	//ファイルを開く
-	std::ifstream file;
-	file.open("Resources/enemyMove.csv");
-	assert(file.is_open());
-	//ファイルの内容を文字列ストリームにコピー
-	enemyMoveCommand << file.rdbuf();
-	//ファイルを閉じる
-	file.close();
-}
-
-void GameScene::UpdateEnemyMoveCommand()
-{
-	if (moveFlag) {
-		moveTime_--;
-		if (moveTime_ <= 0.0f) {
-			//待機完了
-			moveFlag = false;
-		}
-		return;
-	}
-	//1行分の文字列を入れる
-	std::string line;
-	//発生コマンド実行
-	while (std::getline(enemyMoveCommand, line)) {
-		//1行分の文字列をストリームに変換
-		std::istringstream line_stream(line);
-		std::string world;
-		// ,区切りで行の先頭文字列を取得
-		std::getline(line_stream, world, ',');
-		//"//"から始まる行はコメント
-		if (world.find("//") == 0) {
-			continue;
-		}
-		//POPコマンド
-		if (world.find("MOVE_E1") == 0) {
-			//CSVに書いてある値を変数に入れる
-			//x座標
-			std::getline(line_stream, world, ',');
-			speed_.x = (float)std::atof(world.c_str());
-			//y座標
-			std::getline(line_stream, world, ',');
-			speed_.y = (float)std::atof(world.c_str());
-			//z座標
-			std::getline(line_stream, world, ',');
-			speed_.z = (float)std::atof(world.c_str());
-
-		}
-		//MOVE_E2コマンド
-		else if (world.find("MOVE_E2") == 0) {
-			//CSVに書いてある値を変数に入れる
-			//x座標
-			std::getline(line_stream, world, ',');
-			speed_.x = (float)std::atof(world.c_str());
-			//y座標
-			std::getline(line_stream, world, ',');
-			speed_.y = (float)std::atof(world.c_str());
-			//z座標
-			std::getline(line_stream, world, ',');
-			speed_.z = (float)std::atof(world.c_str());
-
-		}
-		//WAITコマンド
-		else if (world.find("WAIT") == 0)
-		{
-			std::getline(line_stream, world, ',');
-			//待ち時間
-			int32_t waitTime = atoi(world.c_str());
-			//待ち時間
-			moveFlag = true;
-			moveTime_ = waitTime;
 			//コマンドループを抜ける
 			break;
 		}

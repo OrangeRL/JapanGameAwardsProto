@@ -48,15 +48,6 @@ public: // メンバ関数
 	/// 敵発生コマンドの更新
 	/// </summary>
 	void UpdateEnemyPopCommand();
-	/// <summary>
-	/// 敵移動データの読み込み
-	/// </summary>
-	void loadEnemyMoveData();
-	/// <summary>
-	/// 敵移動コマンドの更新
-	/// </summary>
-	void UpdateEnemyMoveCommand();
-
 private: // メンバ変数
 	WinApp* winApp_ = nullptr;
 	DX12base& dx12base_ = DX12base::GetInstance();
@@ -121,11 +112,5 @@ private: // メンバ変数
 	std::stringstream enemyPopCommand;
 	bool waitFlag = false;
 	float waitTime_;
-	Vector3 pop_;
 //------------------------------------
-	//敵移動コマンド関係
-	std::stringstream enemyMoveCommand;
-	bool moveFlag = false;
-	float moveTime_;
-	Vector3 speed_;
 };
