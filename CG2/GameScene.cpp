@@ -118,7 +118,7 @@ void GameScene::UpdateEnemyPopCommand()
 			//-------ここにEnemy発生関数---------//
 			//複数化するためにuniq_ptrに変更
 			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
-			newEnemy->Initialize(&viewProjection_, &matProjection_,L"Resources/e.png");
+			newEnemy->Initialize(&viewProjection_, &matProjection_,L"Resources/white1x1.png");
 			//上で書いてある物をEnemyの座標としてセットする
 			newEnemy->Settransform(x, y, z);
 			//敵を登録
@@ -135,13 +135,17 @@ void GameScene::UpdateEnemyPopCommand()
 			//z座標
 			std::getline(line_stream, world, ',');
 			float z = (float)std::atof(world.c_str());
+			//移動速度
+			std::getline(line_stream, world, ',');
+			float speed = (float)std::atof(world.c_str());
 			//敵を発生させる
 			//-------ここにEnemy発生関数---------//
 			//複数化するためにuniq_ptrに変更
 			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
-			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png");
+			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/e.png");
 			//上で書いてある物をEnemyの座標としてセットする
 			newEnemy->Settransform(x, y, z);
+			newEnemy->SetSpeed(speed);
 			//敵を登録
 			enemys2.push_back(std::move(newEnemy));
 		}

@@ -23,7 +23,11 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 
 void Enemy::Update() {
 
-	
+	gameObject->worldTransform.translation.y += moveSpeed;
+	if (gameObject->worldTransform.translation.y >= 70 || gameObject->worldTransform.translation.y <= -70)
+	{
+		moveSpeed = -moveSpeed;
+	}
 	gameObject->Update();
 
 }
@@ -43,4 +47,10 @@ WorldTransform Enemy::Settransform(float x,float y,float z)
 	this->gameObject->worldTransform.translation.z = z;
 
 	return gameObject->worldTransform;
+}
+
+float Enemy::SetSpeed(float speed)
+{
+	this->moveSpeed = speed;
+	return 0.0f;
 }

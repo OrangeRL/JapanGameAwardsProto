@@ -17,6 +17,7 @@ public:
 
 	WorldTransform GetWorldTransform();
 	WorldTransform Settransform(float x,float y,float z);
+	float SetSpeed(float speed);
 private:
 	GameObject3D* gameObject = nullptr; // À•W‚â‘å‚«‚³“™‚ª“ü‚Á‚Ä‚¢‚é
 
