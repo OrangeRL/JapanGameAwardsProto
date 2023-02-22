@@ -17,10 +17,11 @@ public:
 
 	WorldTransform GetWorldTransform();
 	WorldTransform Settransform(float x,float y,float z);
+	Vector3 SetSpeed(float x, float y, float z);
 private:
 	GameObject3D* gameObject = nullptr; // À•W‚â‘å‚«‚³“™‚ª“ü‚Á‚Ä‚¢‚é
 
-	float moveSpeed = 0; //ˆÚ“®‘¬“x
+	Vector3 moveSpeed = {0,0,0}; //ˆÚ“®‘¬“x
 
 };
 

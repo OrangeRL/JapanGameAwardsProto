@@ -1,0 +1,12 @@
+// コマンド,x,y,z
+WAIT,120,,
+MOVE_E1, 0, 0, 0
+MOVE_E1,-0, 0, 0
+MOVE_E1, 0,-0, 0
+MOVE_E1,-0,-0, 0
+WAIT,120,,
+MOVE_E2, 0, -0.5f,0
+MOVE_E2,-0, -0.5f,0
+MOVE_E2, 0,  0.5f,0
+MOVE_E2,-0,  0.5f,0
+WAIT,180,,
