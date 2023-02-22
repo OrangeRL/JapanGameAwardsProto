@@ -47,8 +47,11 @@ private: // メンバ変数
 	ViewProjection viewProjection_;
 
 	//音声読み込み
-	SoundData soundData1 = soundManager_.SoundLoadWave("Resources/Alarm01.wav");
-	SoundData selectSound = soundManager_.SoundLoadWave("Resources/selectSound.wav");
+	SoundData soundData1 = soundManager_.SoundLoadWave("Resources/selectSound.wav");
+	SoundData soundData2 = soundManager_.SoundLoadWave("Resources/shot.wav");
+	SoundData soundData3 = soundManager_.SoundLoadWave("Resources/shot2.wav");
+	SoundData soundData4 = soundManager_.SoundLoadWave("Resources/death.wav");
+	SoundData mainBGM = soundManager_.SoundLoadWave("Resources/demo.wav");
 
 	bool isPlayingBGM = false;
 
@@ -76,6 +79,12 @@ private: // メンバ変数
 	int stage = 1;
 
 	int gameoverTimer = 0;
+
+	float timer = 0.0f;
+
+	int weapon = 0;
+	int measure = 0;
+	bool isActive = 1;
 
 	Sprite* title_ = nullptr;
 	Sprite* clear_ = nullptr;

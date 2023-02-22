@@ -19,7 +19,7 @@ void FPS::FpsControlEnd() {
 		DWORD sleepTime = static_cast<DWORD>((frameTime - elapsedFrame) * 1000.0f);
 		timeBeginPeriod(1);
 		//êQÇÈ
-		Sleep(sleepTime);
+		//Sleep(sleepTime);
 		timeEndPeriod(1);
 	}
 
