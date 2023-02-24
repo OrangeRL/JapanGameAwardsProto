@@ -2,7 +2,6 @@
 #include "GameObject3D.h"
 #include "Input.h"
 #include "MathFunc.h"
-#include "PlayerBullet2.h"
 #include "PlayerBullet.h"
 #include <memory>
 #include<list>
@@ -87,11 +86,13 @@ private:
 
 	int isGoal = false;
 	int isEnemy = false;
-
+	bool newBulletFired = false;
 	Map* map = nullptr;
 	Goal* goal = nullptr;
 	Enemy* enemy = nullptr;
-
+	
+	Vector3 enemyPos = {};
+	Vector3 playerPos = {};
 
 	Vector3 move = {};
 

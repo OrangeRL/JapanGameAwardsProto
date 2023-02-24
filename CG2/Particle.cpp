@@ -6,7 +6,7 @@ std::random_device seed_gen;
 //メルセンヌ・ツイスターの乱数エンジン
 std::mt19937_64 engine(seed_gen());
 //乱数範囲の指定
-std::uniform_real_distribution<float> distRot(MathFunc::Utility::Deg2Rad(-60) , MathFunc::Utility::Deg2Rad(60));
+std::uniform_real_distribution<float> distRot(MathFunc::Utility::Deg2Rad(-60), MathFunc::Utility::Deg2Rad(60));
 
 Particle::Particle() {
 
@@ -18,11 +18,12 @@ Particle::~Particle() {
 	}
 }
 
-void Particle::Initialize(ViewProjection* viewProjection , XMMATRIX* matProjection , Player* player) {
+void Particle::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, Player* player) {
 	soundManager_.Initialize();
 	for (int i = 0; i < particleValue; i++) {
 
 		gameObject[i] = new GameObject3D;
+		gameObject[i]->PreLoadTexture(L"Resources/red.png");
 		gameObject[i]->SetViewProjection(viewProjection);
 		gameObject[i]->SetMatProjection(matProjection);
 		gameObject[i]->Initialize();
@@ -39,12 +40,34 @@ void Particle::Initialize(ViewProjection* viewProjection , XMMATRIX* matProjecti
 
 }
 
+void Particle::Initialize2(ViewProjection* viewProjection, XMMATRIX* matProjection, PlayerBullet* player) {
+	soundManager_.Initialize();
+	for (int i = 0; i < particleValue; i++) {
+
+		gameObject[i] = new GameObject3D;
+		gameObject[i]->PreLoadTexture(L"Resources/red.png");
+		gameObject[i]->SetViewProjection(viewProjection);
+		gameObject[i]->SetMatProjection(matProjection);
+		gameObject[i]->Initialize();
+
+		gameObject[i]->Update();
+
+		isDead[i] = true;
+
+		Reset();
+
+	}
+
+	this->playerBullet = player;
+
+}
+
 void Particle::Update() {
 
 	if (player->GetIsDead() == true) {
 		if (isPlayingBGM == false) {
 			//音声再生
-			soundManager_.SoundPlayWave(soundManager_.xAudio2.Get() , soundData1 , false , 0.01f);
+			soundManager_.SoundPlayWave(soundManager_.xAudio2.Get(), soundData1, false, 0.01f);
 			isPlayingBGM = true;
 		}
 		for (int i = 0; i < particleValue; i++) {
@@ -54,7 +77,7 @@ void Particle::Update() {
 				gameObject[i]->worldTransform = player->GetWorldTransform();
 
 
-				gameObject[i]->worldTransform.scale = {0.5 , 0.5 , 0.5};
+				gameObject[i]->worldTransform.scale = { 0.5 , 0.5 , 0.5 };
 
 				velocity[i] = {
 					speed * cosf(angle[i].y) ,
@@ -62,11 +85,11 @@ void Particle::Update() {
 					speed * -sinf(angle[i].y)
 				};
 
-				gameObject[i]->worldTransform.rotation = {distRot(engine) , distRot(engine) , distRot(engine)};
+				gameObject[i]->worldTransform.rotation = { distRot(engine) , distRot(engine) , distRot(engine) };
 
-				MathFunc::Affine::SetMatRotation(gameObject[i]->worldTransform.matWorld , gameObject[i]->worldTransform.rotation);
+				MathFunc::Affine::SetMatRotation(gameObject[i]->worldTransform.matWorld, gameObject[i]->worldTransform.rotation);
 
-				velocity[i] = MathFunc::Utility::MulVector3AndMatrix4(velocity[i] , gameObject[i]->worldTransform.matWorld);
+				velocity[i] = MathFunc::Utility::MulVector3AndMatrix4(velocity[i], gameObject[i]->worldTransform.matWorld);
 
 				particleOff[i] = false;
 				isDead[i] = false;
@@ -74,12 +97,12 @@ void Particle::Update() {
 			}
 			else {
 				gameObject[i]->worldTransform.translation += velocity[i];
-				gameObject[i]->worldTransform.scale = {0.5f * timer[i] / 60 , 0.5f * timer[i] / 60 , 0.5f * timer[i] / 60};
+				gameObject[i]->worldTransform.scale = { 0.5f * timer[i] / 60 , 0.5f * timer[i] / 60 , 0.5f * timer[i] / 60 };
 
 				gameObject[i]->Update();
 				timer[i]--;
 				if (timer[i] < 0) {
-					
+
 					isDead[i] = true;
 				}
 			}
@@ -87,6 +110,58 @@ void Particle::Update() {
 
 	}
 
+}
+
+void Particle::Update2() {
+	bool justDied = false; // Flag to check if a bullet has just died
+	const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = player->GetBullets();
+	for (int i = 0; i < particleValue; i++) {
+		if (particleOff[i] == false) {
+			gameObject[i]->worldTransform.translation += velocity[i];
+			gameObject[i]->worldTransform.scale = { 0.5f * timer[i] / 60 , 0.5f * timer[i] / 60 , 0.5f * timer[i] / 60 };
+
+			gameObject[i]->Update();
+			timer[i]--;
+			if (timer[i] < 0) {
+				justDied = false;
+				isDead[i] = true;
+				Reset();
+			}
+		}
+	}
+	for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
+		if (bulletA->GetIsDead() == true) {
+			if (isPlayingBGM == false) {
+				//音声再生
+				soundManager_.SoundPlayWave(soundManager_.xAudio2.Get(), soundData1, false, 0.01f);
+				isPlayingBGM = true;
+			}
+			for (int i = 0; i < particleValue; i++) {
+
+					angle[i] = bulletA->GetAngle();
+					gameObject[i]->worldTransform = bulletA->GetWorldTransform();
+
+					gameObject[i]->worldTransform.scale = { 0.5 , 0.5 , 0.5 };
+
+					velocity[i] = {
+						speed * cosf(angle[i].y) ,
+						0 ,
+						speed * -sinf(angle[i].y)
+					};
+
+					gameObject[i]->worldTransform.rotation = { distRot(engine) , distRot(engine) , distRot(engine) };
+
+					MathFunc::Affine::SetMatRotation(gameObject[i]->worldTransform.matWorld, gameObject[i]->worldTransform.rotation);
+
+					velocity[i] = MathFunc::Utility::MulVector3AndMatrix4(velocity[i], gameObject[i]->worldTransform.matWorld);
+
+					particleOff[i] = false;
+					isDead[i] = false;
+					timer[i] = 60;
+				
+			}
+		}
+	}
 }
 
 void Particle::Draw() {
@@ -103,7 +178,7 @@ void Particle::Draw() {
 
 void Particle::Reset() {
 	for (int i = 0; i < particleValue; i++) {
-	
+
 		particleOff[i] = true;
 		isPlayingBGM = false;
 	}

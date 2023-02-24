@@ -10,16 +10,23 @@ public:
 	~PlayerBullet();
 
 	//初期化
-	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection);
+	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 playerPos, Vector3 bossPos);
 	//更新
 	void Update(Vector3 playerPos, Vector3 bossPos);
 	//描画
 	void Draw();
 
 	bool IsDead() const { return isDead_; }
-private:	//メンバ関数
+
+	int GetIsDead();
+	Vector3 GetAngle();
+	WorldTransform GetWorldTransform();
+
+	void OnCollision();
 	//攻撃
 	void Attack(Vector3 playerPos, Vector3 bossPos);
+private:	//メンバ関数
+	
 private:	//メンバ変数
 	//弾数
 	const int bulletNum = 10;
@@ -41,5 +48,9 @@ private:	//メンバ変数
 	//デスタイマー
 	int32_t deathTimer_ = kLifeTime;
 	//デスフラグ
-	bool isDead_;
+	int isDead_ = false;
+	Vector3 angle = {};
+
+	Vector3 newEnemyPos = {};
+	Vector3 newPlayerPos = {};
 };

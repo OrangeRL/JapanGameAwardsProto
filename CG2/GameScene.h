@@ -57,6 +57,7 @@ private: // メンバ変数
 	PlayerBullet* playerBullet = nullptr;
 
 	Particle* particle = nullptr;
+	Particle* particle2 = nullptr;
 
 	Map* map = nullptr;
 

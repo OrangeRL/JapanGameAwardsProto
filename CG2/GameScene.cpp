@@ -30,7 +30,10 @@ void GameScene::Initialize(WinApp* winApp) {
 
 	player = new Player();
 	player->Initialize(&viewProjection_, &matProjection_);
-	
+
+	enemy = new Enemy();
+	enemy->Initialize(&viewProjection_, &matProjection_);
+
 	player->SetMap(map);
 	player->SetGoal(goal);
 	player->SetEnemy(enemy);
@@ -38,28 +41,38 @@ void GameScene::Initialize(WinApp* winApp) {
 	particle = new Particle;
 	particle->Initialize(&viewProjection_, &matProjection_, player);
 
+	particle2 = new Particle;
+	particle2->Initialize(&viewProjection_, &matProjection_, player);
+
 }
 
 void GameScene::Update() {
-	
+
 	viewProjection_.UpdateView();
 	viewProjection_.target = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z };
-	viewProjection_.eye = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z -30 };
+	viewProjection_.eye = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z - 30 };
+	player->Update();
+	enemy->Update();
+	particle->Update();
+	particle2->Update2();
+	player->NewBullet(&viewProjection_, &matProjection_);
 
-		player->Update();
-		particle->Update();
-		player->NewBullet(&viewProjection_, &matProjection_);
+	if (input_.PushKey(DIK_R)) {
+		Reset();
+	}
 }
 
 void GameScene::Draw() {
 	//3D描画
 
-		player->Draw();
-		particle->Draw();
+	player->Draw();
+	enemy->Draw();
+	particle->Draw();
+	particle2->Draw();
 
 	//スプライト描画
 	Sprite::PreDraw(dx12base_.GetCmdList().Get());
-	
+
 
 	Sprite::PostDraw();
 
