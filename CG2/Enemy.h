@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject3D.h"
+#include "EnemyBullet.h"
 
 class Enemy {
 public:
@@ -11,7 +12,7 @@ public:
 
 	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName);
 
-	void Update();
+	void Update(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName);
 
 	void Draw();
 
@@ -22,7 +23,8 @@ private:
 	GameObject3D* gameObject = nullptr; // À•W‚â‘å‚«‚³“™‚ª“ü‚Á‚Ä‚¢‚é
 
 	float moveSpeed = 0; //ˆÚ“®‘¬“x
-
+	float attackSpeed = 100.0f;
+	bool isAttack = false;
 };
 
 

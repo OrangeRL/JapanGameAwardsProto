@@ -107,7 +107,7 @@ private: // メンバ変数
 	Sprite* num9_ = nullptr;
 	Sprite* num10_ = nullptr;
 
-// 敵発生コマンド関係
+// 敵コマンド関係
 //------------------------------------
 	std::stringstream enemyPopCommand;
 	bool waitFlag = false;

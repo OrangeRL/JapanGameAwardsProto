@@ -19,10 +19,10 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 	gameObject->worldTransform.translation = { 0 , 0 , 75 };
 	gameObject->worldTransform.scale = { 2 , 2 , 2};
 
+	
 }
 
-void Enemy::Update() {
-
+void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName) {
 	gameObject->worldTransform.translation.y += moveSpeed;
 	if (gameObject->worldTransform.translation.y >= 70 || gameObject->worldTransform.translation.y <= -70)
 	{
@@ -52,5 +52,5 @@ WorldTransform Enemy::Settransform(float x,float y,float z)
 float Enemy::SetSpeed(float speed)
 {
 	this->moveSpeed = speed;
-	return 0.0f;
+	return moveSpeed;
 }
