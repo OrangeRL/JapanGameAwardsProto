@@ -1,6 +1,8 @@
 #pragma once
 #include "GameObject3D.h"
 #include "EnemyBullet.h"
+#include <memory>
+#include <list>
 
 class Enemy {
 public:
@@ -21,6 +23,7 @@ public:
 	float SetSpeed(float speed);
 private:
 	GameObject3D* gameObject = nullptr; // À•W‚â‘å‚«‚³“™‚ª“ü‚Á‚Ä‚¢‚é
+	std::list<std::unique_ptr<EnemyBullet>> bullets;
 
 	float moveSpeed = 0; //ˆÚ“®‘¬“x
 	float attackSpeed = 100.0f;

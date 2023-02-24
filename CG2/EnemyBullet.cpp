@@ -12,14 +12,18 @@ void EnemyBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjec
 
 void EnemyBullet::Update(WorldTransform enemy)
 {
-	//if (input.TriggerKey(DIK_SPACE))
-	//{
-	//	gameObject->worldTransform.translation = enemy.translation;
-	//}
+
 	gameObject->Update();
 }
 
 void EnemyBullet::Draw()
 {
 	gameObject->Draw();
+}
+
+Vector3 EnemyBullet::SetTransform(Vector3 transform)
+{
+	this->gameObject->worldTransform.translation = transform;
+
+	return gameObject->worldTransform.translation;
 }

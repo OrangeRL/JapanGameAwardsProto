@@ -23,6 +23,24 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 }
 
 void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName) {
+	if (isAttack == false) {
+		attackSpeed -= 0.5f;
+		if (attackSpeed <= 0.0f) {
+			std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
+			bullet->Initialize(viewProjection, matProjection, textureFileName);
+			bullet->SetTransform(gameObject->worldTransform.translation);
+			bullets.push_back(std::move(bullet));
+			isAttack = true;
+			attackSpeed = 100.0f;
+		}
+	}
+	else
+	{
+		for (std::unique_ptr<EnemyBullet>& bullet : bullets) {
+			bullet->Update(gameObject->worldTransform);
+		}
+	}
+
 	gameObject->worldTransform.translation.y += moveSpeed;
 	if (gameObject->worldTransform.translation.y >= 70 || gameObject->worldTransform.translation.y <= -70)
 	{
@@ -34,6 +52,9 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, cons
 
 void Enemy::Draw() {
 	gameObject->Draw();
+	for (std::unique_ptr<EnemyBullet>& bullet : bullets) {
+		bullet->Draw();
+	}
 }
 
 WorldTransform Enemy::GetWorldTransform() {
