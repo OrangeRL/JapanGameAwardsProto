@@ -9,7 +9,7 @@ public:
 
 	//コンストラクタ
 	Enemy();
-	//デストラクタ
+	//チE��トラクタ
 	~Enemy();
 
 	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName);
@@ -19,17 +19,16 @@ public:
 
 
 	void Draw();
-	//座標取得用
-
+	
 	void Reset();
-
+	//���W�擾�p
 	WorldTransform GetWorldTransform();
-	//生成される場所を設定
+	//���������ꏊ��ݒ�
 	WorldTransform Settransform(float x,float y,float z);
-	//速度設定
+	//���x�ݒ�
 	float SetSpeed(float speed);
 private:
-	GameObject3D* gameObject = nullptr; // 座標や大きさ等が入っている
+	GameObject3D* gameObject = nullptr; // 座標や大きさ等が入ってぁE��
 	std::list<std::unique_ptr<EnemyBullet>> bullets;
 
 

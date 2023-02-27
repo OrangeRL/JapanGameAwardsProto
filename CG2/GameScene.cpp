@@ -35,7 +35,6 @@ void GameScene::Initialize(WinApp* winApp) {
 
 	player->SetMap(map);
 	player->SetGoal(goal);
-	player->SetEnemy(enemy);
 
 	particle = new Particle;
 	particle->Initialize(&viewProjection_, &matProjection_, player);
@@ -61,6 +60,7 @@ void GameScene::Update() {
 	//敵の更新処理
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
 		enemy->Update(&viewProjection_, &matProjection_, L"Resources/white1x1.png",0);
+		//player->SetEnemy(enemy);
 	}
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
 		enemy->Update(&viewProjection_, &matProjection_, L"Resources/white1x1.png",1);
@@ -123,11 +123,6 @@ void GameScene::Draw() {
 
 
 	Sprite::PostDraw();
-
-}
-
-void GameScene::Reset() {
-
 
 }
 
@@ -233,7 +228,7 @@ void GameScene::UpdateEnemyPopCommand()
 
 	player->Reset();
 	particle->Reset();
-	enemy->Reset();
+	//enemy->Reset();
 	
 }
 

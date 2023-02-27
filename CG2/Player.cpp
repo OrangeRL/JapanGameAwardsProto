@@ -126,7 +126,7 @@ void Player::NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection) 
 		bullets_.push_back(std::move(newBullet));
 
 	}
-	enemyPos = enemy->GetWorldTransform().translation;
+	//enemyPos = enemy->GetWorldTransform().translation;
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Update(enemyPos, playerPos); }
 
 }
@@ -135,38 +135,38 @@ void Player::NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection) 
 void Player::Collision() {
 
 	//enemy-player
-	if (enemy->GetWorldTransform().translation.x - gameObject->worldTransform.translation.x < 2 &&
-		-2 < enemy->GetWorldTransform().translation.x - gameObject->worldTransform.translation.x) {
-		if (enemy->GetWorldTransform().translation.y - gameObject->worldTransform.translation.y < 3 &&
-			-3 < enemy->GetWorldTransform().translation.y - gameObject->worldTransform.translation.y) {
-			if (enemy->GetWorldTransform().translation.z - gameObject->worldTransform.translation.z < 3 &&
-				-3 < enemy->GetWorldTransform().translation.z - gameObject->worldTransform.translation.z) {
-				if (life > 0) {
-					life -= 10;
-				}
-				else {
-					isDead = true;
-				}
-			}
-		}
-	}
+	//if (enemy->GetWorldTransform().translation.x - gameObject->worldTransform.translation.x < 2 &&
+	//	-2 < enemy->GetWorldTransform().translation.x - gameObject->worldTransform.translation.x) {
+	//	if (enemy->GetWorldTransform().translation.y - gameObject->worldTransform.translation.y < 3 &&
+	//		-3 < enemy->GetWorldTransform().translation.y - gameObject->worldTransform.translation.y) {
+	//		if (enemy->GetWorldTransform().translation.z - gameObject->worldTransform.translation.z < 3 &&
+	//			-3 < enemy->GetWorldTransform().translation.z - gameObject->worldTransform.translation.z) {
+	//			if (life > 0) {
+	//				life -= 10;
+	//			}
+	//			else {
+	//				isDead = true;
+	//			}
+	//		}
+	//	}
+	//}
 
 	//bullet-enemy
-	const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = GetBullets();
-	for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
-		if (enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x < 2 &&
-			-2 < enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x) {
-			if (enemy->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y < 3 &&
-				-3 < enemy->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y) {
-				if (enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z < 3 &&
-					-3 < enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z) {
-
-					bulletA->OnCollision();
-					enemy->Reset();
-				}
-			}
-		}
-	}
+	//const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = GetBullets();
+	//for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
+	//	if (enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x < 2 &&
+	//		-2 < enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x) {
+	//		if (enemy->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y < 3 &&
+	//			-3 < enemy->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y) {
+	//			if (enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z < 3 &&
+	//				-3 < enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z) {
+	//
+	//				bulletA->OnCollision();
+	//				enemy->Reset();
+	//			}
+	//		}
+	//	}
+	//}
 
 
 }
