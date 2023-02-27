@@ -43,7 +43,7 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, cons
 	else
 	{
 		for (std::unique_ptr<EnemyBullet>& bullet : bullets) {
-			bullet->Update(gameObject->worldTransform);
+			bullet->Update(player_->GetWorldTransform());
 			//弾が画面外に言ったらEnemyの座標に戻す(いずれ削除に変更すること)
 			if (bullet->GetWorldTransform().translation.z <= -15.0f) {
 				bullet->SetTransform(gameObject->worldTransform.translation);

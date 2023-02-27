@@ -3,6 +3,9 @@
 #include "EnemyBullet.h"
 #include <memory>
 #include <list>
+#include "Player.h"
+
+class Player;
 
 class Enemy {
 public:
@@ -36,6 +39,7 @@ private:
 	float attackSpeed = 100.0f;
 	bool isAttack = false;
 
+	Player* player_;
 };
 
 
