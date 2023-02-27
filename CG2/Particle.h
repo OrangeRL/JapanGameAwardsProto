@@ -11,15 +11,17 @@ public:
 	~Particle();
 
 	void Initialize(ViewProjection* viewProjection , XMMATRIX* matProjection,Player* player);
+	void Initialize2(ViewProjection* viewProjection , XMMATRIX* matProjection,PlayerBullet* player);
 
 	void Update();
+	void Update2();
 
 	void Draw();
 
 	void Reset();
 
 	int GetIsDead();
-
+	bool IsDead() const { return isDead[particleValue]; }
 private:
 
 	static const int particleValue = 20;
@@ -38,6 +40,7 @@ private:
 	int particleOff[particleValue] = {0};
 
 	Player* player = nullptr;
+	PlayerBullet* playerBullet = nullptr;
 	SoundManager soundManager_;
 	//âπê∫ì«Ç›çûÇ›
 	SoundData soundData1 = soundManager_.SoundLoadWave("Resources/death.wav");

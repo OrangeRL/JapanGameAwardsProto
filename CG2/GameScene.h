@@ -18,6 +18,7 @@
 #include "Goal.h"
 #include "Particle.h"
 #include "Enemy.h"
+#include "PlayerBullet.h"
 
 class GameScene {
 
@@ -48,13 +49,18 @@ public: // メンバ関数
 	/// 敵発生コマンドの更新
 	/// </summary>
 	void UpdateEnemyPopCommand();
+
+	//弾リストを取得
+	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
+	std::list<std::unique_ptr<PlayerBullet>>bullets_;
+
 private: // メンバ変数
 	WinApp* winApp_ = nullptr;
 	DX12base& dx12base_ = DX12base::GetInstance();
 	Input& input_ = Input::GetInstance();
 	XMMATRIX matProjection_ = {};
-	SoundManager soundManager_;
 
+	SoundManager soundManager_;
 	ViewProjection viewProjection_;
 
 	//音声読み込み
@@ -64,8 +70,10 @@ private: // メンバ変数
 	bool isPlayingBGM = false;
 
 	Player* player = nullptr;
+	PlayerBullet* playerBullet = nullptr;
 
 	Particle* particle = nullptr;
+	Particle* particle2 = nullptr;
 
 	Map* map = nullptr;
 

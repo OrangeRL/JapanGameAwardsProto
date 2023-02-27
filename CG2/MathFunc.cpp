@@ -1,4 +1,5 @@
 #include "MathFunc.h"
+#include <stdlib.h>
 
 //スケーリング行列を設定する関数
 void MathFunc::Affine::SetMatScale(Matrix4& affineMat , Vector3 scale) {
@@ -229,4 +230,18 @@ Vector3  MathFunc::Utility::MulVector3AndMatrix4(Vector3 vec , Matrix4 mat) {
 
 	return ans;
 
+}
+
+int MathFunc::RNG(int min, int max, bool preciseMode)
+{
+	if (!preciseMode) {
+		return (rand() % (max + 1 - min) + min);
+	}
+
+	int ret = 0;
+	do {
+		ret = rand();
+	} while (ret >= RAND_MAX - RAND_MAX % (max + 1 - min));
+	ret = ret % (max + 1 - min) + min;
+	return ret;
 }
