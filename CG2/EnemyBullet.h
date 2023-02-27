@@ -7,6 +7,7 @@ public:
 	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName);
 	void Update(WorldTransform enemy);
 	void Draw();
+	WorldTransform GetWorldTransform();
 	//¶¬‚·‚éêŠ‚ğİ’è
 	Vector3 SetTransform(Vector3 transform);
 	//’e‚Ìí—Ş‚ğİ’è

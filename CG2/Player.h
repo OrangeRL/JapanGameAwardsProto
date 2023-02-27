@@ -3,6 +3,7 @@
 #include "Input.h"
 #include "MathFunc.h"
 #include "PlayerBullet.h"
+#include "EnemyBullet.h"
 #include <memory>
 #include<list>
 
@@ -48,7 +49,8 @@ public:
 
 	//’eƒŠƒXƒg‚ğæ“¾
 	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
-
+	const std::list<std::unique_ptr<EnemyBullet>>& GetEnemyBullets() { return enemyBullets; }
+	const std::list<std::unique_ptr<Enemy>>& GetEnemies() { return enemys1; }
 	//ƒƒ“ƒoŠÖ”
 private:
 	void Rotate();
@@ -102,5 +104,11 @@ private:
 	//’e
 	std::list<std::unique_ptr<PlayerBullet>>bullets_;
 	PlayerBullet* playerBullet = nullptr;
+
+	std::list<std::unique_ptr<Enemy>> enemys1;
+	std::list<std::unique_ptr<Enemy>> enemys2;
+	std::list<std::unique_ptr<EnemyBullet>> enemyBullets;
+	EnemyBullet* enemyBullet = nullptr;
+	
 };
 

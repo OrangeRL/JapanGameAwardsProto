@@ -35,7 +35,7 @@ void GameScene::Initialize(WinApp* winApp) {
 
 	player->SetMap(map);
 	player->SetGoal(goal);
-
+	player->SetEnemy(enemy);
 	particle = new Particle;
 	particle->Initialize(&viewProjection_, &matProjection_, player);
 
@@ -60,7 +60,7 @@ void GameScene::Update() {
 	//敵の更新処理
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
 		enemy->Update(&viewProjection_, &matProjection_, L"Resources/white1x1.png",0);
-		//player->SetEnemy(enemy);
+		
 	}
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
 		enemy->Update(&viewProjection_, &matProjection_, L"Resources/white1x1.png",1);
@@ -83,7 +83,7 @@ void GameScene::Update() {
 		Reset();
 	}
 
-	if (player->GetIsDead() == true && particle->GetIsDead() == true) {
+	/*if (player->GetIsDead() == true && particle->GetIsDead() == true) {
 		if (gameoverTimer <= 0) {
 			gameoverTimer = 5;
 		}
@@ -95,7 +95,7 @@ void GameScene::Update() {
 				scene_ = Scene::Title;
 			}
 		}
-	}
+	}*/
 
 }
 
