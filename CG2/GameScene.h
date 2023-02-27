@@ -80,15 +80,6 @@ private: // メンバ変数
 	Sprite* gameOver_ = nullptr;
 	Sprite* spaceToContinue_ = nullptr;
 	Sprite* spaceToReturnTitle_ = nullptr;
-	Sprite* num0_ = nullptr;
-	Sprite* num1_ = nullptr;
-	Sprite* num2_ = nullptr;
-	Sprite* num3_ = nullptr;
-	Sprite* num4_ = nullptr;
-	Sprite* num5_ = nullptr;
-	Sprite* num6_ = nullptr;
-	Sprite* num7_ = nullptr;
-	Sprite* num8_ = nullptr;
-	Sprite* num9_ = nullptr;
-//	Sprite* num10_ = nullptr;
+
+	Sprite* num_[10];
 };
