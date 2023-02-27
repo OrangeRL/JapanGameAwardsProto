@@ -52,7 +52,11 @@ void GameScene::Update() {
 	viewProjection_.target = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z };
 	viewProjection_.eye = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z - 30 };
 	player->Update();
-	enemy->Update();
+	if (player->GetIsDead() == false) {
+		enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
+	}
+
+
 	particle->Update();
 	particle2->Update2();
 	player->NewBullet(&viewProjection_, &matProjection_);
@@ -60,6 +64,32 @@ void GameScene::Update() {
 	if (input_.PushKey(DIK_R)) {
 		Reset();
 	}
+
+	if (player->GetIsDead() == true && particle->GetIsDead() == true) {
+		if (gameoverTimer <= 0) {
+			gameoverTimer = 5;
+		}
+		else {
+			gameoverTimer--;
+			if (gameoverTimer <= 0) {
+				stage = 1;
+				Reset();
+				scene_ = Scene::Title;
+			}
+		}
+	}
+
+	////enemy-player
+	//if (enemy->GetWorldTransform().translation.x -				player->GetWorldTransform().translation.x < 2 &&
+	//	-2 < enemy->GetWorldTransform().translation.x -			player->GetWorldTransform().translation.x) {
+	//	if (enemy->GetWorldTransform().translation.y -			player->GetWorldTransform().translation.y < 3 &&
+	//		-3 < enemy->GetWorldTransform().translation.y -		player->GetWorldTransform().translation.y) {
+	//		if (enemy->GetWorldTransform().translation.z -		player->GetWorldTransform().translation.z < 3 &&
+	//			-3 < enemy->GetWorldTransform().translation.z - player->GetWorldTransform().translation.z) {
+	//			enemy->Reset();
+	//		}
+	//	}
+	//}
 }
 
 void GameScene::Draw() {
@@ -82,4 +112,6 @@ void GameScene::Reset() {
 
 	player->Reset();
 	particle->Reset();
+	enemy->Reset();
+	
 }

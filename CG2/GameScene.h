@@ -37,7 +37,9 @@ public: // メンバ関数
 	void Draw();
 
 	void Reset();
-
+	//弾リストを取得
+	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
+	std::list<std::unique_ptr<PlayerBullet>>bullets_;
 private: // メンバ変数
 	WinApp* winApp_ = nullptr;
 	DX12base& dx12base_ = DX12base::GetInstance();

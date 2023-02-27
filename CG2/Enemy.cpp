@@ -21,23 +21,19 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection) 
 
 }
 
-void Enemy::Update() {
+void Enemy::Update(Vector3 playerPos, Vector3 bossPos) {
 
-	//if (ct <= 0) {
-	//	moveSpeed = g * (timer / 50);
 
-	//	gameObject->worldTransform.translation.z -= moveSpeed;
-
-	//	timer++;
-		if (gameObject->worldTransform.translation.z < -50) {
-			timer = 0;
-			gameObject->worldTransform.translation.z = 100;
-			ct = 50;
-		}
-	//}
-	//else {
-	//	ct--;
-	//}
+	//ボスと自機の差分ベクトルを求める
+	velocity = playerPos - bossPos;
+	//ベクトルの正規化
+	velocity.nomalize();
+	//ベクトルの長さを速さに合わせる
+	velocity.x *= speed;
+	velocity.y *= speed;
+	velocity.z *= speed;
+	//発射フラグがtrueならその時点での自機の座標に向かって移動する
+	gameObject->worldTransform.translation -= velocity;
 
 	gameObject->Update();
 
@@ -45,6 +41,10 @@ void Enemy::Update() {
 
 void Enemy::Draw() {
 	gameObject->Draw();
+}
+
+void Enemy::Reset() {
+	gameObject->worldTransform.translation = { 0 , 0 , 100 };
 }
 
 WorldTransform Enemy::GetWorldTransform() {

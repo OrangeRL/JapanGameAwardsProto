@@ -11,9 +11,11 @@ public:
 
 	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection);
 
-	void Update();
+	void Update(Vector3 playerPos, Vector3 bossPos);
 
 	void Draw();
+
+	void Reset();
 
 	WorldTransform GetWorldTransform();
 
@@ -28,6 +30,9 @@ private:
 
 	float ct = 0;
 
+	const float speed = -0.5f;
+
+	Vector3 velocity;
 };
 
 

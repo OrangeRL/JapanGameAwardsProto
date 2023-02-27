@@ -67,7 +67,8 @@ private:
 	ViewProjection* viewProjection;
 
 	Vector3 velocity = {};
-	//ê≥ñ ÉxÉNÉgÉã
+	
+	int life = 100;
 
 	const float accelaration = 0.0025f;
 
