@@ -82,6 +82,7 @@
       <Filter>Source\Sprite</Filter>
     </ClCompile>
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="Rhythm.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FPS.h">
@@ -154,6 +155,7 @@
       <Filter>Header\3D</Filter>
     </ClInclude>
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Rhythm.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Basic.hlsli">

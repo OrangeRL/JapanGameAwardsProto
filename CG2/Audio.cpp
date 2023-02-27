@@ -97,7 +97,7 @@ void SoundManager::SoundUnload(SoundData& soundData) {
 
 //------サウンドの再生-------//
 
-//音声再生
+//音声再生(はじめから)
 void SoundManager::SoundPlayWave(IXAudio2* xAudio2,SoundData& soundData, bool loop, float volume) {
 	////波形フォーマットを元にSourceVoiceの生成
 	//IXAudio2SourceVoice* pSourceVoice = nullptr;
@@ -115,11 +115,14 @@ void SoundManager::SoundPlayWave(IXAudio2* xAudio2,SoundData& soundData, bool lo
 	buf.Flags = XAUDIO2_END_OF_STREAM;
 
 	//波形データの再生
+	result = soundData.pSourceVoice->SetVolume(volume);
+	result = soundData.pSourceVoice->SetOutputMatrix(soundData.pSourceVoice, 1, 2, outputMatrix);
 	result = soundData.pSourceVoice->SubmitSourceBuffer(&buf);
 	result = soundData.pSourceVoice->Start();
 
 }
 
+//音声停止
 void SoundManager::StopWave(const SoundData& soundData)
 {
 	//波形フォーマットを元にSourceVoiceの生成

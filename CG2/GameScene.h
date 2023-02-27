@@ -4,9 +4,8 @@
 #include"GameObject3D.h"
 #include "WinApp.h"
 #include "ViewProjection.h"
-
 #include "Audio.h"
-#include <xaudio2.h>
+//#include <xaudio2.h>
 #pragma comment(lib,"xaudio2.lib")
 #include "Sprite.h"
 
@@ -15,6 +14,7 @@
 #include "Goal.h"
 #include "Particle.h"
 #include "Enemy.h"
+#include "Rhythm.h"
 
 class GameScene {
 
@@ -22,7 +22,6 @@ public: // メンバ関数
 
 	//コンストラクタ
 	GameScene();
-
 	/// デストラクタ
 	~GameScene();
 
@@ -42,16 +41,10 @@ private: // メンバ変数
 	DX12base& dx12base_ = DX12base::GetInstance();
 	Input& input_ = Input::GetInstance();
 	XMMATRIX matProjection_ = {};
-	SoundManager soundManager_;
+
+	Rhythm* rhythm = nullptr;
 
 	ViewProjection viewProjection_;
-
-	//音声読み込み
-	SoundData soundData1 = soundManager_.SoundLoadWave("Resources/selectSound.wav");
-	SoundData soundData2 = soundManager_.SoundLoadWave("Resources/shot.wav");
-	SoundData soundData3 = soundManager_.SoundLoadWave("Resources/shot2.wav");
-	SoundData soundData4 = soundManager_.SoundLoadWave("Resources/death.wav");
-	SoundData mainBGM = soundManager_.SoundLoadWave("Resources/demo.wav");
 
 	bool isPlayingBGM = false;
 
@@ -80,11 +73,7 @@ private: // メンバ変数
 
 	int gameoverTimer = 0;
 
-	float timer = 0.0f;
-
-	int weapon = 0;
-	int measure = 0;
-	bool isActive = 1;
+	int offset = 5;
 
 	Sprite* title_ = nullptr;
 	Sprite* clear_ = nullptr;
@@ -101,6 +90,5 @@ private: // メンバ変数
 	Sprite* num7_ = nullptr;
 	Sprite* num8_ = nullptr;
 	Sprite* num9_ = nullptr;
-	Sprite* num10_ = nullptr;
-
+//	Sprite* num10_ = nullptr;
 };

@@ -1,19 +1,24 @@
 #include "GameScene.h"
 #include <cassert>
 
-
 GameScene::GameScene() {
 
 }
 
 GameScene::~GameScene() {
-	
-	soundManager_.StopWave(soundData1);
-	soundManager_.StopWave(soundData2);
-	soundManager_.StopWave(soundData3);
-	soundManager_.SoundUnload(soundData1);
-	soundManager_.SoundUnload(soundData2);
-	soundManager_.SoundUnload(soundData3);
+	delete num0_;
+	delete num1_;
+	delete num2_;
+	delete num3_;
+	delete num4_;
+	delete num5_;
+	delete num6_;
+	delete num7_;
+	delete num8_;
+	delete num9_;
+	//delete num10_;
+	delete rhythm;
+	delete enemy;
 }
 
 void GameScene::Initialize(WinApp* winApp) {
@@ -25,136 +30,63 @@ void GameScene::Initialize(WinApp* winApp) {
 		0.1f , 1000.0f
 	);
 
+	
+	num0_ = new Sprite(0,{0,0},{64,64},{1.0f,1.0f,1.0f,1.0f},{0,0},0,0);
+	num1_ = new Sprite(1,{0,0},{64,64},{1.0f,1.0f,1.0f,1.0f},{0,0},0,0);
+	num2_ = new Sprite(2,{0,0},{64,64},{1.0f,1.0f,1.0f,1.0f},{0,0},0,0);
+	num3_ = new Sprite(3,{0,0},{64,64},{1.0f,1.0f,1.0f,1.0f},{0,0},0,0);
+	num4_ = new Sprite(4,{0,0},{64,64},{1.0f,1.0f,1.0f,1.0f},{0,0},0,0);
+	num5_ = new Sprite(5,{0,0},{64,64},{1.0f,1.0f,1.0f,1.0f},{0,0},0,0);
+	num6_ = new Sprite(6,{0,0},{64,64},{1.0f,1.0f,1.0f,1.0f},{0,0},0,0);
+	num7_ = new Sprite(7,{0,0},{64,64},{1.0f,1.0f,1.0f,1.0f},{0,0},0,0);
+	num8_ = new Sprite(8,{0,0},{64,64},{1.0f,1.0f,1.0f,1.0f},{0,0},0,0);
+	num9_ = new Sprite(9,{0,0},{64,64},{1.0f,1.0f,1.0f,1.0f},{0,0},0,0);
+	//num10_ = new Sprite(0,{0,0},{64,64},{1.0f,1.0f,1.0f,1.0f},{0,0},0,0);
+
+	num0_->LoadTexture(0, L"Resources/0.png");
+	num1_->LoadTexture(1, L"Resources/1.png");
+	num2_->LoadTexture(2, L"Resources/2.png");
+	num3_->LoadTexture(3, L"Resources/3.png");
+	num4_->LoadTexture(4, L"Resources/4.png");
+	num5_->LoadTexture(5, L"Resources/5.png");
+	num6_->LoadTexture(6, L"Resources/6.png");
+	num7_->LoadTexture(7, L"Resources/7.png");
+	num8_->LoadTexture(8, L"Resources/8.png");
+	num9_->LoadTexture(9, L"Resources/9.png");
+	//num10_->LoadTexture(10, L"Resources/10.png");
+
+	num0_->Initialize();
+	num1_->Initialize();
+	num2_->Initialize();
+	num3_->Initialize();
+	num4_->Initialize();
+	num5_->Initialize();
+	num6_->Initialize();
+	num7_->Initialize();
+	num8_->Initialize();
+	num9_->Initialize();
+	//num10_->Initialize();
+
 	viewProjection_.Initialize();
 	viewProjection_.eye = {0 , 100 , -100};
 
 	enemy = new Enemy();
 	enemy->Initialize(&viewProjection_, &matProjection_);
 
-	soundManager_.Initialize();
-	soundManager_.SoundPlayWave(soundManager_.xAudio2.Get(), mainBGM, false, 1.0f);
+	rhythm = new Rhythm();
+	rhythm->Initialize();
 }
 
 void GameScene::Update() {
-	if (measure == 0 && timer == 0) {
-		soundManager_.StopWave(mainBGM);
-		soundManager_.SoundPlayWave(soundManager_.xAudio2.Get(), mainBGM, false, 1.0f);
+	rhythm->Update(&input_);
+
+	if (input_.TriggerKey(DIK_A) && offset > 0) {
+		offset--;
+	}
+	else if (input_.TriggerKey(DIK_D) && offset < 10) {
+		offset++;
 	}
 
-	timer++;
-
-	if (timer >= 60.0f) {
-		timer = 0;
-		measure++;
-	}
-
-	if (measure >= 16) {
-		measure = 0;
-	}
-
-	if (timer == 0) {
-		soundManager_.StopWave(soundData1);
-		soundManager_.SoundPlayWave(soundManager_.xAudio2.Get(), soundData1, false, 1.0f);
-	
-	}
-
-	if (input_.TriggerKey(DIK_0)) {
-		weapon = 0;
-	}
-	else if (input_.TriggerKey(DIK_1)) {
-		weapon = 1;
-	}
-	else if (input_.TriggerKey(DIK_2)) {
-		weapon = 2;
-	}
-
-	if (input_.TriggerKey(DIK_A)) {
-		soundManager_.StopWave(mainBGM);
-		soundManager_.SoundPlayWave(soundManager_.xAudio2.Get(), mainBGM, false, 1.0f);
-
-	}
-
-	if (weapon == 0) {
-		if (timer == 0.0f || timer == 30.0f) {
-			soundManager_.StopWave(soundData2);
-			soundManager_.SoundPlayWave(soundManager_.xAudio2.Get(), soundData2, false, 1.0f);
-		}
-		if (timer == 15.0f || timer == 45.0f) {
-			isActive = 1;
-		}
-
-		if (isActive == 1) {
-			if (input_.TriggerKey(DIK_SPACE)) {
-				if (((timer <= 4.0f) || (timer >= 26.0f && timer <= 34.0f) || (timer >= 56.0f))) {
-					soundManager_.StopWave(soundData3);
-					soundManager_.SoundPlayWave(soundManager_.xAudio2.Get(), soundData3, false, 1.0f);
-				}
-				else {
-					soundManager_.StopWave(soundData4);
-					soundManager_.SoundPlayWave(soundManager_.xAudio2.Get(), soundData4, false, 1.0f);
-				}
-
-				isActive = 0;
-				//timer -= 1.0f;
-			}
-		}
-	}
-
-	else if (weapon == 1) {
-		if (timer == 0.0f || timer == 15.0f || timer == 30.0f || timer == 45.0f) {
-			soundManager_.StopWave(soundData2);
-			soundManager_.SoundPlayWave(soundManager_.xAudio2.Get(), soundData2, false, 1.0f);
-
-		}
-		if (timer == 7.0f || timer == 22.0f || timer == 37.0f || timer == 52.0f) {
-			isActive = 1;
-		}
-
-		if (isActive == 1) {
-			if (input_.TriggerKey(DIK_SPACE)) {
-
-				if (((timer <= 4.0f) || (timer >= 11.0f && timer <= 19.0f) || (timer >= 26.0f && timer <= 34.0f) || (timer >= 41.0f && timer <= 49.0f) || (timer >= 56.0f))) {
-					soundManager_.StopWave(soundData3);
-					soundManager_.SoundPlayWave(soundManager_.xAudio2.Get(), soundData3, false, 1.0f);
-				}
-				else {
-					soundManager_.StopWave(soundData4);
-					soundManager_.SoundPlayWave(soundManager_.xAudio2.Get(), soundData4, false, 1.0f);
-				}
-
-				isActive = 0;
-				//timer += 1;
-			}
-		}
-	}
-
-	else if (weapon == 2) {
-		if (timer == 0.0f || timer == 20.0f || timer == 40.0f) {
-			soundManager_.StopWave(soundData2);
-			soundManager_.SoundPlayWave(soundManager_.xAudio2.Get(), soundData2, false, 1.0f);
-
-		}
-		if (timer == 10.0f || timer == 30.0f || timer == 50.0f) {
-			isActive = 1;
-		}
-
-		if (isActive == 1) {
-			if (input_.TriggerKey(DIK_SPACE)) {
-				if (((timer <= 4.0f) || (timer >= 16.0f && timer <= 24.0f) || (timer >= 36.0f && timer <= 44.0f) || (timer >= 56.0f))) {
-					soundManager_.StopWave(soundData3);
-					soundManager_.SoundPlayWave(soundManager_.xAudio2.Get(), soundData3, false, 1.0f);
-				}
-				else {
-					soundManager_.StopWave(soundData4);
-					soundManager_.SoundPlayWave(soundManager_.xAudio2.Get(), soundData4, false, 1.0f);
-				}
-
-				isActive = 0;
-
-			}
-		}
-	}
-	
 	viewProjection_.UpdateView();
 	//シーン管理
 	enemy->Update();
@@ -167,6 +99,36 @@ void GameScene::Draw() {
 	//スプライト描画
 	Sprite::PreDraw(dx12base_.GetCmdList().Get());
 
+	if (offset == 0) {
+		num0_->Draw();
+	}
+	else if (offset == 1) {
+		num1_->Draw();
+	}
+	else if (offset == 2) {
+		num2_->Draw();
+	}
+	else if (offset == 3) {
+		num3_->Draw();
+	}
+	else if (offset == 4) {
+		num4_->Draw();
+	}
+	else if (offset == 5) {
+		num5_->Draw();
+	}
+	else if (offset == 6) {
+		num6_->Draw();
+	}
+	else if (offset == 7) {
+		num7_->Draw();
+	}
+	else if (offset == 8) {
+		num8_->Draw();
+	}
+	else if (offset == 9) {
+		num9_->Draw();
+	}
 
 	Sprite::PostDraw();
 

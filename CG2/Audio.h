@@ -53,11 +53,10 @@ public:
 	void Initialize();
 	//音声読み込み
 	SoundData SoundLoadWave(const char* filename);
-	//音声再生
-	void SoundPlayWave(IXAudio2* xAudio2, SoundData& soundData, bool loop = false, float volume = 1.0f);
+	//音声再生(はじめから)
+	void SoundPlayWave(IXAudio2* xAudio2, SoundData& soundData, bool loop = false, float volume = 0.0f);
 	// 音声停止
 	void StopWave(const SoundData& soundData);
-	//void StopWave(const std::string& filename);
 	//音声解放
 	void SoundUnload(SoundData& soundData);
 	//xAudio2の解放
@@ -70,4 +69,6 @@ private:
 	//波形フォーマットからSourceVoiceの生成
 	IXAudio2SourceVoice* sourceVoice = nullptr;
 	HRESULT result;
+
+	float outputMatrix[2] = { 1.0f,0.05f };
 };
