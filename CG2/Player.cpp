@@ -135,9 +135,12 @@ void Player::NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection) 
 	}
 	timer--;
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Update(enemyPos, playerPos); }
-	if (timer < 0) {
-		for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->OnCollision(); }
-		isDead=true;
+	const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = GetBullets();
+	for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
+		if (input.PushKey(DIK_P)) {
+			isDead = true;
+			bulletA->OnCollision();
+		}
 	}
 
 }
@@ -163,8 +166,13 @@ void Player::Collision() {
 		}
 	}
 	//bullet-enemy
+	
+	
+	
+
 	const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = GetBullets();
 	for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
+
 		if (enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x < 2 &&
 			-2 < enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x) {
 			if (enemy->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y < 3 &&
