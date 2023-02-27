@@ -3,7 +3,7 @@
 class Map {
 public:
 	int GetObjectCount();
-	int GetObjectID(int x , int y);
+	int GetObjectID(int x, int y);
 	WorldTransform GetWorldTransform(int ObjectNum);
 };
 
@@ -15,6 +15,7 @@ public:
 class Enemy {
 public:
 	WorldTransform GetWorldTransform();
+	void Reset();
 };
 
 Player::Player() {
@@ -25,37 +26,48 @@ Player::~Player() {
 	delete gameObject;
 }
 
-void Player::Initialize(ViewProjection* viewProjection , XMMATRIX* matProjection) {
+void Player::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection) {
 
 	gameObject = new GameObject3D();
-	gameObject->PreLoadModel("Resources/star/star.obj");
+	gameObject->PreLoadModel("Resources/tofu/tofu.obj");
 	gameObject->PreLoadTexture(L"Resources/star/star.jpg");
 	gameObject->SetViewProjection(viewProjection);
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
+
 	Reset();
 
 }
 
 void Player::Update() {
 
-	Rotate();
 	Move();
-	Collision();
+	//enemyPos = enemy->GetWorldTransform().translation;
+	//デスフラグの立った弾を削除
+	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
+		return bullet->IsDead();
+		});
 
-	if (isDead == false) {
+	//弾更新
+	//for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Update(enemyPos, GetWorldTransform().translation); }
+
+	if (isDead == false)
+	{
 		gameObject->Update();
 	}
+	Collision();
 }
 
 void Player::Draw() {
 	if (isDead == false) {
 		gameObject->Draw();
+		//弾描画
+		for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Draw(); }
 	}
 }
 
 void Player::Reset() {
-	gameObject->worldTransform.translation = {-40 , 0 , -40};
+	gameObject->worldTransform.translation = { -10 , 0 , -10 };
 	moveSpeed = 0;
 	isDead = false;
 }
@@ -64,10 +76,10 @@ void Player::Rotate() {
 
 	const float rotationSpeed = MathFunc::Utility::Deg2Rad(6.0f);
 
-	Vector3 rotation = {0 , 0 , 0};
+	Vector3 rotation = { 0 , 0 , 0 };
 
 	rotation.y = rotationSpeed;
-	
+
 	gameObject->worldTransform.rotation += rotation;
 
 }
@@ -80,7 +92,7 @@ void Player::Move() {
 	if (input.PushKey(DIK_W) || input.PushKey(DIK_S) || input.PushKey(DIK_D) || input.PushKey(DIK_A))
 	{
 
-		// �ړ���̍��W���v�Z
+		// 移動後の座標を計算
 		if (input.PushKey(DIK_W)) { move = { 0,moveSpeed,0 }; }
 		else if (input.PushKey(DIK_S)) { move = { 0,-moveSpeed,0 }; }
 		if (input.PushKey(DIK_D)) { move = { moveSpeed,0,0 }; }
@@ -93,14 +105,73 @@ void Player::Move() {
 		if (input.PushKey(DIK_A) && input.PushKey(DIK_S)) { move = { -moveSpeed,-moveSpeed,0 }; }
 	}
 
+
 	gameObject->worldTransform.translation += move;
 }
+void Player::NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection) {
+
+	if (input.TriggerKey(DIK_SPACE))
+	{
+		Vector3 tempPopPos;
+		tempPopPos.x += MathFunc::RNG(-100, 100);
+		tempPopPos.y += MathFunc::RNG(-100, 100);
+		tempPopPos.z += MathFunc::RNG(-100, 100);
+
+		playerPos = GetWorldTransform().translation;
+		//弾を生成し、初期化
+		std::unique_ptr<PlayerBullet>newBullet = std::make_unique<PlayerBullet>();
+		newBullet->Initialize(viewProjection, matProjection, enemyPos, playerPos);
+
+		//弾を登録する
+		bullets_.push_back(std::move(newBullet));
+
+	}
+	enemyPos = enemy->GetWorldTransform().translation;
+	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Update(enemyPos, playerPos); }
+
+}
+
 
 void Player::Collision() {
 
+	//enemy-player
+	if (enemy->GetWorldTransform().translation.x - gameObject->worldTransform.translation.x < 2 &&
+		-2 < enemy->GetWorldTransform().translation.x - gameObject->worldTransform.translation.x) {
+		if (enemy->GetWorldTransform().translation.y - gameObject->worldTransform.translation.y < 3 &&
+			-3 < enemy->GetWorldTransform().translation.y - gameObject->worldTransform.translation.y) {
+			if (enemy->GetWorldTransform().translation.z - gameObject->worldTransform.translation.z < 3 &&
+				-3 < enemy->GetWorldTransform().translation.z - gameObject->worldTransform.translation.z) {
+				if (life > 0) {
+					life -= 10;
+				}
+				else {
+					isDead = true;
+				}
+			}
+		}
+	}
+
+	//bullet-enemy
+	const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = GetBullets();
+	for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
+		if (enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x < 2 &&
+			-2 < enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x) {
+			if (enemy->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y < 3 &&
+				-3 < enemy->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y) {
+				if (enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z < 3 &&
+					-3 < enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z) {
+
+					bulletA->OnCollision();
+					enemy->Reset();
+				}
+			}
+		}
+	}
+
+
 }
 
-//�A�N�Z�b�T
+//アクセッサ
 void Player::SetMap(Map* map) {
 	this->map = map;
 }

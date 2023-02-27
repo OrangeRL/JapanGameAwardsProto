@@ -38,6 +38,7 @@ namespace MathFunc {
 
 		//ベクトルと行列の掛け算をする関数
 		Vector3 MulVector3AndMatrix4(Vector3 vec , Matrix4 mat);
+		
 	}
-
+	int RNG(int min, int max, bool preciseMode = false);
 }
