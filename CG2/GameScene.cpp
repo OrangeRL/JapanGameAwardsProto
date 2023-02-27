@@ -33,7 +33,11 @@ void GameScene::Update() {
 	
 	viewProjection_.UpdateView();
 	//シーン管理
+	
+	//プレイヤーの更新処理
 	player->Update();
+
+	//敵の更新処理
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
 		enemy->Update(&viewProjection_, &matProjection_, L"Resources/white1x1.png",0);
 	}
@@ -46,7 +50,9 @@ void GameScene::Update() {
 
 void GameScene::Draw() {
 	//3D描画
+	//プレイヤー描画
 	player->Draw();
+	//敵の描画
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
 		enemy->Draw();
 	}

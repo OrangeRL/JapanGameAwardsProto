@@ -17,9 +17,11 @@ public:
 	void Update(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName, int bulletNum);
 
 	void Draw();
-
+	//座標取得用
 	WorldTransform GetWorldTransform();
+	//生成される場所を設定
 	WorldTransform Settransform(float x,float y,float z);
+	//速度設定
 	float SetSpeed(float speed);
 private:
 	GameObject3D* gameObject = nullptr; // 座標や大きさ等が入っている
