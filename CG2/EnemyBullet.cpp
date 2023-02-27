@@ -12,7 +12,14 @@ void EnemyBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjec
 
 void EnemyBullet::Update(WorldTransform enemy)
 {
-
+	//プレイヤーを狙う
+	if (bulletNum == 0) {
+		gameObject->worldTransform.translation.z -= 0.5f;
+	}
+	//正面にカーテン形成
+	else if (bulletNum == 1) {
+		gameObject->worldTransform.translation.z -= 0.1f;
+	}
 	gameObject->Update();
 }
 
@@ -26,4 +33,11 @@ Vector3 EnemyBullet::SetTransform(Vector3 transform)
 	this->gameObject->worldTransform.translation = transform;
 
 	return gameObject->worldTransform.translation;
+}
+
+int EnemyBullet::SetBullet(int bulletNum)
+{
+	this->bulletNum = bulletNum;
+
+	return this->bulletNum;
 }

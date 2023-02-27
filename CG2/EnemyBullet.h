@@ -8,9 +8,11 @@ public:
 	void Update(WorldTransform enemy);
 	void Draw();
 	Vector3 SetTransform(Vector3 transform);
+	int SetBullet(int bulletNum);
 private:
 	GameObject3D* gameObject = nullptr;
 	//ƒL[“ü—Í
 	Input& input = Input::GetInstance();
+	int bulletNum;
 };
 

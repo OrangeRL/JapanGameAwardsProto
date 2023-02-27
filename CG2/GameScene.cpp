@@ -35,10 +35,10 @@ void GameScene::Update() {
 	//シーン管理
 	player->Update();
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
-		enemy->Update(&viewProjection_, &matProjection_, L"Resources/white1x1.png");
+		enemy->Update(&viewProjection_, &matProjection_, L"Resources/white1x1.png",0);
 	}
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
-		enemy->Update(&viewProjection_, &matProjection_, L"Resources/white1x1.png");
+		enemy->Update(&viewProjection_, &matProjection_, L"Resources/white1x1.png",1);
 	}
 	UpdateEnemyPopCommand();
 	

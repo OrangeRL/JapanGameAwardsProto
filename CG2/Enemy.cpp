@@ -22,13 +22,17 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 	
 }
 
-void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName) {
+void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName, int bulletNum) {
 	if (isAttack == false) {
 		attackSpeed -= 0.5f;
 		if (attackSpeed <= 0.0f) {
+			//’e‚ð¶¬
 			std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
+			//‰Šú‰»
 			bullet->Initialize(viewProjection, matProjection, textureFileName);
 			bullet->SetTransform(gameObject->worldTransform.translation);
+			//Žg‚¤’e‚ÌÝ’è
+			bullet->SetBullet(bulletNum);
 			bullets.push_back(std::move(bullet));
 			isAttack = true;
 			attackSpeed = 100.0f;
