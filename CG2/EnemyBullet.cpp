@@ -10,7 +10,7 @@ void EnemyBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjec
 
 }
 
-void EnemyBullet::Update(WorldTransform enemy)
+void EnemyBullet::Update(WorldTransform player)
 {
 	//ƒvƒŒƒCƒ„[‚ð‘_‚¤
 	if (bulletNum == 0) {
@@ -26,6 +26,11 @@ void EnemyBullet::Update(WorldTransform enemy)
 void EnemyBullet::Draw()
 {
 	gameObject->Draw();
+}
+
+WorldTransform EnemyBullet::GetWorldTransform()
+{
+	return gameObject->worldTransform;
 }
 
 Vector3 EnemyBullet::SetTransform(Vector3 transform)

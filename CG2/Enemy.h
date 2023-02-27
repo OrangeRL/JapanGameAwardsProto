@@ -7,9 +7,9 @@
 class Enemy {
 public:
 
-	//繧ｳ繝ｳ繧ｹ繝医Λ繧ｯ繧ｿ
+	//コンストラクタ―
 	Enemy();
-	//繝・せ繝医Λ繧ｯ繧ｿ
+	//デストラクタ
 	~Enemy();
 
 	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName);
@@ -28,11 +28,11 @@ public:
 	//速度設定
 	float SetSpeed(float speed);
 private:
-	GameObject3D* gameObject = nullptr; // 蠎ｧ讓吶ｄ螟ｧ縺阪＆遲峨′蜈･縺｣縺ｦ縺・ｋ
+	GameObject3D* gameObject = nullptr;
 	std::list<std::unique_ptr<EnemyBullet>> bullets;
 
 
-	float moveSpeed = 0; //遘ｻ蜍暮溷ｺｦ
+	float moveSpeed = 0;
 	float attackSpeed = 100.0f;
 	bool isAttack = false;
 
