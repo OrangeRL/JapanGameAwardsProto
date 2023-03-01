@@ -81,6 +81,7 @@ void GameScene::Update() {
 				bullet->Update(enemy->GetWorldTransform());
 			}
 		}
+		bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
 #pragma endregion
 
 		
@@ -107,9 +108,10 @@ void GameScene::Update() {
 
 		if (enemy->GetIsAttack() == true) {
 			for (std::unique_ptr<EnemyBullet>& bullet : bullets2) {
-				bullet->Update(enemy->GetWorldTransform());
+				bullet->Update(enemy->GetWorldTransform());	
 			}
 		}
+		bullets2.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {return bullet->IsDead(); });
 #pragma endregion
 
 	}

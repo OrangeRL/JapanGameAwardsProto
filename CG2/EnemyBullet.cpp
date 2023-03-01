@@ -12,6 +12,10 @@ void EnemyBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjec
 
 void EnemyBullet::Update(WorldTransform player)
 {
+	if (--deleteTimer_ <= 0) {
+		isDelete_ = true;
+	}
+
 	//ƒvƒŒƒCƒ„[‚ð‘_‚¤
 	if (bulletNum == 0) {
 		gameObject->worldTransform.translation.z -= 0.5f;
