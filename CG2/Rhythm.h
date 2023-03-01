@@ -12,27 +12,18 @@ enum class Weapons {
 
 struct SoundState {
 	//タイマー
-	float timer = 60.0f;
+	float timer = 0.0f;
 	//小節カウント(仮)
 	int measureCount = 0;
-	//次の弾が撃てるまでのクールタイムのフラグ
-	bool isActive = 1;
+
 	//一時停止中か
 	bool isPause = 0;
 	//武器の種類
 	Weapons weapon = Weapons::Normal;
-	//爆裂弾の発射が成功したかどうか(仮)
-	int isSuccess = 0;
+
 	//レーザー弾の発射可能フラグ
 	bool isLaserActive = 0;
-	//弾発射タイミング1
-	float shotTiming1;
-	//弾発射タイミング2
-	float shotTiming2;
-	//弾発射タイミング3
-	float shotTiming3;
-	//弾が装填されるタイミング
-	float reloadTiming;
+
 	//判定のずれ(オフセット)
 	float offset = 0.0f;
 	//BGM音量
@@ -74,6 +65,19 @@ private:
 	const float maxTimer = 60.0f;
 	//判定の広さ
 	const float judgeBreadth = 3.0f;
+
+	//弾発射タイミング1
+	float shotTiming1;
+	//弾発射タイミング2
+	float shotTiming2;
+	//弾発射タイミング3
+	float shotTiming3;
+	//弾が装填されるタイミング
+	float reloadTiming;
+	//次の弾が撃てるまでのクールタイムのフラグ
+	bool isActive = 1;
+	//爆裂弾の発射が成功したかどうか(仮)
+	int isSuccess = 0;
 
 	//サウンドマネージャー
 	SoundManager* soundManager_ = nullptr;

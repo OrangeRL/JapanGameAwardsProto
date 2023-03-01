@@ -85,7 +85,4 @@ private: // メンバ変数
 
 	Sprite* num_[10];
 
-	char fmt1[8] = "%d\n";
-	const char string[10] = "1";
-
 };
