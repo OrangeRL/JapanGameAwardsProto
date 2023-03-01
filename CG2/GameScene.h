@@ -86,6 +86,7 @@ private: // メンバ変数
 	GameObject3D* tutorialFloor = nullptr;
 	GameObject3D* stageFloor = nullptr;
 
+	Vector3 enemyPos = {};
 	//シーン管理
 	enum class Scene
 	{

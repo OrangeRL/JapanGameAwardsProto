@@ -61,15 +61,19 @@ void GameScene::Update() {
 	//敵の更新処理
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
 		enemy->Update(&viewProjection_, &matProjection_, L"Resources/white1x1.png", 0);
-		player->NewBullet(&viewProjection_, &matProjection_, enemy->GetWorldTransform().translation, player->GetWorldTransform().translation);
+		enemyPos = enemy->GetWorldTransform().translation;
 		//player->SetEnemy(enemy);
+		
 	}
+	
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
 		enemy->Update(&viewProjection_, &matProjection_, L"Resources/white1x1.png", 1);
 		//player->NewBullet(&viewProjection_, &matProjection_, enemy->GetWorldTransform().translation, player->GetWorldTransform().translation);
 	}
 	UpdateEnemyPopCommand();
-	
+
+	player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
+
 	viewProjection_.target = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z };
 	viewProjection_.eye = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z - 30 };
 	
