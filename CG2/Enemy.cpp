@@ -25,6 +25,7 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 
 
 void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName, int bulletNum) {
+
 	attackSpeed -= 0.5f;
 	
 	gameObject->worldTransform.translation.y += moveSpeed;

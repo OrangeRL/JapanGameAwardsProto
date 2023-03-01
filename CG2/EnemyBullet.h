@@ -5,7 +5,7 @@ class EnemyBullet
 {
 public:
 	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName);
-	void Update(WorldTransform player);
+	void Update(Vector3 player, Vector3 enemy);
 	void Draw();
 
 	WorldTransform GetWorldTransform();
@@ -24,7 +24,7 @@ private:
 
 	//消えるまでの時間
 	// 60 * 消えるまでの時間:
-	static const int32_t deleteTime = 60 * 15;
+	static const int32_t deleteTime = 60 * 25;
 	//タイマー
 	int32_t deleteTimer_ = deleteTime;
 	//フラグ

@@ -79,8 +79,9 @@ void GameScene::Update() {
 		}
 
 		if (enemy->GetIsAttack() == true) {
+			
 			for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
-				bullet->Update(enemy->GetWorldTransform());
+				bullet->Update(player->GetWorldTransform().translation,enemy->GetWorldTransform().translation);
 			}
 		}
 		//弾を削除する
@@ -109,7 +110,7 @@ void GameScene::Update() {
 
 		if (enemy->GetIsAttack() == true) {
 			for (std::unique_ptr<EnemyBullet>& bullet : bullets2) {
-				bullet->Update(player->GetWorldTransform());
+				bullet->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
 			}
 		}
 		//弾を削除する
