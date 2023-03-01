@@ -23,7 +23,8 @@ private:
 	int bulletNum;
 
 	//消えるまでの時間
-	static const int32_t deleteTime = 60 * 1;
+	// 60 * 消えるまでの時間:
+	static const int32_t deleteTime = 60 * 15;
 	//タイマー
 	int32_t deleteTimer_ = deleteTime;
 	//フラグ

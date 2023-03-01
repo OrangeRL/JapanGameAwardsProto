@@ -81,6 +81,7 @@ void GameScene::Update() {
 				bullet->Update(enemy->GetWorldTransform());
 			}
 		}
+		//弾を削除する
 		bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
 #pragma endregion
 
@@ -111,6 +112,7 @@ void GameScene::Update() {
 				bullet->Update(enemy->GetWorldTransform());	
 			}
 		}
+		//弾を削除する
 		bullets2.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {return bullet->IsDead(); });
 #pragma endregion
 
