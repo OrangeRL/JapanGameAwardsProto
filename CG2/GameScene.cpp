@@ -15,16 +15,17 @@ GameScene::~GameScene() {
 
 void GameScene::Initialize(WinApp* winApp) {
 
+	// デバッグテキスト用テクスチャ読み込み
+	Sprite::LoadTexture(10, L"Resources/debugfont.png");
+	// デバッグテキスト初期化
+	debugText.Initialize(10);
+
 	//透視投影変換行列の計算
 	matProjection_ = XMMatrixPerspectiveFovLH(
 		XMConvertToRadians(45.0) ,
 		(float)winApp->window_width / winApp->window_height ,
 		0.1f , 1000.0f
 	);
-
-	for (int i = 0; i < 10; i++) {
-		num_[i] = new Sprite(i, { 0,0 }, { 64,64 }, { 1.0f,1.0f,1.0f,1.0f }, { 0,0 }, 0, 0);
-	}
 
 	num_[0]->LoadTexture(0, L"Resources/0.png");
 	num_[1]->LoadTexture(1, L"Resources/1.png");
@@ -37,7 +38,9 @@ void GameScene::Initialize(WinApp* winApp) {
 	num_[8]->LoadTexture(8, L"Resources/8.png");
 	num_[9]->LoadTexture(9, L"Resources/9.png");
 
+
 	for (int i = 0; i < 10; i++) {
+		num_[i] = new Sprite(i, { 0,0 }, { 64,64 }, { 1.0f,1.0f,1.0f,1.0f }, { 0,0 }, 0, 0);
 		num_[i]->Initialize();
 	}
 
@@ -49,6 +52,7 @@ void GameScene::Initialize(WinApp* winApp) {
 
 	rhythm = new Rhythm();
 	rhythm->Initialize();
+
 }
 
 void GameScene::Update() {
@@ -61,6 +65,10 @@ void GameScene::Update() {
 		offset++;
 	}
 
+	debugText.Printf(0, 100, 1.0f, 10," offset:%d",offset);
+	debugText.Printf(0, 120, 1.0f, 10," Timer:%f",rhythm->GetSoundState().timer);
+	debugText.Printf(0, 140, 1.0f, 15," BGMVolume:%f", rhythm->GetSoundState().BGMVolume);
+	debugText.Printf(0, 160, 1.0f, 19," guideSEVolume:%f", rhythm->GetSoundState().guideSEVolume);
 	viewProjection_.UpdateView();
 	//シーン管理
 	enemy->Update();
@@ -76,9 +84,12 @@ void GameScene::Draw() {
 
 	for (int i = 0; i < 10; i++) {
 		if (offset == i) {
-			num_[i]->Draw();
+			//num_[i]->Draw();
 		}
 	}
+
+	// デバッグテキストの描画
+	debugText.DrawAll(dx12base_.GetCmdList().Get());
 
 	Sprite::PostDraw();
 

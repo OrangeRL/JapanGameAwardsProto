@@ -15,6 +15,7 @@
 #include "Particle.h"
 #include "Enemy.h"
 #include "Rhythm.h"
+#include "DebugText.h"
 
 class GameScene {
 
@@ -41,6 +42,7 @@ private: // メンバ変数
 	DX12base& dx12base_ = DX12base::GetInstance();
 	Input& input_ = Input::GetInstance();
 	XMMATRIX matProjection_ = {};
+	DebugText debugText;
 
 	Rhythm* rhythm = nullptr;
 
@@ -82,4 +84,8 @@ private: // メンバ変数
 	Sprite* spaceToReturnTitle_ = nullptr;
 
 	Sprite* num_[10];
+
+	char fmt1[8] = "%d\n";
+	const char string[10] = "1";
+
 };

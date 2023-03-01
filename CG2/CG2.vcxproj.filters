@@ -83,6 +83,9 @@
     </ClCompile>
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Rhythm.cpp" />
+    <ClCompile Include="DebugText.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FPS.h">
@@ -156,6 +159,9 @@
     </ClInclude>
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Rhythm.h" />
+    <ClInclude Include="DebugText.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Basic.hlsli">
