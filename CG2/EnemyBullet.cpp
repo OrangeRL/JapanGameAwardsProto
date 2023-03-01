@@ -16,9 +16,10 @@ void EnemyBullet::Update(WorldTransform player)
 		isDelete_ = true;
 	}
 
+
 	//プレイヤーを狙う
-	if (bulletNum == 0) {
-		gameObject->worldTransform.translation.z -= 0.5f;
+	if (bulletNum == 0){
+
 	}
 	//正面にカーテン形成
 	else if (bulletNum == 1) {

@@ -70,7 +70,9 @@ void GameScene::Update() {
 			//使う弾の設定
 			bullet->SetBullet(0);
 			bullets1.push_back(std::move(bullet));
+			//攻撃頻度の設定 1(速い)~ >1(遅い)
 			enemy->SetAttackSpeed(150.0f);
+
 			if (enemy->GetIsAttack() == false) {
 				enemy->SetIsAttack(true);
 			}
@@ -84,9 +86,6 @@ void GameScene::Update() {
 		//弾を削除する
 		bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
 #pragma endregion
-
-		
-
 		//player->SetEnemy(enemy);
 	}
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
@@ -101,7 +100,8 @@ void GameScene::Update() {
 			//使う弾の設定
 			bullet->SetBullet(1);
 			bullets2.push_back(std::move(bullet));
-			enemy->SetAttackSpeed(25.0f);
+			//攻撃頻度の設定 1(速い)~ >1(遅い)
+			enemy->SetAttackSpeed(5.0f);
 			if (enemy->GetIsAttack() == false) {
 				enemy->SetIsAttack(true);
 			}
@@ -109,7 +109,7 @@ void GameScene::Update() {
 
 		if (enemy->GetIsAttack() == true) {
 			for (std::unique_ptr<EnemyBullet>& bullet : bullets2) {
-				bullet->Update(enemy->GetWorldTransform());	
+				bullet->Update(player->GetWorldTransform());
 			}
 		}
 		//弾を削除する
