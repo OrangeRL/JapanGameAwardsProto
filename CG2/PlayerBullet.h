@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject3D.h"
 #include "MathFunc.h"
+#include "Input.h"
 
 class PlayerBullet {
 public:
@@ -53,4 +54,7 @@ private:	//ƒƒ“ƒo•Ï”
 
 	Vector3 newEnemyPos = {};
 	Vector3 newPlayerPos = {};
+
+	//ƒL[“ü—Í
+	Input& input = Input::GetInstance();
 };

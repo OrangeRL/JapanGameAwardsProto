@@ -42,9 +42,6 @@ void GameScene::Initialize(WinApp* winApp) {
 	particle2 = new Particle;
 	particle2->Initialize(&viewProjection_, &matProjection_, player);
 
-
-	player = new Player();
-	player->Initialize(&viewProjection_, &matProjection_);
 	loadEnemyPopData();
 }
 
@@ -52,13 +49,15 @@ void GameScene::Update() {
 	Collision();
 	viewProjection_.UpdateView();
 	if (input_.PushKey(DIK_P)) {
-		player->OnCollision();
+		//player->OnCollision();
 	}
 	//シーン管理
 
 	//プレイヤーの更新処理
 	player->Update();
-
+	particle->Update();
+	particle2->Update2();
+	
 	//敵の更新処理
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
 		enemy->Update(&viewProjection_, &matProjection_, L"Resources/white1x1.png", 0);
@@ -70,24 +69,21 @@ void GameScene::Update() {
 		//player->NewBullet(&viewProjection_, &matProjection_, enemy->GetWorldTransform().translation, player->GetWorldTransform().translation);
 	}
 	UpdateEnemyPopCommand();
-
+	
 	viewProjection_.target = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z };
 	viewProjection_.eye = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z - 30 };
-	player->Update();
+	
 	if (player->GetIsDead() == false) {
 		//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
 	}
 
 
-	particle->Update();
-	particle2->Update2();
-
-
 	if (input_.PushKey(DIK_R)) {
 		Reset();
+
 	}
 
-	if (player->GetIsDead() == true && particle->GetIsDead() == true) {
+	/*if (player->GetIsDead() == true && particle->GetIsDead() == true) {
 		if (gameoverTimer <= 0) {
 			gameoverTimer = 5;
 		}
@@ -99,7 +95,7 @@ void GameScene::Update() {
 				scene_ = Scene::Title;
 			}
 		}
-	}
+	}*/
 
 }
 
@@ -107,6 +103,8 @@ void GameScene::Draw() {
 	//3D描画
 	//プレイヤー描画
 	player->Draw();
+	particle->Draw();
+	particle2->Draw();
 	//敵の描画
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
 		enemy->Draw();
@@ -114,13 +112,6 @@ void GameScene::Draw() {
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
 		enemy->Draw();
 	}
-
-
-	//player->Draw();
-	//enemy->Draw();
-	particle->Draw();
-	particle2->Draw();
-
 
 	//スプライト描画
 	Sprite::PreDraw(dx12base_.GetCmdList().Get());
@@ -232,6 +223,7 @@ void GameScene::Reset() {
 
 	player->Reset();
 	particle->Reset();
+	particle2->Reset();
 	//enemy->Reset();
 
 }
@@ -264,15 +256,15 @@ void GameScene::Collision() {
 		const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = player->GetBullets();
 		for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
 			if (input_.PushKey(DIK_P)) {
-				player->OnCollision();
+				//player->OnCollision();
 				bulletA->OnCollision();
 			}
 			if (enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x < 2 &&
 				-2 < enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x) {
-				if (enemy->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y < 3 &&
-					-3 < enemy->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y) {
-					if (enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z < 3 &&
-						-3 < enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z) {
+				if (enemy->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y < 2 &&
+					-2 < enemy->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y) {
+					if (enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z < 2 &&
+						-2 < enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z) {
 
 						bulletA->OnCollision();
 						//enemy->Reset();
@@ -281,6 +273,7 @@ void GameScene::Collision() {
 				}
 			}
 		}
+		//player-enemybullet
 		const std::list < std::unique_ptr<EnemyBullet>>& enemyBullets = enemy->GetBullets();
 		for (const std::unique_ptr<EnemyBullet>& bulletB : enemyBullets) {
 

@@ -52,9 +52,7 @@ public: // メンバ関数
 	/// </summary>
 	void UpdateEnemyPopCommand();
 
-	//弾リストを取得
-	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
-	std::list<std::unique_ptr<PlayerBullet>>bullets_;
+
 	const std::list<std::unique_ptr<Enemy>>& GetEnemies() { return enemys1; }
 private: // メンバ変数
 	WinApp* winApp_ = nullptr;

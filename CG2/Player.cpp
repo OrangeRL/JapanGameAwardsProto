@@ -55,7 +55,7 @@ void Player::Update() {
 		});
 
 	//弾更新
-	//for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Update(enemyPos, GetWorldTransform().translation); }
+	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Update(enemyPos, GetWorldTransform().translation); }
 
 	if (isDead == false)
 	{
