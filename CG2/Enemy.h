@@ -21,6 +21,8 @@ public:
 	void Draw();
 	
 	void Reset();
+
+	const std::list<std::unique_ptr<EnemyBullet>>& GetBullets() { return bullets; }
 	//À•Wæ“¾—p
 	WorldTransform GetWorldTransform();
 	//¶¬‚³‚ê‚éêŠ‚ğİ’è
@@ -30,7 +32,7 @@ public:
 private:
 	GameObject3D* gameObject = nullptr; // åº§æ¨™ã‚„å¤§ãã•ç­‰ãŒå…¥ã£ã¦ãE‚‹
 	std::list<std::unique_ptr<EnemyBullet>> bullets;
-
+	EnemyBullet* enemyBullet = nullptr;
 
 	float moveSpeed = 0; //ç§»å‹•é€Ÿåº¦
 	float attackSpeed = 100.0f;
