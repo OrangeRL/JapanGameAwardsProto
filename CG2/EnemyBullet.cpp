@@ -14,7 +14,7 @@ void EnemyBullet::Update(WorldTransform player)
 {
 	//プレイヤーを狙う
 	if (bulletNum == 0) {
-		gameObject->worldTransform.translation.z -= 0.1f;
+		gameObject->worldTransform.translation.z -= 0.5f;
 	}
 	//正面にカーテン形成
 	else if (bulletNum == 1) {

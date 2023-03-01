@@ -3,9 +3,6 @@
 #include "EnemyBullet.h"
 #include <memory>
 #include <list>
-#include "Player.h"
-
-class Player;
 
 class Enemy {
 public:
@@ -28,18 +25,20 @@ public:
 	WorldTransform GetWorldTransform();
 	//¶¬‚³‚ê‚éêŠ‚ğİ’è
 	WorldTransform Settransform(float x,float y,float z);
+	float GetAttackSpeed();
+	float SetAttackSpeed(float speed);
 	//‘¬“xİ’è
 	float SetSpeed(float speed);
+
+	bool GetIsAttack();
+	bool SetIsAttack(bool isAttack);
 private:
 	GameObject3D* gameObject = nullptr;
-	std::list<std::unique_ptr<EnemyBullet>> bullets;
 
 
 	float moveSpeed = 0;
 	float attackSpeed = 100.0f;
 	bool isAttack = false;
-
-	Player* player_;
 };
 
 

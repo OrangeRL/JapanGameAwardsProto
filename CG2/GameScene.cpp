@@ -60,10 +60,58 @@ void GameScene::Update() {
 	//敵の更新処理
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
 		enemy->Update(&viewProjection_, &matProjection_, L"Resources/white1x1.png",0);
+#pragma region makeEnemyBullet
+		if (enemy->GetAttackSpeed() <= 0.0f) {
+			//弾を生成
+			std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
+			//初期化
+			bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png");
+			bullet->SetTransform(enemy->GetWorldTransform().translation);
+			//使う弾の設定
+			bullet->SetBullet(0);
+			bullets1.push_back(std::move(bullet));
+			enemy->SetAttackSpeed(150.0f);
+			if (enemy->GetIsAttack() == false) {
+				enemy->SetIsAttack(true);
+			}
+		}
+
+		if (enemy->GetIsAttack() == true) {
+			for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
+				bullet->Update(enemy->GetWorldTransform());
+			}
+		}
+#pragma endregion
+
+		
+
 		//player->SetEnemy(enemy);
 	}
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
 		enemy->Update(&viewProjection_, &matProjection_, L"Resources/white1x1.png",1);
+#pragma region makeEnemyBullet
+		if (enemy->GetAttackSpeed() <= 0.0f) {
+			//弾を生成
+			std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
+			//初期化
+			bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png");
+			bullet->SetTransform(enemy->GetWorldTransform().translation);
+			//使う弾の設定
+			bullet->SetBullet(1);
+			bullets2.push_back(std::move(bullet));
+			enemy->SetAttackSpeed(25.0f);
+			if (enemy->GetIsAttack() == false) {
+				enemy->SetIsAttack(true);
+			}
+		}
+
+		if (enemy->GetIsAttack() == true) {
+			for (std::unique_ptr<EnemyBullet>& bullet : bullets2) {
+				bullet->Update(enemy->GetWorldTransform());
+			}
+		}
+#pragma endregion
+
 	}
 	UpdateEnemyPopCommand();
 
@@ -105,10 +153,16 @@ void GameScene::Draw() {
 	player->Draw();
 	//敵の描画
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
-		enemy->Draw();
+		enemy->Draw();	
+	}
+	for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
+		bullet->Draw();
 	}
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
 		enemy->Draw();
+	}
+	for (std::unique_ptr<EnemyBullet>& bullet : bullets2) {
+		bullet->Draw();
 	}
 
 
