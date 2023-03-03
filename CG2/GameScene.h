@@ -7,7 +7,10 @@
 #include "Audio.h"
 //#include <xaudio2.h>
 #pragma comment(lib,"xaudio2.lib")
+#include <sstream>
 #include "Sprite.h"
+#include <memory>
+#include <list>
 
 #include "Player.h"
 #include "Map.h"
@@ -16,6 +19,7 @@
 #include "Enemy.h"
 #include "Rhythm.h"
 #include "DebugText.h"
+#include "PlayerBullet.h"
 
 class GameScene {
 
@@ -37,6 +41,19 @@ public: // メンバ関数
 
 	void Reset();
 
+	void Collision();
+
+	/// <summary>
+	/// 敵発生データの読み込み
+	/// </summary>
+	void loadEnemyPopData();
+	/// <summary>
+	/// 敵発生コマンドの更新
+	/// </summary>
+	void UpdateEnemyPopCommand();
+
+
+	const std::list<std::unique_ptr<Enemy>>& GetEnemies() { return enemys1; }
 private: // メンバ変数
 	WinApp* winApp_ = nullptr;
 	DX12base& dx12base_ = DX12base::GetInstance();
@@ -45,23 +62,29 @@ private: // メンバ変数
 	DebugText debugText;
 
 	Rhythm* rhythm = nullptr;
-
+	SoundManager soundManager_;
 	ViewProjection viewProjection_;
 
 	bool isPlayingBGM = false;
 
 	Player* player = nullptr;
+	PlayerBullet* playerBullet = nullptr;
 
 	Particle* particle = nullptr;
+	Particle* particle2 = nullptr;
 
 	Map* map = nullptr;
 
 	Goal* goal = nullptr;
-	Enemy* enemy = nullptr;
+	//敵
+	std::list<std::unique_ptr<Enemy>> enemys1;
+	std::list<std::unique_ptr<Enemy>> enemys2;
+	Enemy* enemy;
 
 	GameObject3D* tutorialFloor = nullptr;
 	GameObject3D* stageFloor = nullptr;
 
+	Vector3 enemyPos = {};
 	//シーン管理
 	enum class Scene
 	{
@@ -85,4 +108,10 @@ private: // メンバ変数
 
 	Sprite* num_[10];
 
+// 敵コマンド関係
+//------------------------------------
+	std::stringstream enemyPopCommand;
+	bool waitFlag = false;
+	float waitTime_;
+//------------------------------------
 };

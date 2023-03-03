@@ -86,6 +86,8 @@
     <ClCompile Include="DebugText.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="EnemyBullet.cpp" />
+    <ClCompile Include="PlayerBullet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FPS.h">
@@ -162,6 +164,8 @@
     <ClInclude Include="DebugText.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="EnemyBullet.h" />
+    <ClInclude Include="PlayerBullet.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Basic.hlsli">

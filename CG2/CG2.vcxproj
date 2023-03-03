@@ -147,6 +147,7 @@
     <ClCompile Include="DebugText.cpp" />
     <ClCompile Include="DX12base.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="EnemyBullet.cpp" />
     <ClCompile Include="FPS.cpp" />
     <ClCompile Include="GameObject3D.cpp" />
     <ClCompile Include="GameScene.cpp" />
@@ -158,6 +159,7 @@
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Rhythm.cpp" />
+    <ClCompile Include="PlayerBullet.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="ViewProjection.cpp" />
@@ -212,6 +214,7 @@
     <ClInclude Include="DebugText.h" />
     <ClInclude Include="DX12base.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="EnemyBullet.h" />
     <ClInclude Include="ErrorException.h" />
     <ClInclude Include="FPS.h" />
     <ClInclude Include="GameObject3D.h" />
@@ -223,6 +226,7 @@
     <ClInclude Include="Particle.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Rhythm.h" />
+    <ClInclude Include="PlayerBullet.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Texture.h" />
