@@ -57,8 +57,3 @@ int EnemyBullet::SetBullet(int bulletNum)
 
 	return this->bulletNum;
 }
-
-
-WorldTransform EnemyBullet::GetWorldTransform() {
-	return gameObject->worldTransform;
-}
