@@ -57,26 +57,26 @@ void GameScene::Update() {
 	player->Update();
 	particle->Update();
 	particle2->Update2();
-	
+
 	//敵の更新処理
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
 		enemy->Update(&viewProjection_, &matProjection_, L"Resources/white1x1.png", 0);
 		enemyPos = enemy->GetWorldTransform().translation;
 		//player->SetEnemy(enemy);
-		
+		player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
 	}
-	
+
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
 		enemy->Update(&viewProjection_, &matProjection_, L"Resources/white1x1.png", 1);
 		//player->NewBullet(&viewProjection_, &matProjection_, enemy->GetWorldTransform().translation, player->GetWorldTransform().translation);
 	}
 	UpdateEnemyPopCommand();
 
-	player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
+
 
 	viewProjection_.target = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z };
 	viewProjection_.eye = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z - 30 };
-	
+
 	if (player->GetIsDead() == false) {
 		//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
 	}
@@ -233,11 +233,13 @@ void GameScene::Reset() {
 }
 
 void GameScene::Collision() {
+
 	const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = player->GetBullets();
 	for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
 		if (input_.PushKey(DIK_P)) {
-			//player->OnCollision();
+			player->OnCollision();
 			bulletA->OnCollision();
+			break;
 		}
 	}
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
