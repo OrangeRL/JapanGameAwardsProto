@@ -7,9 +7,9 @@
 class Enemy {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^\
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿â€•
 	Enemy();
-	//ƒfƒXƒgƒ‰ƒNƒ^
+	//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	~Enemy();
 
 	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName);
@@ -21,20 +21,24 @@ public:
 	void Draw();
 	
 	void Reset();
-	//À•Wæ“¾—p
+
+	const std::list<std::unique_ptr<EnemyBullet>>& GetBullets() { return bullets; }
+	//åº§æ¨™å–å¾—ç”¨
 	WorldTransform GetWorldTransform();
-	//¶¬‚³‚ê‚éêŠ‚ğİ’è
+	//ç”Ÿæˆã•ã‚Œã‚‹å ´æ‰€ã‚’è¨­å®š
 	WorldTransform Settransform(float x,float y,float z);
 	float GetAttackSpeed();
 	float SetAttackSpeed(float speed);
-	//‘¬“xİ’è
+	//é€Ÿåº¦è¨­å®š
 	float SetSpeed(float speed);
 
 	bool GetIsAttack();
 	bool SetIsAttack(bool isAttack);
 private:
-	GameObject3D* gameObject = nullptr;
 
+	GameObject3D* gameObject = nullptr;
+	std::list<std::unique_ptr<EnemyBullet>> bullets;
+	EnemyBullet* enemyBullet = nullptr;
 
 	float moveSpeed = 0;
 	float attackSpeed = 100.0f;

@@ -4,9 +4,8 @@
 #include"GameObject3D.h"
 #include "WinApp.h"
 #include "ViewProjection.h"
-
 #include "Audio.h"
-#include <xaudio2.h>
+//#include <xaudio2.h>
 #pragma comment(lib,"xaudio2.lib")
 #include <sstream>
 #include "Sprite.h"
@@ -18,6 +17,8 @@
 #include "Goal.h"
 #include "Particle.h"
 #include "Enemy.h"
+#include "Rhythm.h"
+#include "DebugText.h"
 #include "PlayerBullet.h"
 
 class GameScene {
@@ -26,7 +27,6 @@ public: // メンバ関数
 
 	//コンストラクタ
 	GameScene();
-
 	/// デストラクタ
 	~GameScene();
 
@@ -41,6 +41,8 @@ public: // メンバ関数
 
 	void Reset();
 
+	void Collision();
+
 	/// <summary>
 	/// 敵発生データの読み込み
 	/// </summary>
@@ -50,22 +52,18 @@ public: // メンバ関数
 	/// </summary>
 	void UpdateEnemyPopCommand();
 
-	//弾リストを取得
-	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
-	std::list<std::unique_ptr<PlayerBullet>>bullets_;
 
+	const std::list<std::unique_ptr<Enemy>>& GetEnemies() { return enemys1; }
 private: // メンバ変数
 	WinApp* winApp_ = nullptr;
 	DX12base& dx12base_ = DX12base::GetInstance();
 	Input& input_ = Input::GetInstance();
 	XMMATRIX matProjection_ = {};
+	DebugText debugText;
 
+	Rhythm* rhythm = nullptr;
 	SoundManager soundManager_;
 	ViewProjection viewProjection_;
-
-	//音声読み込み
-	SoundData soundData1 = soundManager_.SoundLoadWave("Resources/Alarm01.wav");
-	SoundData selectSound = soundManager_.SoundLoadWave("Resources/selectSound.wav");
 
 	bool isPlayingBGM = false;
 
@@ -87,6 +85,7 @@ private: // メンバ変数
 	GameObject3D* tutorialFloor = nullptr;
 	GameObject3D* stageFloor = nullptr;
 
+	Vector3 enemyPos = {};
 	//シーン管理
 	enum class Scene
 	{
@@ -100,22 +99,15 @@ private: // メンバ変数
 
 	int gameoverTimer = 0;
 
+	int offset = 5;
+
 	Sprite* title_ = nullptr;
 	Sprite* clear_ = nullptr;
 	Sprite* gameOver_ = nullptr;
 	Sprite* spaceToContinue_ = nullptr;
 	Sprite* spaceToReturnTitle_ = nullptr;
-	Sprite* num0_ = nullptr;
-	Sprite* num1_ = nullptr;
-	Sprite* num2_ = nullptr;
-	Sprite* num3_ = nullptr;
-	Sprite* num4_ = nullptr;
-	Sprite* num5_ = nullptr;
-	Sprite* num6_ = nullptr;
-	Sprite* num7_ = nullptr;
-	Sprite* num8_ = nullptr;
-	Sprite* num9_ = nullptr;
-	Sprite* num10_ = nullptr;
+
+	Sprite* num_[10];
 
 // 敵コマンド関係
 //------------------------------------

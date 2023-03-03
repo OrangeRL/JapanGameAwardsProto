@@ -43,7 +43,7 @@ void PlayerBullet::Update(Vector3 playerPos, Vector3 bossPos) {
 	angle = gameObject->worldTransform.rotation;
 	gameObject->worldTransform.rotation += rotation;
 	Attack(playerPos, bossPos);
-	
+
 	if (isShot) {
 		gameObject->Update();
 	}

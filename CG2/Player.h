@@ -3,6 +3,7 @@
 #include "Input.h"
 #include "MathFunc.h"
 #include "PlayerBullet.h"
+#include "EnemyBullet.h"
 #include <memory>
 #include<list>
 
@@ -10,6 +11,7 @@
 class Map;
 class Goal;
 class Enemy;
+class GameScene;
 
 class Player {
 public:
@@ -26,11 +28,13 @@ public:
 
 	void Reset();
 
+	void OnCollision();
+
 	//アクセッサ
 	void SetMap(Map* map);
 	void SetGoal(Goal* goal);
 	void SetEnemy(Enemy* enemy);
-	void NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection);
+	void NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 enemyPos,Vector3 playerPos);
 	int GetIsGoal();
 	void SetIsGoal(int flag);
 
@@ -48,7 +52,6 @@ public:
 
 	//弾リストを取得
 	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
-
 	//メンバ関数
 private:
 	void Rotate();
@@ -102,5 +105,10 @@ private:
 	//弾
 	std::list<std::unique_ptr<PlayerBullet>>bullets_;
 	PlayerBullet* playerBullet = nullptr;
+
+
+	std::list<std::unique_ptr<EnemyBullet>> enemyBullets;
+	EnemyBullet* enemyBullet = nullptr;
+	
 };
 
