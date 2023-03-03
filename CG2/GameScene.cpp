@@ -68,11 +68,11 @@ void GameScene::Update() {
 		offset++;
 	}
 
-	debugText.Printf(0, 100, 1.0f, 10," offset:%d",offset);
+	debugText.Printf(0, 100, 1.0f, 10," O,P...offset:%d",offset);
+	debugText.Printf(0, 140, 1.0f, 25," Up,Dawn...BGMVolume:%f", rhythm->GetSoundState().BGMVolume);
+	debugText.Printf(0, 160, 1.0f, 32," Left,Right...guideSEVolume:%f", rhythm->GetSoundState().guideSEVolume);
 	debugText.Printf(0, 120, 1.0f, 10," Timer:%f",rhythm->GetSoundState().timer);
-	debugText.Printf(0, 140, 1.0f, 15," BGMVolume:%f", rhythm->GetSoundState().BGMVolume);
-	debugText.Printf(0, 160, 1.0f, 19," guideSEVolume:%f", rhythm->GetSoundState().guideSEVolume);
-	debugText.Printf(0, 180, 1.0f, 17," measureCount:%d", rhythm->GetSoundState().measureCount);
+	debugText.Printf(0, 180, 1.0f, 15," measureCount:%d", rhythm->GetSoundState().measureCount);
 	debugText.Printf(0, 200, 1.0f, 9," weapon:%d", rhythm->GetSoundState().weapon);
 	viewProjection_.UpdateView();
 	//シーン管理

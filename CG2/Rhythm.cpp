@@ -44,10 +44,10 @@ void Rhythm::Update(Input* input) {
 		if (soundState.measureCount >= 8) {
 
 			//オフセット設定
-			if (input->TriggerKey(DIK_A) && soundState.offset > -5.0f) {
+			if (input->TriggerKey(DIK_O) && soundState.offset > -5.0f) {
 				soundState.offset--;
 			}
-			else if (input->TriggerKey(DIK_D) && soundState.offset < 5.0f) {
+			else if (input->TriggerKey(DIK_P) && soundState.offset < 5.0f) {
 				soundState.offset++;
 			}
 
