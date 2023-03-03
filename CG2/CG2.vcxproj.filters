@@ -82,6 +82,10 @@
       <Filter>Source\Sprite</Filter>
     </ClCompile>
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="Rhythm.cpp" />
+    <ClCompile Include="DebugText.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
     <ClCompile Include="EnemyBullet.cpp" />
     <ClCompile Include="PlayerBullet.cpp" />
   </ItemGroup>
@@ -156,6 +160,10 @@
       <Filter>Header\3D</Filter>
     </ClInclude>
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Rhythm.h" />
+    <ClInclude Include="DebugText.h">
+      <Filter>Header</Filter>
+    </ClInclude>
     <ClInclude Include="EnemyBullet.h" />
     <ClInclude Include="PlayerBullet.h" />
   </ItemGroup>
