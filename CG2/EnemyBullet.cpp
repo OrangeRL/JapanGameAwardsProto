@@ -2,7 +2,8 @@
 
 void EnemyBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName,Vector3 player, Vector3 enemy)
 {
-	Bullet1(player, enemy);
+	//Ž©‹@‘_‚¢—pÀ•WŽæ“¾
+	Aim(player, enemy);
 
 	gameObject = new GameObject3D();
 	gameObject->PreLoadTexture(textureFileName);
@@ -55,7 +56,7 @@ int EnemyBullet::SetBullet(int bulletNum)
 	return this->bulletNum;
 }
 
-void EnemyBullet::Bullet1(Vector3 player, Vector3 enemy)
+void EnemyBullet::Aim(Vector3 player, Vector3 enemy)
 {
 	const float speed = -0.3f;
 	posA = player;

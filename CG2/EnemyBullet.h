@@ -13,7 +13,7 @@ public:
 	Vector3 SetTransform(Vector3 transform);
 	//弾の種類を設定
 	int SetBullet(int bulletNum);
-	void Bullet1(Vector3 player, Vector3 enemy);
+	void Aim(Vector3 player, Vector3 enemy);
 
 	bool IsDead()const { return isDelete_; }
 private:
