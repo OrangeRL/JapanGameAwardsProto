@@ -13,8 +13,6 @@ GameScene::~GameScene() {
 	}
 	delete player;
 
-	soundManager_.SoundUnload(soundData1);
-	soundManager_.SoundUnload(selectSound);
 }
 
 void GameScene::Initialize(WinApp* winApp) {
@@ -68,6 +66,8 @@ void GameScene::Initialize(WinApp* winApp) {
 	particle2 = new Particle;
 	particle2->Initialize(&viewProjection_, &matProjection_, player);
 
+	loadEnemyPopData();
+
 }
 
 void GameScene::Update() {
@@ -89,8 +89,6 @@ void GameScene::Update() {
   
 	viewProjection_.eye = { 0 , 100 , -100 };
   
-	loadEnemyPopData();
-  
 	Collision();
   
 	viewProjection_.UpdateView();
@@ -109,7 +107,7 @@ void GameScene::Update() {
 		enemy->Update(&viewProjection_, &matProjection_, L"Resources/white1x1.png", 0);
 		enemyPos = enemy->GetWorldTransform().translation;
 		//player->SetEnemy(enemy);
-		player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
+		//player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
 	}
 
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
