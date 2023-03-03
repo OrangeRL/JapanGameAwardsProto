@@ -7,7 +7,6 @@ GameScene::GameScene() {
 
 GameScene::~GameScene() {
 	delete rhythm;
-	delete enemy;
 	for (int i = 0; i < 10; i++) {
 		delete num_[i];
 	}
@@ -47,9 +46,6 @@ void GameScene::Initialize(WinApp* winApp) {
 	}
 
 	viewProjection_.Initialize();
-
-	rhythm = new Rhythm();
-	rhythm->Initialize();
   
   	//XAudioエンジンのインスタンスを生成
 	soundManager_.Initialize();
@@ -68,6 +64,8 @@ void GameScene::Initialize(WinApp* winApp) {
 
 	loadEnemyPopData();
 
+	rhythm = new Rhythm();
+	rhythm->Initialize();
 }
 
 void GameScene::Update() {
@@ -134,7 +132,7 @@ void GameScene::Update() {
 #pragma endregion
 		enemyPos = enemy->GetWorldTransform().translation;
 		//player->SetEnemy(enemy);
-		//player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
+		player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
 	}
 
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
