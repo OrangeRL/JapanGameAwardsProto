@@ -133,7 +133,7 @@ void GameScene::Update() {
 #pragma endregion
 		enemyPos = enemy->GetWorldTransform().translation;
 		//player->SetEnemy(enemy);
-		player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
+		//player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
 	}
 
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
