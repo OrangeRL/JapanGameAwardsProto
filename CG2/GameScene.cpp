@@ -109,7 +109,7 @@ void GameScene::Update() {
 			//弾を生成
 			std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
 			//初期化
-			bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png");
+			bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
 			bullet->SetTransform(enemy->GetWorldTransform().translation);
 			//使う弾の設定
 			bullet->SetBullet(0);
@@ -121,13 +121,13 @@ void GameScene::Update() {
 				enemy->SetIsAttack(true);
 			}
 		}
-
 		if (enemy->GetIsAttack() == true) {
-			
+
 			for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
-				bullet->Update(player->GetWorldTransform().translation,enemy->GetWorldTransform().translation);
+				bullet->Update();
 			}
 		}
+
 		//弾を削除する
 		bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
 #pragma endregion
@@ -143,7 +143,7 @@ void GameScene::Update() {
 			//弾を生成
 			std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
 			//初期化
-			bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png");
+			bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
 			bullet->SetTransform(enemy->GetWorldTransform().translation);
 			//使う弾の設定
 			bullet->SetBullet(1);
@@ -157,7 +157,7 @@ void GameScene::Update() {
 
 		if (enemy->GetIsAttack() == true) {
 			for (std::unique_ptr<EnemyBullet>& bullet : bullets2) {
-				bullet->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
+				bullet->Update();
 			}
 		}
 		//弾を削除する
