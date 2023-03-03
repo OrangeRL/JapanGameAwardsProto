@@ -10,22 +10,38 @@ void EnemyBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjec
 
 }
 
-void EnemyBullet::Update(WorldTransform enemy)
+void EnemyBullet::Update(Vector3 player, Vector3 enemy)
 {
 	//プレイヤーを狙う
-	if (bulletNum == 0) {
-		gameObject->worldTransform.translation.z -= 0.5f;
+	if (bulletNum == 0){
+		Vector3 velocity = player - enemy;
+		velocity.nomalize();
+		velocity.x *= -0.5f;
+		velocity.y *= -0.5f;
+		velocity.z *= -0.5f;
+		gameObject->worldTransform.translation -= velocity;
 	}
 	//正面にカーテン形成
 	else if (bulletNum == 1) {
 		gameObject->worldTransform.translation.z -= 0.1f;
 	}
+
+	if (--deleteTimer_ <= 0) {
+		isDelete_ = true;
+	}
+
 	gameObject->Update();
+	
 }
 
 void EnemyBullet::Draw()
 {
 	gameObject->Draw();
+}
+
+WorldTransform EnemyBullet::GetWorldTransform()
+{
+	return gameObject->worldTransform;
 }
 
 Vector3 EnemyBullet::SetTransform(Vector3 transform)

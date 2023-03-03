@@ -79,7 +79,8 @@ private: // メンバ変数
 	//敵
 	std::list<std::unique_ptr<Enemy>> enemys1;
 	std::list<std::unique_ptr<Enemy>> enemys2;
-	Enemy* enemy;
+	std::list<std::unique_ptr<EnemyBullet>> bullets1;
+	std::list<std::unique_ptr<EnemyBullet>> bullets2;
 
 	GameObject3D* tutorialFloor = nullptr;
 	GameObject3D* stageFloor = nullptr;
