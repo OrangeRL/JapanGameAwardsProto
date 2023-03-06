@@ -22,7 +22,7 @@ public:
 
 	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection);
 
-	void Update();
+	void Update(WorldTransform wt);
 
 	void Draw();
 
@@ -37,6 +37,7 @@ public:
 	void NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 enemyPos,Vector3 playerPos);
 	int GetIsGoal();
 	void SetIsGoal(int flag);
+	void SetPos(Vector3 pos) { gameObject->worldTransform.translation = pos; }
 
 	int GetIsEnemy();
 	void SetIsEnemy(int flag);

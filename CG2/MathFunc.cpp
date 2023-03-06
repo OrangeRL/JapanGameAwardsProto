@@ -180,6 +180,7 @@ Matrix4 MathFunc::Utility::CreatMatView(Vector3 eye , Vector3 target , Vector3 u
 	XMMATRIX xmMatView = XMMatrixLookAtLH(
 		XMLoadFloat3(&xmEye) , XMLoadFloat3(&xmTarget) , XMLoadFloat3(&xmUp));
 
+	//xmMatView = XMMatrixPerspectiveFovLH(1.0f,1.0f,100.0f,1000.0f);
 
 	matView = MathFunc::Utility::ConvertXMMATRIXtoMatrix4(xmMatView);
 

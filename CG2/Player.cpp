@@ -39,13 +39,15 @@ void Player::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 	gameObject->PreLoadTexture(L"Resources/star/star.jpg");
 	gameObject->SetViewProjection(viewProjection);
 	gameObject->SetMatProjection(matProjection);
+	gameObject->worldTransform.translation.z = 10.0f;
 	gameObject->Initialize();
 
 	Reset();
 
 }
 
-void Player::Update() {
+void Player::Update(WorldTransform wt) {
+
 
 	Move();
 	//enemyPos = enemy->GetWorldTransform().translation;
@@ -57,11 +59,17 @@ void Player::Update() {
 	//弾更新
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Update(enemyPos, GetWorldTransform().translation); }
 
+
 	if (isDead == false)
 	{
+		//gameObject->worldTransform.translation.z = wt.translation.z + 50.0f;
+		gameObject->worldTransform.parent = &wt;
 		gameObject->Update();
 	}
 	Collision();
+
+	//SetPos({ 0.0f,0.0f,5.0f });
+
 }
 
 void Player::Draw() {
