@@ -31,6 +31,7 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, cons
 		{
 		case Phase::normal:
 		default:
+			//ˆÚ“®‚Ì‚Ý
 			phaseTimer -= 0.3f;
 			gameObject->worldTransform.translation += moveSpeed;
 			if (phaseTimer <= 0.0f) {
@@ -39,9 +40,22 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, cons
 			}
 			break;
 		case Phase::move:
+			//UŒ‚&ˆÚ“®
 
 			break;
+		case Phase::leave:
+			//—£’E
+			Vector3 leaveSpeedt = { 0.5f,0.0f,0.3f };
+			Vector3 leaveSpeedf = { -0.5f,0.0f,0.3f };
+			if (gameObject->worldTransform.translation.x >= 1) {
+				gameObject->worldTransform.translation += leaveSpeedt;
+			}
+			if (gameObject->worldTransform.translation.x <= -1) {
+				gameObject->worldTransform.translation += leaveSpeedf;
+			}
+			break;
 		}
+
 	}
 	else if (enemyNum == 1) {
 		gameObject->worldTransform.translation += moveSpeed;

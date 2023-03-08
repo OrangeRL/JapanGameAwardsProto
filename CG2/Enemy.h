@@ -6,6 +6,7 @@
 enum class Phase {
 	normal,
 	move,
+	leave,
 };
 
 class Enemy {
@@ -46,6 +47,8 @@ public:
 	bool SetIsAttack(bool isAttack);
 
 	Phase GetPhase();
+
+	bool IsDead()const { return isDelete_; }
 private:
 	Phase phase = Phase::normal;
 
@@ -61,6 +64,14 @@ private:
 	float coolTime = 150.0f;
 	//行動変化
 	float phaseTimer = 300.0f;
+
+	//消えるまでの時間
+	// 60 * 消えるまでの時間:
+	static const int32_t deleteTime = 60 * 3;
+	//タイマー
+	int32_t deleteTimer_ = deleteTime;
+	//フラグ
+	bool isDelete_ = false;
 };
 
 
