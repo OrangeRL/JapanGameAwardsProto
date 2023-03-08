@@ -30,7 +30,7 @@ public:
 	float GetAttackSpeed();
 	float SetAttackSpeed(float speed);
 	//速度設定
-	float SetSpeed(float speed);
+	Vector3 SetSpeed(float x, float y, float z);
 
 	bool GetIsAttack();
 	bool SetIsAttack(bool isAttack);
@@ -40,7 +40,7 @@ private:
 	std::list<std::unique_ptr<EnemyBullet>> bullets;
 	EnemyBullet* enemyBullet = nullptr;
 
-	float moveSpeed = 0;
+	Vector3 moveSpeed = { 0,0,0 };
 	float attackSpeed = 100.0f;
 	bool isAttack = false;
 };

@@ -29,13 +29,13 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, cons
 
 	attackSpeed -= 0.5f;
 	if (enemyNum == 0) {
-		gameObject->worldTransform.translation.z += 0.1f;
+		gameObject->worldTransform.translation += moveSpeed;
 	}
 	else if (enemyNum == 1) {
-		gameObject->worldTransform.translation.y += moveSpeed;
+		gameObject->worldTransform.translation += moveSpeed;
 		if (gameObject->worldTransform.translation.y >= 70 || gameObject->worldTransform.translation.y <= -70)
 		{
-			moveSpeed = -moveSpeed;
+			moveSpeed.y = -moveSpeed.y;
 		}
 	}
 	gameObject->Update();
@@ -73,8 +73,9 @@ float Enemy::SetAttackSpeed(float speed)
 	return attackSpeed;
 }
 
-float Enemy::SetSpeed(float speed)
+Vector3 Enemy::SetSpeed(float x, float y, float z)
 {
+	Vector3 speed = { x,y,z };
 	this->moveSpeed = speed;
 	return moveSpeed;
 }
