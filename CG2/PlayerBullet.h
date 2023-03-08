@@ -13,7 +13,7 @@ public:
 	//‰Šú‰»
 	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 playerPos, Vector3 bossPos);
 	//XV
-	void Update(Vector3 playerPos, Vector3 bossPos);
+	void Update();
 	//•`‰æ
 	void Draw();
 
@@ -24,7 +24,10 @@ public:
 	WorldTransform GetWorldTransform();
 
 	void OnCollision();
+
 	//UŒ‚
+	void AttackPress();
+
 	void Attack(Vector3 playerPos, Vector3 bossPos);
 private:	//ƒƒ“ƒoŠÖ”
 	

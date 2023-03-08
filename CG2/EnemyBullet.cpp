@@ -34,6 +34,7 @@ void EnemyBullet::Update(Vector3 player, Vector3 enemy)
 	
 }
 
+
 void EnemyBullet::Draw()
 {
 	gameObject->Draw();

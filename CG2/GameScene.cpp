@@ -11,11 +11,11 @@ GameScene::~GameScene() {
 		delete num_[i];
 	}
 	delete player;
-
+	
 }
 
-void GameScene::Initialize(WinApp* winApp) {
-
+void GameScene::Initialize(WinApp* winApp) 
+{
 	// デバッグテキスト用テクスチャ読み込み
 	Sprite::LoadTexture(10, L"Resources/debugfont.png");
 	// デバッグテキスト初期化
@@ -67,7 +67,8 @@ void GameScene::Initialize(WinApp* winApp) {
 	rhythm->Initialize();
 }
 
-void GameScene::Update() {
+void GameScene::Update() 
+{
 	rhythm->Update(&input_);
 
 	if (input_.TriggerKey(DIK_O) && offset > 0) {
@@ -86,8 +87,6 @@ void GameScene::Update() {
 
 	viewProjection_.eye = { 0 , 100 , -100 };
 
-	Collision();
-
 	viewProjection_.target = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z };
 	viewProjection_.eye = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z - 30 };
 
@@ -100,10 +99,16 @@ void GameScene::Update() {
 	player->Update();
 	particle->Update();
 	particle2->Update2();
-
+	
 	//敵の更新処理
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
+	
 		enemy->Update(&viewProjection_, &matProjection_, L"Resources/white1x1.png", 0);
+		enemyPos = enemy->GetWorldTransform().translation;
+		if (input_.TriggerKey(DIK_SPACE))
+		{
+			player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
+		}
 #pragma region makeEnemyBullet
 		if (enemy->GetAttackSpeed() <= 0.0f) {
 			//弾を生成
@@ -131,9 +136,7 @@ void GameScene::Update() {
 		//弾を削除する
 		bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
 #pragma endregion
-		enemyPos = enemy->GetWorldTransform().translation;
 		//player->SetEnemy(enemy);
-		player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
 	}
 
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
@@ -163,7 +166,6 @@ void GameScene::Update() {
 		//弾を削除する
 		bullets2.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {return bullet->IsDead(); });
 #pragma endregion
-		//player->NewBullet(&viewProjection_, &matProjection_, enemy->GetWorldTransform().translation, player->GetWorldTransform().translation);
 	}
 	UpdateEnemyPopCommand();
 
@@ -190,7 +192,7 @@ void GameScene::Update() {
 			}
 		}
 	}*/
-
+	Collision();
 }
 
 void GameScene::Draw() {
@@ -333,7 +335,6 @@ void GameScene::Reset() {
 	player->Reset();
 	particle->Reset();
 	particle2->Reset();
-	//enemy->Reset();
 
 }
 
@@ -384,6 +385,7 @@ void GameScene::Collision() {
 				}
 			}
 		}
+	}
 		//player-enemybullet
 		for (const std::unique_ptr<EnemyBullet>& bulletB : bullets1) {
 
@@ -395,7 +397,7 @@ void GameScene::Collision() {
 						-3 < player->GetWorldTransform().translation.z - bulletB->GetWorldTransform().translation.z) {
 
 						//bulletB->OnCollision();
-						enemy->Reset();
+						//enemy->Reset();
 						player->OnCollision();
 					}
 				}
@@ -404,17 +406,16 @@ void GameScene::Collision() {
 		for (const std::unique_ptr<EnemyBullet>& bulletC : bullets2) {
 			if (player->GetWorldTransform().translation.x - bulletC->GetWorldTransform().translation.x < 2 &&
 				-2 < player->GetWorldTransform().translation.x - bulletC->GetWorldTransform().translation.x) {
-				if (player->GetWorldTransform().translation.y - bulletC->GetWorldTransform().translation.y < 3 &&
-					-3 < player->GetWorldTransform().translation.y - bulletC->GetWorldTransform().translation.y) {
-					if (player->GetWorldTransform().translation.z - bulletC->GetWorldTransform().translation.z < 3 &&
-						-3 < player->GetWorldTransform().translation.z - bulletC->GetWorldTransform().translation.z) {
+				if (player->GetWorldTransform().translation.y - bulletC->GetWorldTransform().translation.y < 2 &&
+					-2 < player->GetWorldTransform().translation.y - bulletC->GetWorldTransform().translation.y) {
+					if (player->GetWorldTransform().translation.z - bulletC->GetWorldTransform().translation.z < 2 &&
+						-2 < player->GetWorldTransform().translation.z - bulletC->GetWorldTransform().translation.z) {
 
 						//bulletB->OnCollision();
-						enemy->Reset();
+						//enemy->Reset();
 						player->OnCollision();
 					}
 				}
 			}
 		}
-	}
 }
