@@ -20,23 +20,35 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 
 	gameObject->worldTransform.translation = { 0 , 0 , 100 };
 	gameObject->worldTransform.scale = { 2 , 2 , 2 };
-
 	
 }
 
 
 void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName, int enemyNum) {
-
 	attackSpeed -= 0.5f;
 	if (enemyNum == 0) {
-		gameObject->worldTransform.translation += moveSpeed;
+		switch (phase)
+		{
+		case Phase::normal:
+		default:
+			phaseTimer -= 0.3f;
+			gameObject->worldTransform.translation += moveSpeed;
+			if (phaseTimer <= 0.0f) {
+				phaseTimer = 300.0f;
+				phase = Phase::move;
+			}
+			break;
+		case Phase::move:
+
+			break;
+		}
 	}
 	else if (enemyNum == 1) {
 		gameObject->worldTransform.translation += moveSpeed;
-		if (gameObject->worldTransform.translation.y >= 70 || gameObject->worldTransform.translation.y <= -70)
-		{
-			moveSpeed.y = -moveSpeed.y;
-		}
+		//è„â∫ÇîΩïúà⁄ìÆ
+		//Repetition();
+
+		CoolTime();
 	}
 	gameObject->Update();
 
@@ -48,6 +60,26 @@ void Enemy::Draw() {
 
 void Enemy::Reset() {
 	gameObject->worldTransform.translation = { 0 , 0 , 100 };
+}
+//îΩïúä÷êî
+void Enemy::Repetition()
+{
+}
+
+void Enemy::CoolTime()
+{
+	if (isCoolDown) {
+		coolTime--;
+		if (coolTime <= 0.0f) {
+			isCoolDown = false;
+		}
+	}
+	else {
+		coolTime++;
+		if (coolTime >= 150.0f) {
+			isCoolDown = true;
+		}
+	}
 }
 
 WorldTransform Enemy::GetWorldTransform() {
@@ -71,6 +103,11 @@ float Enemy::SetAttackSpeed(float speed)
 {
 	this->attackSpeed = speed;
 	return attackSpeed;
+}
+
+bool Enemy::GetCoolDown()
+{
+	return isCoolDown;
 }
 
 Vector3 Enemy::SetSpeed(float x, float y, float z)

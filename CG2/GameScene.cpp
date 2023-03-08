@@ -128,7 +128,7 @@ void GameScene::Update() {
 			}
 		}
 
-		//弾を削除する
+		//弾&敵を削除する
 		bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
 #pragma endregion
 		enemyPos = enemy->GetWorldTransform().translation;
@@ -139,7 +139,7 @@ void GameScene::Update() {
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
 		enemy->Update(&viewProjection_, &matProjection_, L"Resources/white1x1.png",1);
 #pragma region makeEnemyBullet
-		if (enemy->GetAttackSpeed() <= 0.0f) {
+		if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetCoolDown() == false) {
 			//弾を生成
 			std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
 			//初期化
@@ -208,11 +208,11 @@ void GameScene::Draw() {
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
 		enemy->Draw();	
 	}
-	for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
-		bullet->Draw();
-	}
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
 		enemy->Draw();
+	}
+	for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
+		bullet->Draw();
 	}
 	for (std::unique_ptr<EnemyBullet>& bullet : bullets2) {
 		bullet->Draw();
