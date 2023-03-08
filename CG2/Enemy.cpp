@@ -127,3 +127,8 @@ bool Enemy::SetIsAttack(bool isAttack)
 	this->isAttack = isAttack;
 	return this->isAttack;
 }
+
+Phase Enemy::GetPhase()
+{
+	return phase;
+}

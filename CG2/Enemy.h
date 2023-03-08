@@ -44,6 +44,8 @@ public:
 
 	bool GetIsAttack();
 	bool SetIsAttack(bool isAttack);
+
+	Phase GetPhase();
 private:
 	Phase phase = Phase::normal;
 

@@ -105,7 +105,7 @@ void GameScene::Update() {
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
 		enemy->Update(&viewProjection_, &matProjection_, L"Resources/white1x1.png",0);
 #pragma region makeEnemyBullet
-		if (enemy->GetAttackSpeed() <= 0.0f/*Add protocol*/) {
+		if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::move) {
 			//弾を生成
 			std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
 			//初期化
@@ -293,7 +293,7 @@ void GameScene::UpdateEnemyPopCommand()
 			//-------ここにEnemy発生関数---------//
 			//複数化するためにuniq_ptrに変更
 			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
-			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png");
+			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/red.png");
 			//上で書いてある物をEnemyの座標としてセットする
 			newEnemy->Settransform(x, y, z);
 			newEnemy->SetSpeed(speedX, speedY, speedZ);
@@ -322,7 +322,7 @@ void GameScene::UpdateEnemyPopCommand()
 			//-------ここにEnemy発生関数---------//
 			//複数化するためにuniq_ptrに変更
 			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
-			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/e.png");
+			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/red.png");
 			//上で書いてある物をEnemyの座標としてセットする
 			newEnemy->Settransform(x, y, z);
 			newEnemy->SetSpeed(speedX, speedY, speedZ);
