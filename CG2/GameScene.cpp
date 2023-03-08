@@ -105,7 +105,7 @@ void GameScene::Update() {
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
 		enemy->Update(&viewProjection_, &matProjection_, L"Resources/white1x1.png",0);
 #pragma region makeEnemyBullet
-		if (enemy->GetAttackSpeed() <= 0.0f) {
+		if (enemy->GetAttackSpeed() <= 0.0f/*Add protocol*/) {
 			//弾を生成
 			std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
 			//初期化
@@ -149,7 +149,7 @@ void GameScene::Update() {
 			bullet->SetBullet(1);
 			bullets2.push_back(std::move(bullet));
 			//攻撃頻度の設定 1(速い)~ >1(遅い)
-			enemy->SetAttackSpeed(5.0f);
+			enemy->SetAttackSpeed(15.0f);
 			if (enemy->GetIsAttack() == false) {
 				enemy->SetIsAttack(true);
 			}

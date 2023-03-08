@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include "MathFunc.h"
 
 Enemy::Enemy() {
 	
@@ -24,14 +25,18 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 }
 
 
-void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName, int bulletNum) {
+void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName, int enemyNum) {
 
 	attackSpeed -= 0.5f;
-	
-	gameObject->worldTransform.translation.y += moveSpeed;
-	if (gameObject->worldTransform.translation.y >= 70 || gameObject->worldTransform.translation.y <= -70)
-	{
-		moveSpeed = -moveSpeed;
+	if (enemyNum == 0) {
+		gameObject->worldTransform.translation.z += 0.1f;
+	}
+	else if (enemyNum == 1) {
+		gameObject->worldTransform.translation.y += moveSpeed;
+		if (gameObject->worldTransform.translation.y >= 70 || gameObject->worldTransform.translation.y <= -70)
+		{
+			moveSpeed = -moveSpeed;
+		}
 	}
 	gameObject->Update();
 
