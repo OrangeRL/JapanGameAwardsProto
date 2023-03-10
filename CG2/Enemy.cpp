@@ -23,7 +23,6 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 	
 }
 
-
 void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName, int enemyNum) {
 	attackSpeed -= 0.5f;
 	if (enemyNum == 0) {
@@ -31,7 +30,7 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, cons
 		{
 		case Phase::normal:
 		default:
-			//ˆÚ“®‚Ì‚İ
+			//ç§»å‹•
 			phaseTimer -= 0.3f;
 			gameObject->worldTransform.translation += moveSpeed;
 			if (phaseTimer <= 0.0f) {
@@ -40,11 +39,11 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, cons
 			}
 			break;
 		case Phase::move:
-			//UŒ‚&ˆÚ“®
+			//æ”»æ’ƒ
 
 			break;
 		case Phase::leave:
-			//—£’E
+			//é›¢è„±
 			Vector3 leaveSpeedt = { 0.5f,0.0f,0.3f };
 			Vector3 leaveSpeedf = { -0.5f,0.0f,0.3f };
 			Leave(leaveSpeedt, leaveSpeedf);
@@ -54,11 +53,11 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, cons
 	}
 	else if (enemyNum == 1) {
 		gameObject->worldTransform.translation += moveSpeed;
-		//ã‰º‚ğ”½•œˆÚ“®
+		//ï¿½ã‰ºï¿½ğ”½•ï¿½ï¿½Ú“ï¿½
 		//Repetition();
 
 		CoolTime();
-	}
+
 	gameObject->Update();
 
 }
@@ -70,11 +69,11 @@ void Enemy::Draw() {
 void Enemy::Reset() {
 	gameObject->worldTransform.translation = { 0 , 0 , 100 };
 }
-//”½•œŠÖ”
+//ï¿½ï¿½ï¿½ï¿½ï¿½Öï¿½
 void Enemy::Repetition()
 {
 }
-//—£’E
+//ï¿½ï¿½ï¿½E
 void Enemy::Leave(Vector3 leaveSpeedt,Vector3 leaveSpeedf)
 {
 	if (gameObject->worldTransform.translation.x >= 1) {
@@ -84,7 +83,7 @@ void Enemy::Leave(Vector3 leaveSpeedt,Vector3 leaveSpeedf)
 		gameObject->worldTransform.translation += leaveSpeedf;
 	}
 }
-//UŒ‚—pƒN[ƒ‹ƒ^ƒCƒ€
+//ï¿½Uï¿½ï¿½ï¿½pï¿½Nï¿½[ï¿½ï¿½ï¿½^ï¿½Cï¿½ï¿½
 void Enemy::CoolTime()
 {
 	if (isCoolDown) {

@@ -33,19 +33,23 @@ Player::~Player() {
 }
 
 void Player::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection) {
+	viewProjection_ = viewProjection;
 
 	gameObject = new GameObject3D();
 	gameObject->PreLoadModel("Resources/tofu/tofu.obj");
 	gameObject->PreLoadTexture(L"Resources/star/star.jpg");
-	gameObject->SetViewProjection(viewProjection);
+	gameObject->SetViewProjection(viewProjection_);
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
+	//gameObject->worldTransform.translation = { 50.0f ,0.0f, 0.0f };
+	//gameObject->worldTransform.parent = &wt;
 
 	Reset();
 }
 
-void Player::Update() {
+void Player::Update(WorldTransform wt) {
 	playerPos = GetWorldTransform().translation;
+	//Reset();
 	Move();
 	//enemyPos = enemy->GetWorldTransform().translation;
 	//デスフラグの立った弾を削除
@@ -54,14 +58,20 @@ void Player::Update() {
 		});
 
 	//弾更新
-	//for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Update(enemyPos, GetWorldTransform().translation); }
-	
+
+	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Update(enemyPos, GetWorldTransform().translation); }
+
 	if (isDead == false)
 	{
+
+		gameObject->worldTransform.parent = &wt;
 		gameObject->Update();
 	}
+  
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Update(); }
-	//Collision();
+	Collision();
+
+	//SetPos({ 0.0f,0.0f,5.0f });
 }
 
 void Player::Draw() {
@@ -126,6 +136,15 @@ void Player::NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 		//弾を登録する
 		bullets_.push_back(std::move(newBullet));
 	
+	timer--;
+	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Update(enemyPos, playerPos); }
+	const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = GetBullets();
+	for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
+		if (input.PushKey(DIK_P)) {
+			isDead = true;
+			bulletA->OnCollision();
+		}
+	}
 }
 void Player::Collision() {
 

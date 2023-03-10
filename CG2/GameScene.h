@@ -20,6 +20,7 @@
 #include "Rhythm.h"
 #include "DebugText.h"
 #include "PlayerBullet.h"
+#include "ReilCamera.h"
 
 class GameScene {
 
@@ -84,6 +85,7 @@ private: // メンバ変数
 
 	GameObject3D* tutorialFloor = nullptr;
 	GameObject3D* stageFloor = nullptr;
+	GameObject3D* skydome = nullptr;
 
 	Vector3 enemyPos = {};
 	//シーン管理
@@ -99,7 +101,7 @@ private: // メンバ変数
 
 	int gameoverTimer = 0;
 
-	int offset = 5;
+	ReilCamera* reilCamera = nullptr;
 
 	Sprite* title_ = nullptr;
 	Sprite* clear_ = nullptr;

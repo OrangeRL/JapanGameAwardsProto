@@ -21,6 +21,8 @@ void GameScene::Initialize(WinApp* winApp)
 	// デバッグテキスト初期化
 	debugText.Initialize(10);
 
+
+
 	//透視投影変換行列の計算
 	matProjection_ = XMMatrixPerspectiveFovLH(
 		XMConvertToRadians(45.0),
@@ -49,11 +51,26 @@ void GameScene::Initialize(WinApp* winApp)
 	//XAudioエンジンのインスタンスを生成
 	soundManager_.Initialize();
 
+	skydome = new GameObject3D();
+	skydome->PreLoadModel("Resources/skydome/skydome.obj");
+	skydome->PreLoadTexture(L"Resources/skydome/Fine_Basin.jpg");
+	skydome->SetViewProjection(&viewProjection_);
+	skydome->SetMatProjection(&matProjection_);
+	skydome->Initialize();
+	skydome->worldTransform.scale = { 1000.0f,1000.0f,1000.0f };
+
+	//レールカメラ
+	reilCamera = new ReilCamera();
+	reilCamera->Initialize({ 0,0,-50 }, { 0,0,0 });
+
 	player = new Player();
 	player->Initialize(&viewProjection_, &matProjection_);
+	player->SetPos({ 0.0f, 0.0f, 20.0f });
 
-	player->SetMap(map);
-	player->SetGoal(goal);
+	viewProjection_ = reilCamera->GetViewProjection();
+
+	//player->SetMap(map);
+	//player->SetGoal(goal);
 
 	particle = new Particle;
 	particle->Initialize(&viewProjection_, &matProjection_, player);
@@ -70,13 +87,9 @@ void GameScene::Initialize(WinApp* winApp)
 void GameScene::Update() 
 {
 	rhythm->Update(&input_);
+  
+	viewProjection_ = reilCamera->GetViewProjection();
 
-	if (input_.TriggerKey(DIK_O) && offset > 0) {
-		offset--;
-	}
-	else if (input_.TriggerKey(DIK_P) && offset < 10) {
-		offset++;
-	}
 
 	debugText.Printf(0, 100, 1.0f, 10, " O,P...offset:%d", offset);
 	debugText.Printf(0, 140, 1.0f, 25, " Up,Dawn...BGMVolume:%f", rhythm->GetSoundState().BGMVolume);
@@ -90,16 +103,23 @@ void GameScene::Update()
 	viewProjection_.target = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z };
 	viewProjection_.eye = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z - 30 };
 
+	Collision();
+ 
 	viewProjection_.UpdateView();
 	if (input_.PushKey(DIK_P)) {
 		//player->OnCollision();
 	}
 
 	//プレイヤーの更新処理
-	player->Update();
+
+	player->Update(reilCamera->GetWorldTransform());
+	reilCamera->Update(&input_);
+
 	particle->Update();
 	particle2->Update2();
-	
+  
+	skydome->Update();
+  
 	//敵の更新処理
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
 	
@@ -137,6 +157,7 @@ void GameScene::Update()
 		bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
 #pragma endregion
 		//player->SetEnemy(enemy);
+		//player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
 	}
 
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
@@ -192,7 +213,22 @@ void GameScene::Update()
 			}
 		}
 	}*/
+
 	Collision();
+
+	rhythm->Update(&input_);
+
+	debugText.Printf(0, 100, 1.0f, 18, " Q,E...offset:%f", rhythm->GetSoundState().offset);
+	debugText.Printf(0, 140, 1.0f, 25, " Up,Dawn...BGMVolume:%f", rhythm->GetSoundState().BGMVolume);
+	debugText.Printf(0, 160, 1.0f, 32, " Left,Right...guideSEVolume:%f", rhythm->GetSoundState().guideSEVolume);
+	debugText.Printf(0, 120, 1.0f, 10, " Timer:%f", rhythm->GetSoundState().timer);
+	debugText.Printf(0, 180, 1.0f, 17, " measureCount:%d", rhythm->GetSoundState().measureCount);
+	debugText.Printf(0, 200, 1.0f, 9, " weapon:%d", rhythm->GetSoundState().weapon);
+
+	debugText.Printf(0, 220, 1.0f, 27, " %f,%f,%f",
+		player->GetWorldTransform().matWorld.m[3][0],
+		player->GetWorldTransform().matWorld.m[3][1],
+		player->GetWorldTransform().matWorld.m[3][2]);
 }
 
 void GameScene::Draw() {
@@ -215,15 +251,11 @@ void GameScene::Draw() {
 		bullet->Draw();
 	}
 
+	skydome->Draw();
+
 	//スプライト描画
 	Sprite::PreDraw(dx12base_.GetCmdList().Get());
 
-
-	for (int i = 0; i < 10; i++) {
-		if (offset == i) {
-			//num_[i]->Draw();
-		}
-	}
 
 	// デバッグテキストの描画
 	debugText.DrawAll(dx12base_.GetCmdList().Get());

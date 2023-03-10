@@ -16,14 +16,14 @@ void FPS::FpsControlEnd() {
 	//—]—T‚ª‚ ‚é‚Æ‚«‚Í‘Ò‚Â
 	if (elapsedFrame < frameTime) {
 		// sleepŠÔ
-		DWORD sleepTime = static_cast<DWORD>((frameTime - elapsedFrame) * 1000.0f);
+		DWORD sleepTime = static_cast<DWORD>((frameTime - elapsedFrame) * 990.0f);
 		timeBeginPeriod(1);
 		//Q‚é
-		//Sleep(sleepTime);
+		//Sleep(11.99f);
 		timeEndPeriod(1);
 	}
 
-	fps = 1 / elapsedFrame;
+	fps = 1.0f / elapsedFrame;
 }
 
 void FPS::SetFrameRate(float fps_) { frameTime = 1.0f / fps_; }
