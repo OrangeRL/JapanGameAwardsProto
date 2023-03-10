@@ -3,41 +3,77 @@
 #include "EnemyBullet.h"
 #include <memory>
 #include <list>
+enum class Phase {
+	normal,
+	move,
+	leave,
+};
 
 class Enemy {
 public:
 
-	//コンストラクタ
+	//コンストラクタ―
 	Enemy();
-	//チE��トラクタ
+	//デストラクタ
 	~Enemy();
 
 	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName);
 
 
-	void Update(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName, int bulletNum);
+	void Update(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName, int enemyNum);
 
 
 	void Draw();
 	
 	void Reset();
 
+	//反復
+	void Repetition();
+	//離脱
+	void Leave(Vector3 leaveSpeedt, Vector3 leaveSpeedf);
+
+	void CoolTime();
+
 	const std::list<std::unique_ptr<EnemyBullet>>& GetBullets() { return bullets; }
-	//���W�擾�p
+	//座標取得用
 	WorldTransform GetWorldTransform();
-	//���������ꏊ��ݒ�
+	//生成される場所を設定
 	WorldTransform Settransform(float x,float y,float z);
-	//���x�ݒ�
-	float SetSpeed(float speed);
+	float GetAttackSpeed();
+	float SetAttackSpeed(float speed);
+	bool GetCoolDown();
+	//速度設定
+	Vector3 SetSpeed(float x, float y, float z);
+
+	bool GetIsAttack();
+	bool SetIsAttack(bool isAttack);
+
+	Phase GetPhase();
+
+	bool IsDead()const { return isDelete_; }
 private:
-	GameObject3D* gameObject = nullptr; // 座標や大きさ等が入ってぁE��
+	Phase phase = Phase::normal;
+
+	GameObject3D* gameObject = nullptr;
 	std::list<std::unique_ptr<EnemyBullet>> bullets;
 	EnemyBullet* enemyBullet = nullptr;
 
-	float moveSpeed = 0; //移動速度
+	Vector3 moveSpeed = { 0,0,0 };
 	float attackSpeed = 100.0f;
 	bool isAttack = false;
+	//クールタイム
+	bool isCoolDown = true;
+	float coolTime = 150.0f;
+	//行動変化
+	float phaseTimer = 300.0f;
 
+	//消えるまでの時間
+	// 60 * 消えるまでの時間:
+	static const int32_t deleteTime = 60 * 3;
+	//タイマー
+	int32_t deleteTimer_ = deleteTime;
+	//フラグ
+	bool isDelete_ = false;
 };
 
 

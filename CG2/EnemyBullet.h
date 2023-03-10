@@ -4,20 +4,35 @@
 class EnemyBullet
 {
 public:
-	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName);
-	void Update(WorldTransform enemy);
+	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName,Vector3 player, Vector3 enemy);
+	void Update();
 	void Draw();
 	void OnCollision();
 	WorldTransform GetWorldTransform();
-	//¶¬‚·‚éêŠ‚ğİ’è
+	//ç”Ÿæˆã™ã‚‹å ´æ‰€ã‚’è¨­å®š
 	Vector3 SetTransform(Vector3 transform);
-	//’e‚Ìí—Ş‚ğİ’è
+	//å¼¾ã®ç¨®é¡ã‚’è¨­å®š
 	int SetBullet(int bulletNum);
+	void Aim(Vector3 player, Vector3 enemy);
+
+	bool IsDead()const { return isDelete_; }
 private:
 	GameObject3D* gameObject = nullptr;
-	//ƒL[“ü—Í
+	//ã‚­ãƒ¼å…¥åŠ›
 	Input& input = Input::GetInstance();
-	//’e‚Ìí—Ş	0=ƒvƒŒƒCƒ„[‘_‚¢, 1=³–ÊƒJ[ƒeƒ““™
+	//å¼¾ã®ç¨®é¡	0=ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç‹™ã„, 1=æ­£é¢ã‚«ãƒ¼ãƒ†ãƒ³ç­‰
 	int bulletNum;
+
+	Vector3 posA;
+	Vector3 posB;
+	Vector3 posC;
+
+	//æ¶ˆãˆã‚‹ã¾ã§ã®æ™‚é–“
+	// 60 * æ¶ˆãˆã‚‹ã¾ã§ã®æ™‚é–“:
+	static const int32_t deleteTime = 60 * 25;
+	//ã‚¿ã‚¤ãƒãƒ¼
+	int32_t deleteTimer_ = deleteTime;
+	//ãƒ•ãƒ©ã‚°
+	bool isDelete_ = false;
 };
 

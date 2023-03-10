@@ -1,7 +1,10 @@
 #include "EnemyBullet.h"
 
-void EnemyBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName)
+void EnemyBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName,Vector3 player, Vector3 enemy)
 {
+	//自機狙い用座標取得
+	Aim(player, enemy);
+
 	gameObject = new GameObject3D();
 	gameObject->PreLoadTexture(textureFileName);
 	gameObject->SetViewProjection(viewProjection);
@@ -10,22 +13,33 @@ void EnemyBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjec
 
 }
 
-void EnemyBullet::Update(WorldTransform enemy)
+void EnemyBullet::Update()
 {
 	//プレイヤーを狙う
-	if (bulletNum == 0) {
-		gameObject->worldTransform.translation.z -= 0.5f;
+	if (bulletNum == 0){
+		gameObject->worldTransform.translation -= posC;
 	}
 	//正面にカーテン形成
 	else if (bulletNum == 1) {
 		gameObject->worldTransform.translation.z -= 0.1f;
 	}
+
+	if (--deleteTimer_ <= 0) {
+		isDelete_ = true;
+	}
+
 	gameObject->Update();
+	
 }
 
 void EnemyBullet::Draw()
 {
 	gameObject->Draw();
+}
+
+WorldTransform EnemyBullet::GetWorldTransform()
+{
+	return gameObject->worldTransform;
 }
 
 Vector3 EnemyBullet::SetTransform(Vector3 transform)
@@ -42,7 +56,12 @@ int EnemyBullet::SetBullet(int bulletNum)
 	return this->bulletNum;
 }
 
-
-WorldTransform EnemyBullet::GetWorldTransform() {
-	return gameObject->worldTransform;
+void EnemyBullet::Aim(Vector3 player, Vector3 enemy)
+{
+	const float speed = -0.3f;
+	posA = player;
+	posB = enemy;
+	posC = posA - posB;
+	posC.nomalize();
+	posC *= speed;
 }

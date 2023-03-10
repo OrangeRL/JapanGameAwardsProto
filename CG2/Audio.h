@@ -39,6 +39,8 @@ struct SoundData {
 	BYTE* pBuffer;
 	//バッファサイズ
 	unsigned int bufferSize;
+	//波形フォーマットを元にSourceVoiceの生成
+	IXAudio2SourceVoice* pSourceVoice;
 };
 
 class SoundManager
@@ -46,15 +48,15 @@ class SoundManager
 public:
 	ComPtr<IXAudio2> xAudio2;
 	IXAudio2MasteringVoice* masterVoice;
+
 	static const int kMaxSoundData = 256;
 	void Initialize();
 	//音声読み込み
 	SoundData SoundLoadWave(const char* filename);
-	//音声再生
-	void SoundPlayWave(IXAudio2* xAudio2, const SoundData& soundData, bool loop = false, float volume = 1.0f);
+	//音声再生(はじめから)
+	void SoundPlayWave(IXAudio2* xAudio2, SoundData& soundData, bool loop = false, float volume = 0.0f);
 	// 音声停止
 	void StopWave(const SoundData& soundData);
-	//void StopWave(const std::string& filename);
 	//音声解放
 	void SoundUnload(SoundData& soundData);
 	//xAudio2の解放
@@ -67,4 +69,6 @@ private:
 	//波形フォーマットからSourceVoiceの生成
 	IXAudio2SourceVoice* sourceVoice = nullptr;
 	HRESULT result;
+
+	float outputMatrix[2] = { 1.0f,0.05f };
 };

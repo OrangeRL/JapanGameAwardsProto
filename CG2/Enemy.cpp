@@ -1,7 +1,8 @@
 #include "Enemy.h"
+#include "MathFunc.h"
 
 Enemy::Enemy() {
-
+	
 }
 
 Enemy::~Enemy() {
@@ -19,39 +20,44 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 
 	gameObject->worldTransform.translation = { 0 , 0 , 100 };
 	gameObject->worldTransform.scale = { 2 , 2 , 2 };
-
 	
 }
 
 
-void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName, int bulletNum) {
-	if (isAttack == false) {
-		attackSpeed -= 0.5f;
-		if (attackSpeed <= 0.0f) {
-			//Âºæ„ÇíÁîüÊàê
-			std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
-			//ÂàùÊúüÂåñ
-			bullet->Initialize(viewProjection, matProjection, textureFileName);
-			bullet->SetTransform(gameObject->worldTransform.translation);
-			//‰Ωø„ÅÜÂºæ„ÅÆË®≠ÂÆö
-			bullet->SetBullet(bulletNum);
-			bullets.push_back(std::move(bullet));
-			isAttack = true;
-			attackSpeed = 100.0f;
-		}
-	}
-	else
-	{
-		for (std::unique_ptr<EnemyBullet>& bullet : bullets) {
-			bullet->Update(gameObject->worldTransform);
-		}
-	}
+void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName, int enemyNum) {
+	attackSpeed -= 0.5f;
+	if (enemyNum == 0) {
+		switch (phase)
+		{
+		case Phase::normal:
+		default:
+			//à⁄ìÆÇÃÇ›
+			phaseTimer -= 0.3f;
+			gameObject->worldTransform.translation += moveSpeed;
+			if (phaseTimer <= 0.0f) {
+				phaseTimer = 300.0f;
+				phase = Phase::move;
+			}
+			break;
+		case Phase::move:
+			//çUåÇ&à⁄ìÆ
 
+			break;
+		case Phase::leave:
+			//ó£íE
+			Vector3 leaveSpeedt = { 0.5f,0.0f,0.3f };
+			Vector3 leaveSpeedf = { -0.5f,0.0f,0.3f };
+			Leave(leaveSpeedt, leaveSpeedf);
+			break;
+		}
 
-	gameObject->worldTransform.translation.y += moveSpeed;
-	if (gameObject->worldTransform.translation.y >= 70 || gameObject->worldTransform.translation.y <= -70)
-	{
-		moveSpeed = -moveSpeed;
+	}
+	else if (enemyNum == 1) {
+		gameObject->worldTransform.translation += moveSpeed;
+		//è„â∫ÇîΩïúà⁄ìÆ
+		//Repetition();
+
+		CoolTime();
 	}
 	gameObject->Update();
 
@@ -59,13 +65,40 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, cons
 
 void Enemy::Draw() {
 	gameObject->Draw();
-	for (std::unique_ptr<EnemyBullet>& bullet : bullets) {
-		bullet->Draw();
-	}
 }
 
 void Enemy::Reset() {
 	gameObject->worldTransform.translation = { 0 , 0 , 100 };
+}
+//îΩïúä÷êî
+void Enemy::Repetition()
+{
+}
+//ó£íE
+void Enemy::Leave(Vector3 leaveSpeedt,Vector3 leaveSpeedf)
+{
+	if (gameObject->worldTransform.translation.x >= 1) {
+		gameObject->worldTransform.translation += leaveSpeedt;
+	}
+	if (gameObject->worldTransform.translation.x <= -1) {
+		gameObject->worldTransform.translation += leaveSpeedf;
+	}
+}
+//çUåÇópÉNÅ[ÉãÉ^ÉCÉÄ
+void Enemy::CoolTime()
+{
+	if (isCoolDown) {
+		coolTime--;
+		if (coolTime <= 0.0f) {
+			isCoolDown = false;
+		}
+	}
+	else {
+		coolTime++;
+		if (coolTime >= 150.0f) {
+			isCoolDown = true;
+		}
+	}
 }
 
 WorldTransform Enemy::GetWorldTransform() {
@@ -81,8 +114,40 @@ WorldTransform Enemy::Settransform(float x,float y,float z)
 	return gameObject->worldTransform;
 }
 
-float Enemy::SetSpeed(float speed)
+float Enemy::GetAttackSpeed(){
+	return attackSpeed;
+}
+
+float Enemy::SetAttackSpeed(float speed)
 {
+	this->attackSpeed = speed;
+	return attackSpeed;
+}
+
+bool Enemy::GetCoolDown()
+{
+	return isCoolDown;
+}
+
+Vector3 Enemy::SetSpeed(float x, float y, float z)
+{
+	Vector3 speed = { x,y,z };
 	this->moveSpeed = speed;
 	return moveSpeed;
+}
+
+bool Enemy::GetIsAttack()
+{
+	return isAttack;
+}
+
+bool Enemy::SetIsAttack(bool isAttack)
+{
+	this->isAttack = isAttack;
+	return this->isAttack;
+}
+
+Phase Enemy::GetPhase()
+{
+	return phase;
 }
