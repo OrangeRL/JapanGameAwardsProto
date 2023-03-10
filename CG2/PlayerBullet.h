@@ -41,7 +41,7 @@ private:	//メンバ変数
 	//カウント
 	int bulletCount = 0;
 	//弾の移動速度
-	const float speed = -1.0f;
+	const float speed = -10.0f;
 	//弾のベクトル
 	Vector3 velocity;
 	//弾の移動範囲

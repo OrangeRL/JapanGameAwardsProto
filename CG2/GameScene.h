@@ -74,17 +74,12 @@ private: // メンバ変数
 	Particle* particle = nullptr;
 	Particle* particle2 = nullptr;
 
-	Map* map = nullptr;
-
-	Goal* goal = nullptr;
 	//敵
 	std::list<std::unique_ptr<Enemy>> enemys1;
 	std::list<std::unique_ptr<Enemy>> enemys2;
 	std::list<std::unique_ptr<EnemyBullet>> bullets1;
 	std::list<std::unique_ptr<EnemyBullet>> bullets2;
 
-	GameObject3D* tutorialFloor = nullptr;
-	GameObject3D* stageFloor = nullptr;
 	GameObject3D* skydome = nullptr;
 
 	Vector3 enemyPos = {};
@@ -102,12 +97,6 @@ private: // メンバ変数
 	int gameoverTimer = 0;
 
 	ReilCamera* reilCamera = nullptr;
-
-	Sprite* title_ = nullptr;
-	Sprite* clear_ = nullptr;
-	Sprite* gameOver_ = nullptr;
-	Sprite* spaceToContinue_ = nullptr;
-	Sprite* spaceToReturnTitle_ = nullptr;
 
 	Sprite* num_[10];
 

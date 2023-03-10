@@ -47,6 +47,7 @@ public:
 	Vector3 GetAngle();
 	ViewProjection* GetViewProjection() { return viewProjection; }
 	WorldTransform GetWorldTransform();
+	Vector3 GetPos();
 	Vector3 centerVec = { 0,0,0 };
 	Vector3 angle = {};
 
@@ -108,8 +109,8 @@ private:
 	PlayerBullet* playerBullet = nullptr;
 
 
-	std::list<std::unique_ptr<EnemyBullet>> enemyBullets;
-	EnemyBullet* enemyBullet = nullptr;
+	//std::list<std::unique_ptr<EnemyBullet>> enemyBullets;
+	//EnemyBullet* enemyBullet = nullptr;
 	
 };
 

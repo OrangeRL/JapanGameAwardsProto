@@ -1,5 +1,13 @@
 #include "EnemyBullet.h"
 
+EnemyBullet::EnemyBullet() {
+	
+}
+
+EnemyBullet::~EnemyBullet() {
+	delete gameObject;
+}
+
 void EnemyBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName,Vector3 player, Vector3 enemy)
 {
 	//自機狙い用座標取得

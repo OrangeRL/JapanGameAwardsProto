@@ -33,15 +33,16 @@ void PlayerBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProje
 }
 
 void PlayerBullet::Update() {
-	//const float rotationSpeed = MathFunc::Utility::Deg2Rad(60.0f);
+	const float rotationSpeed = MathFunc::Utility::Deg2Rad(0.1f);
 
-	//Vector3 rotation = { 0 , 0 , 0 };
+	Vector3 rotation = { 0 , 0 , 0 };
 	//newPlayerPos = playerPos;*/
-	//rotation.y = rotationSpeed;
-	//rotation.x = rotationSpeed;
-	//rotation.z = rotationSpeed;
-	//angle = gameObject->worldTransform.rotation;
+	rotation.y = rotationSpeed;
+	rotation.x = rotationSpeed;
+	rotation.z = rotationSpeed;
+	angle = gameObject->worldTransform.rotation;
 	//gameObject->worldTransform.rotation += rotation;
+
 	Attack(newPlayerPos, newEnemyPos);
 	if (isShot) 
 	{
@@ -54,11 +55,11 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos) {
 
 	Vector3 rotation = { 0 , 0 , 0 };
 
-	rotation.y = rotationSpeed;
-	rotation.x = rotationSpeed;
-	rotation.z = rotationSpeed;
+	//rotation.y = rotationSpeed;
+	//rotation.x = rotationSpeed;
+	//rotation.z = rotationSpeed;
 
-	gameObject->worldTransform.rotation += rotation;
+	//gameObject->worldTransform.rotation += rotation;
 	if (!isShot) 
 	{
 		//その番号の弾の発射フラグがfalseならtrueにする
@@ -67,9 +68,11 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos) {
 		//それと同時に同番号のオブジェクトの座標をボスの座標に持っていく
 		newPlayerPos = playerPos;
 		newEnemyPos = bossPos;
-		gameObject->worldTransform.translation = bossPos;
+		//gameObject->worldTransform.translation = bossPos;
 		//ボスと自機の差分ベクトルを求める
-		velocity = newPlayerPos - newEnemyPos;
+		//velocity = newPlayerPos - newEnemyPos;
+		velocity = { 0.0f,0.0f,0.0f };
+
 		//ベクトルの正規化
 		velocity.nomalize();
 		//ベクトルの長さを速さに合わせる
@@ -81,7 +84,9 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos) {
 	if (isShot) 
 	{
 		//ボスと自機の差分ベクトルを求める
-		velocity = newPlayerPos - newEnemyPos;
+		//velocity = newPlayerPos - newEnemyPos;
+		velocity = { 0.0f,0.0f,5.0f };
+		
 		//ベクトルの正規化
 		velocity.nomalize();
 		//ベクトルの長さを速さに合わせる
@@ -98,8 +103,8 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos) {
 			gameObject->worldTransform.translation.z > canMoveArea) 
 		{
 			//一定の範囲外で消滅
-			isShot = false;
-			isDead_ = true;
+			//isShot = false;
+			//isDead_ = true;
 
 		}
 	}

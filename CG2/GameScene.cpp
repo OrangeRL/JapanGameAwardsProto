@@ -11,7 +11,11 @@ GameScene::~GameScene() {
 		delete num_[i];
 	}
 	delete player;
-	
+	delete playerBullet;
+	delete skydome;
+	delete particle;
+	delete particle2;
+	delete reilCamera;
 }
 
 void GameScene::Initialize(WinApp* winApp) 
@@ -85,29 +89,13 @@ void GameScene::Initialize(WinApp* winApp)
 }
 
 void GameScene::Update() 
-{
-	rhythm->Update(&input_);
-  
+{  
 	viewProjection_ = reilCamera->GetViewProjection();
 
-
-	/*debugText.Printf(0, 100, 1.0f, 10, " O,P...offset:%d", offset);
-	debugText.Printf(0, 140, 1.0f, 25, " Up,Dawn...BGMVolume:%f", rhythm->GetSoundState().BGMVolume);
-	debugText.Printf(0, 160, 1.0f, 32, " Left,Right...guideSEVolume:%f", rhythm->GetSoundState().guideSEVolume);
-	debugText.Printf(0, 120, 1.0f, 10, " Timer:%f", rhythm->GetSoundState().timer);
-	debugText.Printf(0, 180, 1.0f, 15, " measureCount:%d", rhythm->GetSoundState().measureCount);
-	debugText.Printf(0, 200, 1.0f, 9, " weapon:%d", rhythm->GetSoundState().weapon);*/
-
-	//viewProjection_.eye = { 0 , 100 , -100 };
-
-	//viewProjection_.target = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z };
-	//viewProjection_.eye = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z - 30 }; 
 	viewProjection_.UpdateView();
 	if (input_.PushKey(DIK_P)) {
 		//player->OnCollision();
 	}
-
-	//プレイヤーの更新処理
 
 	player->Update(reilCamera->GetWorldTransform());
 	reilCamera->Update(&input_);
@@ -118,7 +106,6 @@ void GameScene::Update()
 	skydome->Update();
   
 	//敵の更新処理
-	//敵の更新処理
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
 		enemy->Update(&viewProjection_, &matProjection_, 0);
 #pragma region makeEnemyBullet
@@ -126,7 +113,7 @@ void GameScene::Update()
 			//弾を生成
 			std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
 			//初期化
-			bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
+			bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetPos(), enemy->GetWorldTransform().translation);
 			bullet->SetTransform(enemy->GetWorldTransform().translation);
 			//使う弾の設定
 			bullet->SetBullet(0);
@@ -159,7 +146,7 @@ void GameScene::Update()
 			//弾を生成
 			std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
 			//初期化
-			bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
+			bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetPos(), enemy->GetWorldTransform().translation);
 			bullet->SetTransform(enemy->GetWorldTransform().translation);
 			//使う弾の設定
 			bullet->SetBullet(1);
@@ -206,9 +193,14 @@ void GameScene::Update()
 		}
 	}*/
 
-	Collision();
-
 	rhythm->Update(&input_);
+	//プレイヤーの弾発射処理
+	if (input_.TriggerKey(DIK_SPACE) && rhythm->GetSoundState().isFireSucces) {
+		player->NewBullet(&viewProjection_, &matProjection_, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,0.0f });
+	}
+
+
+	Collision();
 
 	debugText.Printf(0, 100, 1.0f, 18, " Q,E...offset:%f", rhythm->GetSoundState().offset);
 	debugText.Printf(0, 140, 1.0f, 25, " Up,Dawn...BGMVolume:%f", rhythm->GetSoundState().BGMVolume);
@@ -387,12 +379,12 @@ void GameScene::Collision() {
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
 
 		//enemy-player
-		if (enemy->GetWorldTransform().translation.x - player->GetWorldTransform().translation.x < 2 &&
-			-2 < enemy->GetWorldTransform().translation.x - player->GetWorldTransform().translation.x) {
-			if (enemy->GetWorldTransform().translation.y - player->GetWorldTransform().translation.y < 3 &&
-				-3 < enemy->GetWorldTransform().translation.y - player->GetWorldTransform().translation.y) {
-				if (enemy->GetWorldTransform().translation.z - player->GetWorldTransform().translation.z < 3 &&
-					-3 < enemy->GetWorldTransform().translation.z - player->GetWorldTransform().translation.z) {
+		if (enemy->GetWorldTransform().translation.x - player->GetPos().x < 2 &&
+			-2 < enemy->GetWorldTransform().translation.x - player->GetPos().x) {
+			if (enemy->GetWorldTransform().translation.y - player->GetPos().y < 3 &&
+				-3 < enemy->GetWorldTransform().translation.y - player->GetPos().y) {
+				if (enemy->GetWorldTransform().translation.z - player->GetPos().z < 3 &&
+					-3 < enemy->GetWorldTransform().translation.z - player->GetPos().z) {
 
 					player->OnCollision();
 
@@ -425,12 +417,12 @@ void GameScene::Collision() {
 		//player-enemybullet
 		for (const std::unique_ptr<EnemyBullet>& bulletB : bullets1) {
 
-			if (player->GetWorldTransform().translation.x - bulletB->GetWorldTransform().translation.x < 2 &&
-				-2 < player->GetWorldTransform().translation.x - bulletB->GetWorldTransform().translation.x) {
-				if (player->GetWorldTransform().translation.y - bulletB->GetWorldTransform().translation.y < 3 &&
-					-3 < player->GetWorldTransform().translation.y - bulletB->GetWorldTransform().translation.y) {
-					if (player->GetWorldTransform().translation.z - bulletB->GetWorldTransform().translation.z < 3 &&
-						-3 < player->GetWorldTransform().translation.z - bulletB->GetWorldTransform().translation.z) {
+			if (player->GetPos().x - bulletB->GetWorldTransform().translation.x < 2 &&
+				-2 < player->GetPos().x - bulletB->GetWorldTransform().translation.x) {
+				if (player->GetPos().y - bulletB->GetWorldTransform().translation.y < 3 &&
+					-3 < player->GetPos().y - bulletB->GetWorldTransform().translation.y) {
+					if (player->GetPos().z - bulletB->GetWorldTransform().translation.z < 3 &&
+						-3 < player->GetPos().z - bulletB->GetWorldTransform().translation.z) {
 
 						//bulletB->OnCollision();
 						//enemy->Reset();
@@ -440,12 +432,12 @@ void GameScene::Collision() {
 			}
 		}
 		for (const std::unique_ptr<EnemyBullet>& bulletC : bullets2) {
-			if (player->GetWorldTransform().translation.x - bulletC->GetWorldTransform().translation.x < 2 &&
-				-2 < player->GetWorldTransform().translation.x - bulletC->GetWorldTransform().translation.x) {
-				if (player->GetWorldTransform().translation.y - bulletC->GetWorldTransform().translation.y < 2 &&
-					-2 < player->GetWorldTransform().translation.y - bulletC->GetWorldTransform().translation.y) {
-					if (player->GetWorldTransform().translation.z - bulletC->GetWorldTransform().translation.z < 2 &&
-						-2 < player->GetWorldTransform().translation.z - bulletC->GetWorldTransform().translation.z) {
+			if (player->GetPos().x - bulletC->GetWorldTransform().translation.x < 2 &&
+				-2 < player->GetPos().x - bulletC->GetWorldTransform().translation.x) {
+				if (player->GetPos().y - bulletC->GetWorldTransform().translation.y < 2 &&
+					-2 < player->GetPos().y - bulletC->GetWorldTransform().translation.y) {
+					if (player->GetPos().z - bulletC->GetWorldTransform().translation.z < 2 &&
+						-2 < player->GetPos().z - bulletC->GetWorldTransform().translation.z) {
 
 						//bulletB->OnCollision();
 						//enemy->Reset();
