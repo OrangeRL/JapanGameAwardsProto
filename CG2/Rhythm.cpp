@@ -16,12 +16,14 @@ void Rhythm::Initialize() {
 
 	soundManager_ = new SoundManager();
 	soundManager_->Initialize();
-
-	soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), stage1BGM, false, soundState.BGMVolume);
 }
 
 void Rhythm::Update(Input* input) {
 
+	if (soundState.timer == 0 && soundState.measureCount <= 0) {
+		soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), stage1BGM, false, soundState.BGMVolume);
+		stage1BGM.pSourceVoice->SetFrequencyRatio(1.0003f);
+	}
 
 	//武器変更
 	if (input->TriggerKey(DIK_0)) {
@@ -60,6 +62,8 @@ void Rhythm::Update(Input* input) {
 					soundState.isLaserActive = 0;
 				}
 			}
+
+			soundState.isFireSucces = 0;
 
 			//通常弾のリズム
 			if (soundState.weapon == Weapons::Normal) {
@@ -164,6 +168,7 @@ void Rhythm::SoundUnload(SoundData soundData) {
 	soundManager_->SoundUnload(soundData);
 }
 
+//通常弾
 void Rhythm::NormalShot(SoundState s, Input* input) {
 	shotTiming1 = 30.0f;	//弾発射タイミング1
 	reloadTiming = 15.0f;	//弾が装填されるタイミング
@@ -174,16 +179,19 @@ void Rhythm::NormalShot(SoundState s, Input* input) {
 	}
 	//一定のタイミングで弾を装填する
 	if (s.timer == reloadTiming || s.timer == shotTiming1 + reloadTiming) {
-		isActive = 1;
+		isFireActive = 1;
 	}
 
 	//弾が発射可能なとき
-	if (isActive == 1) {
+	if (isFireActive == 1) {
 		if (input->TriggerKey(DIK_SPACE)) {
 			//丁度いいタイミングでキーを押すと発射
 			if (((s.timer <= judgeBreadth + s.offset) ||
 				(s.timer >= shotTiming1 - judgeBreadth + s.offset && s.timer <= shotTiming1 + judgeBreadth + s.offset) ||
 				(s.timer >= maxTimer - judgeBreadth + s.offset))) {
+
+				soundState.isFireSucces = 1;
+
 				SoundPlayWave(shotSound, s.normalSEVolume);
 			}
 			//それ以外のタイミングは失敗
@@ -191,11 +199,12 @@ void Rhythm::NormalShot(SoundState s, Input* input) {
 				SoundPlayWave(missSound, s.normalSEVolume);
 			}
 
-			isActive = 0;
+			isFireActive = 0;
 		}
 	}
 }
 
+//速射弾
 void Rhythm::RapidShot(SoundState s, Input* input) {
 	shotTiming1 = 15.0f;	//弾発射タイミング1
 	shotTiming2 = 30.0f;	//弾発射タイミング2
@@ -209,11 +218,11 @@ void Rhythm::RapidShot(SoundState s, Input* input) {
 	//一定のタイミングで弾を装填する
 	if (s.timer == reloadTiming || s.timer == shotTiming1 + reloadTiming ||
 		s.timer == shotTiming2 + reloadTiming || s.timer == shotTiming3 + reloadTiming) {
-		isActive = 1;
+		isFireActive = 1;
 	}
 
 	//弾が発射可能なとき
-	if (isActive == 1) {
+	if (isFireActive == 1) {
 		if (input->TriggerKey(DIK_SPACE)) {
 			//丁度いいタイミングでキーを押すと発射
 			if (((s.timer <= judgeBreadth + s.offset) ||
@@ -221,6 +230,9 @@ void Rhythm::RapidShot(SoundState s, Input* input) {
 				(s.timer >= shotTiming2 - judgeBreadth + s.offset && s.timer <= shotTiming2 + judgeBreadth + s.offset) ||
 				(s.timer >= shotTiming3 - judgeBreadth + s.offset && s.timer <= shotTiming3 + judgeBreadth + s.offset) ||
 				(s.timer >= maxTimer - judgeBreadth + s.offset))) {
+
+				soundState.isFireSucces = 1;
+
 				SoundPlayWave(shotSound, s.normalSEVolume);
 			}
 			//それ以外のタイミングは失敗
@@ -228,11 +240,12 @@ void Rhythm::RapidShot(SoundState s, Input* input) {
 				SoundPlayWave(missSound, s.normalSEVolume);
 			}
 
-			isActive = 0;
+			isFireActive = 0;
 		}
 	}
 }
 
+//3way弾
 void Rhythm::ThreeWayShot(SoundState s, Input* input) {
 	shotTiming1 = 20.0f;	//弾発射タイミング1
 	shotTiming2 = 40.0f;	//弾発射タイミング2
@@ -245,17 +258,20 @@ void Rhythm::ThreeWayShot(SoundState s, Input* input) {
 	}
 	//一定のタイミングで弾を装填する
 	if (s.timer == reloadTiming || s.timer == shotTiming1 + reloadTiming || s.timer == shotTiming2 + reloadTiming) {
-		isActive = 1;
+		isFireActive = 1;
 	}
 
 	//弾が発射可能なとき
-	if (isActive == 1) {
+	if (isFireActive == 1) {
 		if (input->TriggerKey(DIK_SPACE)) {
 			//丁度いいタイミングでキーを押すと発射
 			if (((s.timer <= judgeBreadth + s.offset) ||
 				(s.timer >= shotTiming1 - judgeBreadth + s.offset && s.timer <= shotTiming1 + judgeBreadth + s.offset) ||
 				(s.timer >= shotTiming2 - judgeBreadth + s.offset && s.timer <= shotTiming2 + judgeBreadth + s.offset) ||
 				(s.timer >= maxTimer - judgeBreadth + s.offset))) {
+
+				soundState.isFireSucces = 1;
+
 				SoundPlayWave(shotSound, s.normalSEVolume);
 			}
 			//それ以外のタイミングは失敗
@@ -263,12 +279,13 @@ void Rhythm::ThreeWayShot(SoundState s, Input* input) {
 				SoundPlayWave(missSound, s.normalSEVolume);
 			}
 
-			isActive = 0;
+			isFireActive = 0;
 
 		}
 	}
 }
 
+//爆裂弾
 void Rhythm::ExplosionShot(SoundState s, Input* input) {
 	shotTiming1 = 30.0f;	//弾発射タイミング1(爆破タイミング)
 	reloadTiming = 45.0f;	//弾が装填されるタイミング
@@ -280,17 +297,20 @@ void Rhythm::ExplosionShot(SoundState s, Input* input) {
 	//一定のタイミングで弾を装填する
 	if (s.timer == reloadTiming) {
 		isSuccess = 0;
-		isActive = 1;
+		isFireActive = 1;
 	}
 
 	//弾が発射可能なとき
-	if (isActive == 1) {
+	if (isFireActive == 1) {
 		if (input->TriggerKey(DIK_SPACE)) {
 			//丁度いいタイミングでキーを押すと発射
 			if (((s.timer <= judgeBreadth + s.offset) ||
 				(s.timer >= maxTimer - judgeBreadth + s.offset))) {
-				SoundPlayWave(shotSound, s.normalSEVolume);
+
+				soundState.isFireSucces = 1;
 				isSuccess = 1;
+
+				SoundPlayWave(shotSound, s.normalSEVolume);
 			}
 			//それ以外のタイミングは失敗
 			else {
@@ -298,7 +318,7 @@ void Rhythm::ExplosionShot(SoundState s, Input* input) {
 				isSuccess = 0;
 			}
 
-			isActive = 0;
+			isFireActive = 0;
 		}
 	}
 	//成功したら爆破音を鳴らす
@@ -307,6 +327,7 @@ void Rhythm::ExplosionShot(SoundState s, Input* input) {
 	}
 }
 
+//レーザー弾
 void Rhythm::LaserShot(SoundState s, Input* input) {
 	reloadTiming = 0.0f;	//弾が装填されるタイミング
 
@@ -316,15 +337,18 @@ void Rhythm::LaserShot(SoundState s, Input* input) {
 	}
 	//一定のタイミングで弾を装填する
 	if (s.timer == reloadTiming && s.isLaserActive == 0) {
-		isActive = 1;
+		isFireActive = 1;
 	}
 
 	//弾が発射可能なとき
-	if (isActive == 1) {
+	if (isFireActive == 1) {
 		if (input->TriggerKey(DIK_SPACE)) {
 			//丁度いいタイミングでキーを押すと発射
 			if (((s.timer <= judgeBreadth + s.offset && s.isLaserActive == 1) ||
 				(s.timer >= maxTimer - judgeBreadth + s.offset && s.isLaserActive == 1))) {
+
+				soundState.isFireSucces = 1;
+
 				soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), laserSound, false, s.normalSEVolume);
 
 			}
@@ -333,7 +357,7 @@ void Rhythm::LaserShot(SoundState s, Input* input) {
 				SoundPlayWave(missSound, s.normalSEVolume);
 			}
 
-			isActive = 0;
+			isFireActive = 0;
 		}
 	}
 
@@ -341,4 +365,5 @@ void Rhythm::LaserShot(SoundState s, Input* input) {
 	if (input->PushKey(DIK_SPACE) == 0 && laserSound.pSourceVoice != nullptr) {
 		laserSound.pSourceVoice->Stop(0);
 	}
+
 }

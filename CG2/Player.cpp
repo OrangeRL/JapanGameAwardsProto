@@ -41,8 +41,6 @@ void Player::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 	gameObject->SetViewProjection(viewProjection_);
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
-	//gameObject->worldTransform.translation = { 50.0f ,0.0f, 0.0f };
-	//gameObject->worldTransform.parent = &wt;
 
 	Reset();
 }
@@ -59,7 +57,7 @@ void Player::Update(WorldTransform wt) {
 
 	//弾更新
 
-	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Update(); }
+	//for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Update(); }
 
 	if (isDead == false)
 	{
@@ -68,7 +66,9 @@ void Player::Update(WorldTransform wt) {
 		gameObject->Update();
 	}
   
-	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Update(); }
+	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
+		bullet->Update();
+	}
 	Collision();
 
 	//SetPos({ 0.0f,0.0f,5.0f });
@@ -127,7 +127,7 @@ void Player::Move() {
 	gameObject->worldTransform.translation += move;
 }
 void Player::NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 enemyPos, Vector3 playerPos) {
-		playerPos = GetWorldTransform().translation;
+		playerPos = GetPos();
 		//enemyPos = enemy->GetWorldTransform().translation;
 		//弾を生成し、初期化
 		std::unique_ptr<PlayerBullet>newBullet = std::make_unique<PlayerBullet>();
@@ -137,7 +137,10 @@ void Player::NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 		bullets_.push_back(std::move(newBullet));
 	
 	timer--;
-	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Update(); }
+	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
+		//bullet->AttackPress();
+		bullet->Update();
+	}
 	const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = GetBullets();
 	for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
 		if (input.PushKey(DIK_P)) {
@@ -235,6 +238,14 @@ Vector3 Player::GetAngle() {
 
 WorldTransform Player::GetWorldTransform() {
 	return gameObject->worldTransform;
+}
+
+Vector3 Player::GetPos() {
+	return {
+		gameObject->worldTransform.matWorld.m[3][0],
+		gameObject->worldTransform.matWorld.m[3][1],
+		gameObject->worldTransform.matWorld.m[3][2],
+	};
 }
 
 void Player::OnCollision() {

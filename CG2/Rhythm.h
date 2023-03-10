@@ -20,7 +20,8 @@ struct SoundState {
 	bool isPause = 0;
 	//武器の種類
 	Weapons weapon = Weapons::Normal;
-
+	//発射成功したか
+	bool isFireSucces;
 	//レーザー弾の発射可能フラグ
 	bool isLaserActive = 0;
 
@@ -75,7 +76,7 @@ private:
 	//弾が装填されるタイミング
 	float reloadTiming;
 	//次の弾が撃てるまでのクールタイムのフラグ
-	bool isActive = 1;
+	bool isFireActive = 1;
 	//爆裂弾の発射が成功したかどうか(仮)
 	int isSuccess = 0;
 
