@@ -118,14 +118,9 @@ void GameScene::Update()
 	skydome->Update();
   
 	//敵の更新処理
+	//敵の更新処理
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
-	
 		enemy->Update(&viewProjection_, &matProjection_, 0);
-		enemyPos = enemy->GetWorldTransform().translation;
-		if (input_.TriggerKey(DIK_SPACE))
-		{
-			player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
-		}
 #pragma region makeEnemyBullet
 		if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::move) {
 			//弾を生成
@@ -153,10 +148,10 @@ void GameScene::Update()
 		//弾&敵を削除する
 		bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
 #pragma endregion
+		enemyPos = enemy->GetWorldTransform().translation;
 		//player->SetEnemy(enemy);
 		//player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
 	}
-
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
 		enemy->Update(&viewProjection_, &matProjection_, 1);
 #pragma region makeEnemyBullet
@@ -247,6 +242,7 @@ void GameScene::Draw() {
 	for (std::unique_ptr<EnemyBullet>& bullet : bullets2) {
 		bullet->Draw();
 	}
+
 
 	skydome->Draw();
 

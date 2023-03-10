@@ -57,9 +57,8 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 		//Repetition();
 
 		CoolTime();
-
-		gameObject->Update();
 	}
+	gameObject->Update();
 }
 
 void Enemy::Draw() {
