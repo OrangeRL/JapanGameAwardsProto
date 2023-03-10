@@ -29,6 +29,8 @@ public:
 
 	//反復
 	void Repetition();
+	//離脱
+	void Leave(Vector3 leaveSpeedt, Vector3 leaveSpeedf);
 
 	void CoolTime();
 

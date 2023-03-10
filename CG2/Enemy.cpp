@@ -47,12 +47,7 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, cons
 			//離脱
 			Vector3 leaveSpeedt = { 0.5f,0.0f,0.3f };
 			Vector3 leaveSpeedf = { -0.5f,0.0f,0.3f };
-			if (gameObject->worldTransform.translation.x >= 1) {
-				gameObject->worldTransform.translation += leaveSpeedt;
-			}
-			if (gameObject->worldTransform.translation.x <= -1) {
-				gameObject->worldTransform.translation += leaveSpeedf;
-			}
+			Leave(leaveSpeedt, leaveSpeedf);
 			break;
 		}
 
@@ -79,7 +74,17 @@ void Enemy::Reset() {
 void Enemy::Repetition()
 {
 }
-
+//離脱
+void Enemy::Leave(Vector3 leaveSpeedt,Vector3 leaveSpeedf)
+{
+	if (gameObject->worldTransform.translation.x >= 1) {
+		gameObject->worldTransform.translation += leaveSpeedt;
+	}
+	if (gameObject->worldTransform.translation.x <= -1) {
+		gameObject->worldTransform.translation += leaveSpeedf;
+	}
+}
+//攻撃用クールタイム
 void Enemy::CoolTime()
 {
 	if (isCoolDown) {
