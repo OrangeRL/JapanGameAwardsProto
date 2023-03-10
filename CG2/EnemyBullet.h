@@ -4,8 +4,8 @@
 class EnemyBullet
 {
 public:
-	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName);
-	void Update(Vector3 player, Vector3 enemy);
+	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName,Vector3 player, Vector3 enemy);
+	void Update();
 	void Draw();
 	void OnCollision();
 	WorldTransform GetWorldTransform();
@@ -13,6 +13,7 @@ public:
 	Vector3 SetTransform(Vector3 transform);
 	//弾の種類を設定
 	int SetBullet(int bulletNum);
+	void Aim(Vector3 player, Vector3 enemy);
 
 	bool IsDead()const { return isDelete_; }
 private:
@@ -21,6 +22,10 @@ private:
 	Input& input = Input::GetInstance();
 	//弾の種類	0=プレイヤー狙い, 1=正面カーテン等
 	int bulletNum;
+
+	Vector3 posA;
+	Vector3 posB;
+	Vector3 posC;
 
 	//消えるまでの時間
 	// 60 * 消えるまでの時間:

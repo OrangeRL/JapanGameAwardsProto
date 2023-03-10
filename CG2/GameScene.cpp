@@ -11,15 +11,17 @@ GameScene::~GameScene() {
 		delete num_[i];
 	}
 	delete player;
-
+	
 }
 
-void GameScene::Initialize(WinApp* winApp) {
-
+void GameScene::Initialize(WinApp* winApp) 
+{
 	// デバッグテキスト用テクスチャ読み込み
 	Sprite::LoadTexture(10, L"Resources/debugfont.png");
 	// デバッグテキスト初期化
 	debugText.Initialize(10);
+
+
 
 	//透視投影変換行列の計算
 	matProjection_ = XMMatrixPerspectiveFovLH(
@@ -39,22 +41,36 @@ void GameScene::Initialize(WinApp* winApp) {
 	num_[8]->LoadTexture(8, L"Resources/8.png");
 	num_[9]->LoadTexture(9, L"Resources/9.png");
 
-
 	for (int i = 0; i < 10; i++) {
 		num_[i] = new Sprite(i, { 0,0 }, { 64,64 }, { 1.0f,1.0f,1.0f,1.0f }, { 0,0 }, 0, 0);
 		num_[i]->Initialize();
 	}
 
 	viewProjection_.Initialize();
-  
-  	//XAudioエンジンのインスタンスを生成
+
+	//XAudioエンジンのインスタンスを生成
 	soundManager_.Initialize();
+
+	skydome = new GameObject3D();
+	skydome->PreLoadModel("Resources/skydome/skydome.obj");
+	skydome->PreLoadTexture(L"Resources/skydome/Fine_Basin.jpg");
+	skydome->SetViewProjection(&viewProjection_);
+	skydome->SetMatProjection(&matProjection_);
+	skydome->Initialize();
+	skydome->worldTransform.scale = { 1000.0f,1000.0f,1000.0f };
+
+	//レールカメラ
+	reilCamera = new ReilCamera();
+	reilCamera->Initialize({ 0,0,-50 }, { 0,0,0 });
 
 	player = new Player();
 	player->Initialize(&viewProjection_, &matProjection_);
+	player->SetPos({ 0.0f, 0.0f, 20.0f });
 
-	player->SetMap(map);
-	player->SetGoal(goal);
+	viewProjection_ = reilCamera->GetViewProjection();
+
+	//player->SetMap(map);
+	//player->SetGoal(goal);
 
 	particle = new Particle;
 	particle->Initialize(&viewProjection_, &matProjection_, player);
@@ -68,47 +84,49 @@ void GameScene::Initialize(WinApp* winApp) {
 	rhythm->Initialize();
 }
 
-void GameScene::Update() {
+void GameScene::Update() 
+{
 	rhythm->Update(&input_);
+  
+	viewProjection_ = reilCamera->GetViewProjection();
 
-	if (input_.TriggerKey(DIK_O) && offset > 0) {
-		offset--;
-	}
-	else if (input_.TriggerKey(DIK_P) && offset < 10) {
-		offset++;
-	}
 
-	debugText.Printf(0, 100, 1.0f, 10," O,P...offset:%d",offset);
-	debugText.Printf(0, 140, 1.0f, 25," Up,Dawn...BGMVolume:%f", rhythm->GetSoundState().BGMVolume);
-	debugText.Printf(0, 160, 1.0f, 32," Left,Right...guideSEVolume:%f", rhythm->GetSoundState().guideSEVolume);
-	debugText.Printf(0, 120, 1.0f, 10," Timer:%f",rhythm->GetSoundState().timer);
-	debugText.Printf(0, 180, 1.0f, 15," measureCount:%d", rhythm->GetSoundState().measureCount);
-	debugText.Printf(0, 200, 1.0f, 9," weapon:%d", rhythm->GetSoundState().weapon);
-  
-	viewProjection_.eye = { 0 , 100 , -100 };
-  
-	Collision();
-  
+	/*debugText.Printf(0, 100, 1.0f, 10, " O,P...offset:%d", offset);
+	debugText.Printf(0, 140, 1.0f, 25, " Up,Dawn...BGMVolume:%f", rhythm->GetSoundState().BGMVolume);
+	debugText.Printf(0, 160, 1.0f, 32, " Left,Right...guideSEVolume:%f", rhythm->GetSoundState().guideSEVolume);
+	debugText.Printf(0, 120, 1.0f, 10, " Timer:%f", rhythm->GetSoundState().timer);
+	debugText.Printf(0, 180, 1.0f, 15, " measureCount:%d", rhythm->GetSoundState().measureCount);
+	debugText.Printf(0, 200, 1.0f, 9, " weapon:%d", rhythm->GetSoundState().weapon);*/
+
+	//viewProjection_.eye = { 0 , 100 , -100 };
+
+	//viewProjection_.target = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z };
+	//viewProjection_.eye = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z - 30 }; 
 	viewProjection_.UpdateView();
 	if (input_.PushKey(DIK_P)) {
 		//player->OnCollision();
 	}
-	//シーン管理
 
 	//プレイヤーの更新処理
-	player->Update();
+
+	player->Update(reilCamera->GetWorldTransform());
+	reilCamera->Update(&input_);
+
 	particle->Update();
 	particle2->Update2();
-
+  
+	skydome->Update();
+  
+	//敵の更新処理
 	//敵の更新処理
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
-		enemy->Update(&viewProjection_, &matProjection_, L"Resources/white1x1.png",0);
+		enemy->Update(&viewProjection_, &matProjection_, 0);
 #pragma region makeEnemyBullet
-		if (enemy->GetAttackSpeed() <= 0.0f) {
+		if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::move) {
 			//弾を生成
 			std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
 			//初期化
-			bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png");
+			bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
 			bullet->SetTransform(enemy->GetWorldTransform().translation);
 			//使う弾の設定
 			bullet->SetBullet(0);
@@ -120,35 +138,34 @@ void GameScene::Update() {
 				enemy->SetIsAttack(true);
 			}
 		}
-
 		if (enemy->GetIsAttack() == true) {
-			
+
 			for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
-				bullet->Update(player->GetWorldTransform().translation,enemy->GetWorldTransform().translation);
+				bullet->Update();
 			}
 		}
-		//弾を削除する
+
+		//弾&敵を削除する
 		bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
 #pragma endregion
 		enemyPos = enemy->GetWorldTransform().translation;
 		//player->SetEnemy(enemy);
-		player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
+		//player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
 	}
-
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
-		enemy->Update(&viewProjection_, &matProjection_, L"Resources/white1x1.png",1);
+		enemy->Update(&viewProjection_, &matProjection_, 1);
 #pragma region makeEnemyBullet
-		if (enemy->GetAttackSpeed() <= 0.0f) {
+		if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetCoolDown() == false) {
 			//弾を生成
 			std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
 			//初期化
-			bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png");
+			bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
 			bullet->SetTransform(enemy->GetWorldTransform().translation);
 			//使う弾の設定
 			bullet->SetBullet(1);
 			bullets2.push_back(std::move(bullet));
 			//攻撃頻度の設定 1(速い)~ >1(遅い)
-			enemy->SetAttackSpeed(5.0f);
+			enemy->SetAttackSpeed(15.0f);
 			if (enemy->GetIsAttack() == false) {
 				enemy->SetIsAttack(true);
 			}
@@ -156,20 +173,14 @@ void GameScene::Update() {
 
 		if (enemy->GetIsAttack() == true) {
 			for (std::unique_ptr<EnemyBullet>& bullet : bullets2) {
-				bullet->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
+				bullet->Update();
 			}
 		}
 		//弾を削除する
 		bullets2.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {return bullet->IsDead(); });
 #pragma endregion
-		//player->NewBullet(&viewProjection_, &matProjection_, enemy->GetWorldTransform().translation, player->GetWorldTransform().translation);
 	}
 	UpdateEnemyPopCommand();
-
-
-
-	viewProjection_.target = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z };
-	viewProjection_.eye = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z - 30 };
 
 	if (player->GetIsDead() == false) {
 		//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
@@ -195,6 +206,21 @@ void GameScene::Update() {
 		}
 	}*/
 
+	Collision();
+
+	rhythm->Update(&input_);
+
+	debugText.Printf(0, 100, 1.0f, 18, " Q,E...offset:%f", rhythm->GetSoundState().offset);
+	debugText.Printf(0, 140, 1.0f, 25, " Up,Dawn...BGMVolume:%f", rhythm->GetSoundState().BGMVolume);
+	debugText.Printf(0, 160, 1.0f, 32, " Left,Right...guideSEVolume:%f", rhythm->GetSoundState().guideSEVolume);
+	debugText.Printf(0, 120, 1.0f, 10, " Timer:%f", rhythm->GetSoundState().timer);
+	debugText.Printf(0, 180, 1.0f, 17, " measureCount:%d", rhythm->GetSoundState().measureCount);
+	debugText.Printf(0, 200, 1.0f, 9, " weapon:%d", rhythm->GetSoundState().weapon);
+
+	debugText.Printf(0, 220, 1.0f, 27, " %f,%f,%f",
+		player->GetWorldTransform().matWorld.m[3][0],
+		player->GetWorldTransform().matWorld.m[3][1],
+		player->GetWorldTransform().matWorld.m[3][2]);
 }
 
 void GameScene::Draw() {
@@ -205,27 +231,24 @@ void GameScene::Draw() {
 	particle2->Draw();
 	//敵の描画
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
-		enemy->Draw();	
-	}
-	for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
-		bullet->Draw();
+		enemy->Draw();
 	}
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
 		enemy->Draw();
+	}
+	for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
+		bullet->Draw();
 	}
 	for (std::unique_ptr<EnemyBullet>& bullet : bullets2) {
 		bullet->Draw();
 	}
 
+
+	skydome->Draw();
+
 	//スプライト描画
 	Sprite::PreDraw(dx12base_.GetCmdList().Get());
 
-
-	for (int i = 0; i < 10; i++) {
-		if (offset == i) {
-			//num_[i]->Draw();
-		}
-	}
 
 	// デバッグテキストの描画
 	debugText.DrawAll(dx12base_.GetCmdList().Get());
@@ -281,14 +304,21 @@ void GameScene::UpdateEnemyPopCommand()
 			//z座標
 			std::getline(line_stream, world, ',');
 			float z = (float)std::atof(world.c_str());
-
+			//移動速度
+			std::getline(line_stream, world, ',');
+			float speedX = (float)std::atof(world.c_str());
+			std::getline(line_stream, world, ',');
+			float speedY = (float)std::atof(world.c_str());
+			std::getline(line_stream, world, ',');
+			float speedZ = (float)std::atof(world.c_str());
 			//敵を発生させる
 			//-------ここにEnemy発生関数---------//
 			//複数化するためにuniq_ptrに変更
 			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
-			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png");
+			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/red.png");
 			//上で書いてある物をEnemyの座標としてセットする
 			newEnemy->Settransform(x, y, z);
+			newEnemy->SetSpeed(speedX, speedY, speedZ);
 			//敵を登録
 			enemys1.push_back(std::move(newEnemy));
 		}
@@ -305,15 +335,19 @@ void GameScene::UpdateEnemyPopCommand()
 			float z = (float)std::atof(world.c_str());
 			//移動速度
 			std::getline(line_stream, world, ',');
-			float speed = (float)std::atof(world.c_str());
+			float speedX = (float)std::atof(world.c_str());
+			std::getline(line_stream, world, ',');
+			float speedY = (float)std::atof(world.c_str());
+			std::getline(line_stream, world, ',');
+			float speedZ = (float)std::atof(world.c_str());
 			//敵を発生させる
 			//-------ここにEnemy発生関数---------//
 			//複数化するためにuniq_ptrに変更
 			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
-			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/e.png");
+			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/red.png");
 			//上で書いてある物をEnemyの座標としてセットする
 			newEnemy->Settransform(x, y, z);
-			newEnemy->SetSpeed(speed);
+			newEnemy->SetSpeed(speedX, speedY, speedZ);
 			//敵を登録
 			enemys2.push_back(std::move(newEnemy));
 		}
@@ -337,7 +371,6 @@ void GameScene::Reset() {
 	player->Reset();
 	particle->Reset();
 	particle2->Reset();
-	//enemy->Reset();
 
 }
 
@@ -388,9 +421,9 @@ void GameScene::Collision() {
 				}
 			}
 		}
+	}
 		//player-enemybullet
-		const std::list < std::unique_ptr<EnemyBullet>>& enemyBullets = enemy->GetBullets();
-		for (const std::unique_ptr<EnemyBullet>& bulletB : enemyBullets) {
+		for (const std::unique_ptr<EnemyBullet>& bulletB : bullets1) {
 
 			if (player->GetWorldTransform().translation.x - bulletB->GetWorldTransform().translation.x < 2 &&
 				-2 < player->GetWorldTransform().translation.x - bulletB->GetWorldTransform().translation.x) {
@@ -400,11 +433,25 @@ void GameScene::Collision() {
 						-3 < player->GetWorldTransform().translation.z - bulletB->GetWorldTransform().translation.z) {
 
 						//bulletB->OnCollision();
-						enemy->Reset();
+						//enemy->Reset();
 						player->OnCollision();
 					}
 				}
 			}
 		}
-	}
+		for (const std::unique_ptr<EnemyBullet>& bulletC : bullets2) {
+			if (player->GetWorldTransform().translation.x - bulletC->GetWorldTransform().translation.x < 2 &&
+				-2 < player->GetWorldTransform().translation.x - bulletC->GetWorldTransform().translation.x) {
+				if (player->GetWorldTransform().translation.y - bulletC->GetWorldTransform().translation.y < 2 &&
+					-2 < player->GetWorldTransform().translation.y - bulletC->GetWorldTransform().translation.y) {
+					if (player->GetWorldTransform().translation.z - bulletC->GetWorldTransform().translation.z < 2 &&
+						-2 < player->GetWorldTransform().translation.z - bulletC->GetWorldTransform().translation.z) {
+
+						//bulletB->OnCollision();
+						//enemy->Reset();
+						player->OnCollision();
+					}
+				}
+			}
+		}
 }

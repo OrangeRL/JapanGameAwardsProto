@@ -158,6 +158,7 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="ReilCamera.cpp" />
     <ClCompile Include="Rhythm.cpp" />
     <ClCompile Include="PlayerBullet.cpp" />
     <ClCompile Include="Sprite.cpp" />
@@ -225,6 +226,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="ReilCamera.h" />
     <ClInclude Include="Rhythm.h" />
     <ClInclude Include="PlayerBullet.h" />
     <ClInclude Include="Singleton.h" />
