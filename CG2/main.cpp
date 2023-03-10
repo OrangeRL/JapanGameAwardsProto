@@ -21,7 +21,7 @@ int WINAPI WinMain(_In_ HINSTANCE , _In_opt_ HINSTANCE , _In_ LPSTR , _In_ int) 
 	winApp_.Initialize();
 
 	FPS* fps = new FPS;
-	fps->SetFrameRate(60);
+	fps->SetFrameRate(0);
 
 	Input& input_ = Input::GetInstance();
 	GameScene* gameScene = nullptr;

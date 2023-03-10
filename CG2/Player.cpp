@@ -33,21 +33,22 @@ Player::~Player() {
 }
 
 void Player::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection) {
+	viewProjection_ = viewProjection;
 
 	gameObject = new GameObject3D();
 	gameObject->PreLoadModel("Resources/tofu/tofu.obj");
 	gameObject->PreLoadTexture(L"Resources/star/star.jpg");
-	gameObject->SetViewProjection(viewProjection);
+	gameObject->SetViewProjection(viewProjection_);
 	gameObject->SetMatProjection(matProjection);
-	gameObject->worldTransform.translation.z = 10.0f;
 	gameObject->Initialize();
+	//gameObject->worldTransform.translation = { 50.0f ,0.0f, 0.0f };
+	//gameObject->worldTransform.parent = &wt;
 
-	Reset();
+	//Reset();
 
 }
 
 void Player::Update(WorldTransform wt) {
-
 
 	Move();
 	//enemyPos = enemy->GetWorldTransform().translation;
@@ -62,7 +63,7 @@ void Player::Update(WorldTransform wt) {
 
 	if (isDead == false)
 	{
-		//gameObject->worldTransform.translation.z = wt.translation.z + 50.0f;
+
 		gameObject->worldTransform.parent = &wt;
 		gameObject->Update();
 	}
@@ -146,13 +147,13 @@ void Player::NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 	
 	timer--;
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Update(enemyPos, playerPos); }
-	/*const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = GetBullets();
+	const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = GetBullets();
 	for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
 		if (input.PushKey(DIK_P)) {
 			isDead = true;
 			bulletA->OnCollision();
 		}
-	}*/
+	}
 
 }
 void Player::Collision() {

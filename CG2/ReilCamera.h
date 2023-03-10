@@ -17,13 +17,16 @@ public:
 
 private:
 	Input* input = nullptr;
+
 	//ワールド行列
 	WorldTransform worldTransform_;
 
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
 
-	Vector3 up = { 0,1,0 };
-	float radian = 0.5f;
+	//回転
+	Vector3 rotation = { 0,0.5f,0 };
+	//回転の速度
+	Vector3 rotSpeeed = { 0.005f,0.005f,0.005f };
 };
 
