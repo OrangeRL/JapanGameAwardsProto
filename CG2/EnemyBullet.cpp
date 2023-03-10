@@ -1,7 +1,10 @@
 #include "EnemyBullet.h"
 
-void EnemyBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName)
+void EnemyBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName,Vector3 player, Vector3 enemy)
 {
+	//è‡ªæ©Ÿç‹™ã„ç”¨åº§æ¨™å–å¾—
+	Aim(player, enemy);
+
 	gameObject = new GameObject3D();
 	gameObject->PreLoadTexture(textureFileName);
 	gameObject->SetViewProjection(viewProjection);
@@ -10,18 +13,13 @@ void EnemyBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjec
 
 }
 
-void EnemyBullet::Update(Vector3 player, Vector3 enemy)
+void EnemyBullet::Update()
 {
-	//ƒvƒŒƒCƒ„[‚ð‘_‚¤
+	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’ç‹™ã†
 	if (bulletNum == 0){
-		Vector3 velocity = player - enemy;
-		velocity.nomalize();
-		velocity.x *= -0.5f;
-		velocity.y *= -0.5f;
-		velocity.z *= -0.5f;
-		gameObject->worldTransform.translation -= velocity;
+		gameObject->worldTransform.translation -= posC;
 	}
-	//³–Ê‚ÉƒJ[ƒeƒ“Œ`¬
+	//æ­£é¢ã«ã‚«ãƒ¼ãƒ†ãƒ³å½¢æˆ
 	else if (bulletNum == 1) {
 		gameObject->worldTransform.translation.z -= 0.1f;
 	}
@@ -58,3 +56,14 @@ int EnemyBullet::SetBullet(int bulletNum)
 
 	return this->bulletNum;
 }
+
+void EnemyBullet::Aim(Vector3 player, Vector3 enemy)
+{
+	const float speed = -0.3f;
+	posA = player;
+	posB = enemy;
+	posC = posA - posB;
+	posC.nomalize();
+	posC *= speed;
+}
+

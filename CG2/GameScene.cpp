@@ -110,11 +110,11 @@ void GameScene::Update()
 			player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
 		}
 #pragma region makeEnemyBullet
-		if (enemy->GetAttackSpeed() <= 0.0f) {
+		if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::move) {
 			//弾を生成
 			std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
 			//初期化
-			bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png");
+			bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
 			bullet->SetTransform(enemy->GetWorldTransform().translation);
 			//使う弾の設定
 			bullet->SetBullet(0);
@@ -126,14 +126,14 @@ void GameScene::Update()
 				enemy->SetIsAttack(true);
 			}
 		}
-
 		if (enemy->GetIsAttack() == true) {
 
 			for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
-				bullet->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
+				bullet->Update();
 			}
 		}
-		//弾を削除する
+
+		//弾&敵を削除する
 		bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
 #pragma endregion
 		//player->SetEnemy(enemy);
@@ -142,17 +142,17 @@ void GameScene::Update()
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
 		enemy->Update(&viewProjection_, &matProjection_, L"Resources/white1x1.png", 1);
 #pragma region makeEnemyBullet
-		if (enemy->GetAttackSpeed() <= 0.0f) {
+		if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetCoolDown() == false) {
 			//弾を生成
 			std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
 			//初期化
-			bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png");
+			bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
 			bullet->SetTransform(enemy->GetWorldTransform().translation);
 			//使う弾の設定
 			bullet->SetBullet(1);
 			bullets2.push_back(std::move(bullet));
 			//攻撃頻度の設定 1(速い)~ >1(遅い)
-			enemy->SetAttackSpeed(5.0f);
+			enemy->SetAttackSpeed(15.0f);
 			if (enemy->GetIsAttack() == false) {
 				enemy->SetIsAttack(true);
 			}
@@ -160,7 +160,7 @@ void GameScene::Update()
 
 		if (enemy->GetIsAttack() == true) {
 			for (std::unique_ptr<EnemyBullet>& bullet : bullets2) {
-				bullet->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
+				bullet->Update();
 			}
 		}
 		//弾を削除する
@@ -205,11 +205,11 @@ void GameScene::Draw() {
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
 		enemy->Draw();
 	}
-	for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
-		bullet->Draw();
-	}
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
 		enemy->Draw();
+	}
+	for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
+		bullet->Draw();
 	}
 	for (std::unique_ptr<EnemyBullet>& bullet : bullets2) {
 		bullet->Draw();
@@ -279,14 +279,21 @@ void GameScene::UpdateEnemyPopCommand()
 			//z座標
 			std::getline(line_stream, world, ',');
 			float z = (float)std::atof(world.c_str());
-
+			//移動速度
+			std::getline(line_stream, world, ',');
+			float speedX = (float)std::atof(world.c_str());
+			std::getline(line_stream, world, ',');
+			float speedY = (float)std::atof(world.c_str());
+			std::getline(line_stream, world, ',');
+			float speedZ = (float)std::atof(world.c_str());
 			//敵を発生させる
 			//-------ここにEnemy発生関数---------//
 			//複数化するためにuniq_ptrに変更
 			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
-			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png");
+			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/red.png");
 			//上で書いてある物をEnemyの座標としてセットする
 			newEnemy->Settransform(x, y, z);
+			newEnemy->SetSpeed(speedX, speedY, speedZ);
 			//敵を登録
 			enemys1.push_back(std::move(newEnemy));
 		}
@@ -303,15 +310,19 @@ void GameScene::UpdateEnemyPopCommand()
 			float z = (float)std::atof(world.c_str());
 			//移動速度
 			std::getline(line_stream, world, ',');
-			float speed = (float)std::atof(world.c_str());
+			float speedX = (float)std::atof(world.c_str());
+			std::getline(line_stream, world, ',');
+			float speedY = (float)std::atof(world.c_str());
+			std::getline(line_stream, world, ',');
+			float speedZ = (float)std::atof(world.c_str());
 			//敵を発生させる
 			//-------ここにEnemy発生関数---------//
 			//複数化するためにuniq_ptrに変更
 			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
-			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/e.png");
+			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/red.png");
 			//上で書いてある物をEnemyの座標としてセットする
 			newEnemy->Settransform(x, y, z);
-			newEnemy->SetSpeed(speed);
+			newEnemy->SetSpeed(speedX, speedY, speedZ);
 			//敵を登録
 			enemys2.push_back(std::move(newEnemy));
 		}
