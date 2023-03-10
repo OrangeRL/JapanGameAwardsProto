@@ -42,11 +42,10 @@ void Player::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 	gameObject->Initialize();
 
 	Reset();
-
 }
 
 void Player::Update() {
-
+	playerPos = GetWorldTransform().translation;
 	Move();
 	//enemyPos = enemy->GetWorldTransform().translation;
 	//デスフラグの立った弾を削除
@@ -55,13 +54,14 @@ void Player::Update() {
 		});
 
 	//弾更新
-	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Update(enemyPos, GetWorldTransform().translation); }
-
+	//for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Update(enemyPos, GetWorldTransform().translation); }
+	
 	if (isDead == false)
 	{
 		gameObject->Update();
 	}
-	Collision();
+	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Update(); }
+	//Collision();
 }
 
 void Player::Draw() {
@@ -97,7 +97,6 @@ void Player::Move() {
 
 	if (input.PushKey(DIK_W) || input.PushKey(DIK_S) || input.PushKey(DIK_D) || input.PushKey(DIK_A) || input.PushKey(DIK_E) || input.PushKey(DIK_Q))
 	{
-
 		// 移動後の座標を計算
 		if (input.PushKey(DIK_W)) { move = { 0,moveSpeed,0 }; }
 		else if (input.PushKey(DIK_S)) { move = { 0,-moveSpeed,0 }; }
@@ -118,34 +117,15 @@ void Player::Move() {
 	gameObject->worldTransform.translation += move;
 }
 void Player::NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 enemyPos, Vector3 playerPos) {
-	
-	if (input.TriggerKey(DIK_SPACE))
-	{
-		Vector3 tempPopPos;
-		tempPopPos.x += MathFunc::RNG(-100, 100);
-		tempPopPos.y += MathFunc::RNG(-100, 100);
-		tempPopPos.z += MathFunc::RNG(-100, 100);
-
 		playerPos = GetWorldTransform().translation;
+		//enemyPos = enemy->GetWorldTransform().translation;
 		//弾を生成し、初期化
 		std::unique_ptr<PlayerBullet>newBullet = std::make_unique<PlayerBullet>();
 		newBullet->Initialize(viewProjection, matProjection, enemyPos, playerPos);
 
 		//弾を登録する
 		bullets_.push_back(std::move(newBullet));
-		timer = 50;
-	}
 	
-	timer--;
-	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Update(enemyPos, playerPos); }
-	/*const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = GetBullets();
-	for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
-		if (input.PushKey(DIK_P)) {
-			isDead = true;
-			bulletA->OnCollision();
-		}
-	}*/
-
 }
 void Player::Collision() {
 

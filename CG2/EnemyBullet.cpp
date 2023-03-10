@@ -2,7 +2,7 @@
 
 void EnemyBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName,Vector3 player, Vector3 enemy)
 {
-	//Ž©‹@‘_‚¢—pÀ•WŽæ“¾
+	//è‡ªæ©Ÿç‹™ã„ç”¨åº§æ¨™å–å¾—
 	Aim(player, enemy);
 
 	gameObject = new GameObject3D();
@@ -15,11 +15,11 @@ void EnemyBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjec
 
 void EnemyBullet::Update()
 {
-	//ƒvƒŒƒCƒ„[‚ð‘_‚¤
+	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’ç‹™ã†
 	if (bulletNum == 0){
 		gameObject->worldTransform.translation -= posC;
 	}
-	//³–Ê‚ÉƒJ[ƒeƒ“Œ`¬
+	//æ­£é¢ã«ã‚«ãƒ¼ãƒ†ãƒ³å½¢æˆ
 	else if (bulletNum == 1) {
 		gameObject->worldTransform.translation.z -= 0.1f;
 	}
@@ -31,6 +31,7 @@ void EnemyBullet::Update()
 	gameObject->Update();
 	
 }
+
 
 void EnemyBullet::Draw()
 {
@@ -65,3 +66,4 @@ void EnemyBullet::Aim(Vector3 player, Vector3 enemy)
 	posC.nomalize();
 	posC *= speed;
 }
+

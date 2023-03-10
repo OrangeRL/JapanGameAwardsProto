@@ -16,8 +16,8 @@ void PlayerBullet::OnCollision() {
 	isDead_ = true;
 }
 
-void PlayerBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 playerPos, Vector3 bossPos) {
-
+void PlayerBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 playerPos, Vector3 bossPos) 
+{
 	gameObject = new GameObject3D();
 	//gameObject->PreLoadModel("Resources/star/star.obj");
 	gameObject->PreLoadTexture(L"Resources/red.png");
@@ -27,27 +27,27 @@ void PlayerBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProje
 	gameObject->worldTransform.scale = Vector3{ 1,1,1 };
 	gameObject->Update();
 	isDead_ = false;
-
 	newPlayerPos = playerPos;
 	newEnemyPos = bossPos;
+	gameObject->worldTransform.translation = bossPos;
 }
 
-void PlayerBullet::Update(Vector3 playerPos, Vector3 bossPos) {
-	const float rotationSpeed = MathFunc::Utility::Deg2Rad(60.0f);
+void PlayerBullet::Update() {
+	//const float rotationSpeed = MathFunc::Utility::Deg2Rad(60.0f);
 
-	Vector3 rotation = { 0 , 0 , 0 };
-	/*newPlayerPos = playerPos;*/
-	rotation.y = rotationSpeed;
-	rotation.x = rotationSpeed;
-	rotation.z = rotationSpeed;
-	angle = gameObject->worldTransform.rotation;
-	gameObject->worldTransform.rotation += rotation;
-	Attack(playerPos, bossPos);
-
-	if (isShot) {
+	//Vector3 rotation = { 0 , 0 , 0 };
+	//newPlayerPos = playerPos;*/
+	//rotation.y = rotationSpeed;
+	//rotation.x = rotationSpeed;
+	//rotation.z = rotationSpeed;
+	//angle = gameObject->worldTransform.rotation;
+	//gameObject->worldTransform.rotation += rotation;
+	Attack(newPlayerPos, newEnemyPos);
+	if (isShot) 
+	{
 		gameObject->Update();
 	}
-
+	
 }
 void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos) {
 	const float rotationSpeed = MathFunc::Utility::Deg2Rad(60.0f);
@@ -59,12 +59,15 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos) {
 	rotation.z = rotationSpeed;
 
 	gameObject->worldTransform.rotation += rotation;
-	if (!isShot) {
+	if (!isShot) 
+	{
 		//その番号の弾の発射フラグがfalseならtrueにする
 		isShot = true;
 		isDead_ = false;
 		//それと同時に同番号のオブジェクトの座標をボスの座標に持っていく
-		gameObject->worldTransform.translation = newEnemyPos;
+		newPlayerPos = playerPos;
+		newEnemyPos = bossPos;
+		gameObject->worldTransform.translation = bossPos;
 		//ボスと自機の差分ベクトルを求める
 		velocity = newPlayerPos - newEnemyPos;
 		//ベクトルの正規化
@@ -75,7 +78,8 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos) {
 		velocity.z *= speed;
 	}
 
-	if (isShot) {
+	if (isShot) 
+	{
 		//ボスと自機の差分ベクトルを求める
 		velocity = newPlayerPos - newEnemyPos;
 		//ベクトルの正規化
@@ -90,33 +94,33 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos) {
 			gameObject->worldTransform.translation.x > canMoveArea ||
 			gameObject->worldTransform.translation.y < -canMoveArea ||
 			gameObject->worldTransform.translation.y > canMoveArea ||
-			gameObject->worldTransform.translation.z < -canMoveArea - 200 ||
-			gameObject->worldTransform.translation.z > canMoveArea) {
+			gameObject->worldTransform.translation.z < -canMoveArea - 00 ||
+			gameObject->worldTransform.translation.z > canMoveArea) 
+		{
 			//一定の範囲外で消滅
 			isShot = false;
 			isDead_ = true;
 
 		}
 	}
-	if (bulletCount < 10) {
-		bulletCount++;
-	}
 }
 
-void PlayerBullet::Draw() {
-
-	if (isShot) {
+void PlayerBullet::Draw() 
+{
+	if (isShot) 
+	{
 		gameObject->Draw();
-
 	}
 }
 
-
+void PlayerBullet::AttackPress()
+{
+	isShot = true;
+}
 
 int PlayerBullet::GetIsDead() {
 	return isDead_;
 }
-
 
 WorldTransform PlayerBullet::GetWorldTransform() {
 	return gameObject->worldTransform;
