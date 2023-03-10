@@ -55,11 +55,11 @@ void Player::Update(WorldTransform wt) {
 	//デスフラグの立った弾を削除
 	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
 		return bullet->IsDead();
-		});
+	});
 
 	//弾更新
 
-	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Update(enemyPos, GetWorldTransform().translation); }
+	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Update(); }
 
 	if (isDead == false)
 	{
@@ -137,7 +137,7 @@ void Player::NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 		bullets_.push_back(std::move(newBullet));
 	
 	timer--;
-	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Update(enemyPos, playerPos); }
+	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Update(); }
 	const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = GetBullets();
 	for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
 		if (input.PushKey(DIK_P)) {

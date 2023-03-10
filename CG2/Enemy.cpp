@@ -23,7 +23,7 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 	
 }
 
-void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName, int enemyNum) {
+void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int enemyNum) {
 	attackSpeed -= 0.5f;
 	if (enemyNum == 0) {
 		switch (phase)
@@ -58,8 +58,8 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, cons
 
 		CoolTime();
 
-	gameObject->Update();
-
+		gameObject->Update();
+	}
 }
 
 void Enemy::Draw() {
@@ -69,11 +69,11 @@ void Enemy::Draw() {
 void Enemy::Reset() {
 	gameObject->worldTransform.translation = { 0 , 0 , 100 };
 }
-//�����֐�
+//反復
 void Enemy::Repetition()
 {
 }
-//���E
+//離脱
 void Enemy::Leave(Vector3 leaveSpeedt,Vector3 leaveSpeedf)
 {
 	if (gameObject->worldTransform.translation.x >= 1) {
@@ -83,7 +83,7 @@ void Enemy::Leave(Vector3 leaveSpeedt,Vector3 leaveSpeedf)
 		gameObject->worldTransform.translation += leaveSpeedf;
 	}
 }
-//�U���p�N�[���^�C��
+//弾のクールタイム
 void Enemy::CoolTime()
 {
 	if (isCoolDown) {

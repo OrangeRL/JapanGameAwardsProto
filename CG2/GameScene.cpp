@@ -91,20 +91,17 @@ void GameScene::Update()
 	viewProjection_ = reilCamera->GetViewProjection();
 
 
-	debugText.Printf(0, 100, 1.0f, 10, " O,P...offset:%d", offset);
+	/*debugText.Printf(0, 100, 1.0f, 10, " O,P...offset:%d", offset);
 	debugText.Printf(0, 140, 1.0f, 25, " Up,Dawn...BGMVolume:%f", rhythm->GetSoundState().BGMVolume);
 	debugText.Printf(0, 160, 1.0f, 32, " Left,Right...guideSEVolume:%f", rhythm->GetSoundState().guideSEVolume);
 	debugText.Printf(0, 120, 1.0f, 10, " Timer:%f", rhythm->GetSoundState().timer);
 	debugText.Printf(0, 180, 1.0f, 15, " measureCount:%d", rhythm->GetSoundState().measureCount);
-	debugText.Printf(0, 200, 1.0f, 9, " weapon:%d", rhythm->GetSoundState().weapon);
+	debugText.Printf(0, 200, 1.0f, 9, " weapon:%d", rhythm->GetSoundState().weapon);*/
 
-	viewProjection_.eye = { 0 , 100 , -100 };
+	//viewProjection_.eye = { 0 , 100 , -100 };
 
-	viewProjection_.target = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z };
-	viewProjection_.eye = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z - 30 };
-
-	Collision();
- 
+	//viewProjection_.target = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z };
+	//viewProjection_.eye = { player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y, player->GetWorldTransform().translation.z - 30 }; 
 	viewProjection_.UpdateView();
 	if (input_.PushKey(DIK_P)) {
 		//player->OnCollision();
@@ -123,7 +120,7 @@ void GameScene::Update()
 	//敵の更新処理
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
 	
-		enemy->Update(&viewProjection_, &matProjection_, L"Resources/white1x1.png", 0);
+		enemy->Update(&viewProjection_, &matProjection_, 0);
 		enemyPos = enemy->GetWorldTransform().translation;
 		if (input_.TriggerKey(DIK_SPACE))
 		{
@@ -161,7 +158,7 @@ void GameScene::Update()
 	}
 
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
-		enemy->Update(&viewProjection_, &matProjection_, L"Resources/white1x1.png", 1);
+		enemy->Update(&viewProjection_, &matProjection_, 1);
 #pragma region makeEnemyBullet
 		if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetCoolDown() == false) {
 			//弾を生成
