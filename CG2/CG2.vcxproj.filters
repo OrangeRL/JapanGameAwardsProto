@@ -89,6 +89,7 @@
     <ClCompile Include="EnemyBullet.cpp" />
     <ClCompile Include="PlayerBullet.cpp" />
     <ClCompile Include="ReilCamera.cpp" />
+    <ClCompile Include="Item.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FPS.h">
@@ -168,6 +169,7 @@
     <ClInclude Include="EnemyBullet.h" />
     <ClInclude Include="PlayerBullet.h" />
     <ClInclude Include="ReilCamera.h" />
+    <ClInclude Include="Item.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Basic.hlsli">

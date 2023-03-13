@@ -21,6 +21,7 @@
 #include "DebugText.h"
 #include "PlayerBullet.h"
 #include "ReilCamera.h"
+#include "Item.h"
 
 class GameScene {
 
@@ -80,7 +81,11 @@ private: // メンバ変数
 	std::list<std::unique_ptr<EnemyBullet>> bullets1;
 	std::list<std::unique_ptr<EnemyBullet>> bullets2;
 
+	//天球
 	GameObject3D* skydome = nullptr;
+
+	//アイテム
+	Item* item = nullptr;
 
 	Vector3 enemyPos = {};
 	//シーン管理

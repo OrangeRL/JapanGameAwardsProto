@@ -16,6 +16,7 @@ GameScene::~GameScene() {
 	delete particle;
 	delete particle2;
 	delete reilCamera;
+	delete item;
 }
 
 void GameScene::Initialize(WinApp* winApp) 
@@ -55,6 +56,7 @@ void GameScene::Initialize(WinApp* winApp)
 	//XAudioエンジンのインスタンスを生成
 	soundManager_.Initialize();
 
+	//天球
 	skydome = new GameObject3D();
 	skydome->PreLoadModel("Resources/skydome/skydome.obj");
 	skydome->PreLoadTexture(L"Resources/skydome/Fine_Basin.jpg");
@@ -66,6 +68,10 @@ void GameScene::Initialize(WinApp* winApp)
 	//レールカメラ
 	reilCamera = new ReilCamera();
 	reilCamera->Initialize({ 0,0,-50 }, { 0,0,0 });
+
+	//アイテム
+	item = new Item();
+	item->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", {0.0f,0.0f,50.0f});
 
 	player = new Player();
 	player->Initialize(&viewProjection_, &matProjection_);
@@ -104,6 +110,8 @@ void GameScene::Update()
 	particle2->Update2();
   
 	skydome->Update();
+
+	item->Update();
   
 	//敵の更新処理
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
@@ -193,7 +201,6 @@ void GameScene::Update()
 		}
 	}*/
 
-	rhythm->Update(&input_);
 	//プレイヤーの弾発射処理
 	if (input_.TriggerKey(DIK_SPACE) && rhythm->GetSoundState().isFireSucces) {
 		player->NewBullet(&viewProjection_, &matProjection_, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,0.0f });
@@ -210,9 +217,11 @@ void GameScene::Update()
 	debugText.Printf(0, 200, 1.0f, 9, " weapon:%d", rhythm->GetSoundState().weapon);
 
 	debugText.Printf(0, 220, 1.0f, 27, " %f,%f,%f",
-		player->GetWorldTransform().matWorld.m[3][0],
-		player->GetWorldTransform().matWorld.m[3][1],
-		player->GetWorldTransform().matWorld.m[3][2]);
+		item->GetWorldTransform().matWorld.m[3][0],
+		item->GetWorldTransform().matWorld.m[3][1],
+		item->GetWorldTransform().matWorld.m[3][2]);
+
+	rhythm->Update(&input_);
 }
 
 void GameScene::Draw() {
@@ -235,7 +244,7 @@ void GameScene::Draw() {
 		bullet->Draw();
 	}
 
-
+	item->Draw();
 	skydome->Draw();
 
 	//スプライト描画
@@ -442,6 +451,21 @@ void GameScene::Collision() {
 						//bulletB->OnCollision();
 						//enemy->Reset();
 						player->OnCollision();
+					}
+				}
+			}
+		}
+
+		//自機とアイテムの当たり判定
+		if (player->GetPos().x - item->GetWorldTransform().translation.x < 2 &&
+			-2 < player->GetPos().x - item->GetWorldTransform().translation.x) {
+			if (player->GetPos().y - item->GetWorldTransform().translation.y < 2 &&
+				-2 < player->GetPos().y - item->GetWorldTransform().translation.y) {
+				if (player->GetPos().z - item->GetWorldTransform().translation.z < 2 &&
+					-2 < player->GetPos().z - item->GetWorldTransform().translation.z) {
+
+					if (item->GetIsAlve()) {
+						item->OnCollision();
 					}
 				}
 			}
