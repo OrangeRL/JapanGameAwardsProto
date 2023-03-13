@@ -26,6 +26,24 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int enemyNum) {
 	attackSpeed -= 0.5f;
 	if (enemyNum == 0) {
+		phaseTimer--;
+		switch (phase)
+		{
+		case Phase::normal:
+			if (phaseTimer <= 0.0f) {
+				phase = Phase::move;
+				phaseTimer = 300.0f;
+			}
+			break;
+		case Phase::move:
+			if (phaseTimer <= 0.0f) {
+				phase = Phase::leave;
+				phaseTimer = 300.0f;
+			}
+			break;
+		case Phase::leave:
+			Leave({ 0.3f,0,0 }, { -0.3f,0,0 });
+		}
 	}
 	else if (enemyNum == 1) {
 		phaseTimer--;
@@ -43,7 +61,6 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 				phase = Phase::leave;
 				phaseTimer = 300.0f;
 			}
-			break;
 			break;
 		case Phase::leave:
 			Leave({ 0.3f,0,0 }, { -0.3f,0,0 });

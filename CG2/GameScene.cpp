@@ -139,6 +139,9 @@ void GameScene::Update()
 		//player->SetEnemy(enemy);
 		//player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
 	}
+	//敵1の削除
+	enemys1.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
+
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
 		enemy->Update(&viewProjection_, &matProjection_, 1);
 #pragma region makeEnemyBullet
