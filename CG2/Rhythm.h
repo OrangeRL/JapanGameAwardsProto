@@ -49,6 +49,8 @@ public:
 
 	void SoundPlayWave(SoundData soundData, float volume);
 
+	void ItemSoundPlay(float volume);
+
 	void NormalShot(SoundState s, Input* input);
 	void RapidShot(SoundState s, Input* input);
 	void ThreeWayShot(SoundState s, Input* input);
@@ -93,7 +95,6 @@ private:
 	SoundData explosionSound = soundManager_->SoundLoadWave("Resources/shot3.wav");
 	SoundData demoBGM = soundManager_->SoundLoadWave("Resources/demo.wav");
 	SoundData stage1BGM = soundManager_->SoundLoadWave("Resources/stage1.wav");
-
-
+	SoundData itemSound = soundManager_->SoundLoadWave("Resources/item.wav");
 
 };

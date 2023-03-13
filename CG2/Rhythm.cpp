@@ -7,6 +7,7 @@ Rhythm::~Rhythm() {
 	SoundUnload(shotSound);
 	SoundUnload(laserSound);
 	SoundUnload(explosionSound);
+	SoundUnload(itemSound);
 	SoundUnload(missSound);
 	SoundUnload(demoBGM);
 	delete soundManager_;
@@ -166,6 +167,11 @@ void Rhythm::SoundPlayWave(SoundData soundData, float volume) {
 void Rhythm::SoundUnload(SoundData soundData) {
 	soundManager_->StopWave(soundData);
 	soundManager_->SoundUnload(soundData);
+}
+
+void Rhythm::ItemSoundPlay(float volume) {
+	soundManager_->StopWave(itemSound);
+	soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), itemSound, false, volume);
 }
 
 //’Êí’e

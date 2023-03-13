@@ -64,7 +64,7 @@ private: // メンバ変数
 	DebugText debugText;
 
 	Rhythm* rhythm = nullptr;
-	SoundManager soundManager_;
+	//SoundManager* soundManager_ = nullptr;
 	ViewProjection viewProjection_;
 
 	bool isPlayingBGM = false;

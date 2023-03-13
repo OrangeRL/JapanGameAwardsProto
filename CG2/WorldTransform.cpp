@@ -20,8 +20,8 @@ void WorldTransform::UpdateMatWorld() {
 
 	//ワールド変換行列にスケーリング,回転,平行移動の行列を合成
 	MathFunc::Affine::SetMatScale(affineMat , scale);
-	MathFunc::Affine::SetMatRotation(affineMat , rotation);
 	MathFunc::Affine::SetMatTranslation(affineMat , translation);
+	MathFunc::Affine::SetMatRotation(affineMat , rotation);
 
 	//ワールド行列に単位行列を代入
 	matWorld.SetIdentityMatrix();

@@ -46,6 +46,7 @@ void GameScene::Initialize(WinApp* winApp)
 	num_[8]->LoadTexture(8, L"Resources/8.png");
 	num_[9]->LoadTexture(9, L"Resources/9.png");
 
+
 	for (int i = 0; i < 10; i++) {
 		num_[i] = new Sprite(i, { 0,0 }, { 64,64 }, { 1.0f,1.0f,1.0f,1.0f }, { 0,0 }, 0, 0);
 		num_[i]->Initialize();
@@ -54,7 +55,8 @@ void GameScene::Initialize(WinApp* winApp)
 	viewProjection_.Initialize();
 
 	//XAudioエンジンのインスタンスを生成
-	soundManager_.Initialize();
+	//soundManager_ = new SoundManager();
+	//soundManager_->Initialize();
 
 	//天球
 	skydome = new GameObject3D();
@@ -71,7 +73,7 @@ void GameScene::Initialize(WinApp* winApp)
 
 	//アイテム
 	item = new Item();
-	item->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", {0.0f,0.0f,50.0f});
+	item->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", {0.0f,0.0f,50.0f},2);
 
 	player = new Player();
 	player->Initialize(&viewProjection_, &matProjection_);
@@ -201,11 +203,12 @@ void GameScene::Update()
 		}
 	}*/
 
+	rhythm->Update(&input_);
+
 	//プレイヤーの弾発射処理
 	if (input_.TriggerKey(DIK_SPACE) && rhythm->GetSoundState().isFireSucces) {
 		player->NewBullet(&viewProjection_, &matProjection_, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,0.0f });
 	}
-
 
 	Collision();
 
@@ -221,7 +224,6 @@ void GameScene::Update()
 		item->GetWorldTransform().matWorld.m[3][1],
 		item->GetWorldTransform().matWorld.m[3][2]);
 
-	rhythm->Update(&input_);
 }
 
 void GameScene::Draw() {
@@ -466,6 +468,24 @@ void GameScene::Collision() {
 
 					if (item->GetIsAlve()) {
 						item->OnCollision();
+
+						if (item->GetWeapon() == 0) {
+							rhythm->SetWeapon(Weapons::Normal);
+						}
+						else if (item->GetWeapon() == 1) {
+							rhythm->SetWeapon(Weapons::Rapid);
+						}
+						else if (item->GetWeapon() == 2) {
+							rhythm->SetWeapon(Weapons::ThreeWay);
+						}
+						else if (item->GetWeapon() == 3) {
+							rhythm->SetWeapon(Weapons::Explosion);
+						}
+						else if (item->GetWeapon() == 4) {
+							rhythm->SetWeapon(Weapons::Laser);
+						}
+
+						rhythm->ItemSoundPlay(1.0f);
 					}
 				}
 			}
