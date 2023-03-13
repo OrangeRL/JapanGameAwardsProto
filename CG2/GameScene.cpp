@@ -18,7 +18,7 @@ GameScene::~GameScene() {
 	delete reilCamera;
 }
 
-void GameScene::Initialize(WinApp* winApp) 
+void GameScene::Initialize(WinApp* winApp)
 {
 	// デバッグテキスト用テクスチャ読み込み
 	Sprite::LoadTexture(10, L"Resources/debugfont.png");
@@ -88,8 +88,8 @@ void GameScene::Initialize(WinApp* winApp)
 	rhythm->Initialize();
 }
 
-void GameScene::Update() 
-{  
+void GameScene::Update()
+{
 	viewProjection_ = reilCamera->GetViewProjection();
 
 	viewProjection_.UpdateView();
@@ -97,14 +97,17 @@ void GameScene::Update()
 		//player->OnCollision();
 	}
 
+	particle->Update();
+	particle2->Update2();
 	player->Update(reilCamera->GetWorldTransform());
 	reilCamera->Update(&input_);
 
-	particle->Update();
-	particle2->Update2();
-  
 	skydome->Update();
-  
+	if (input_.TriggerKey(DIK_SPACE)) {
+		player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetPos());
+	}
+
+
 	//敵の更新処理
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
 		enemy->Update(&viewProjection_, &matProjection_, 0);
@@ -137,7 +140,10 @@ void GameScene::Update()
 #pragma endregion
 		enemyPos = enemy->GetWorldTransform().translation;
 		//player->SetEnemy(enemy);
-		//player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
+		if (input_.TriggerKey(DIK_SPACE)) {
+			player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetPos());
+		}
+	
 	}
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
 		enemy->Update(&viewProjection_, &matProjection_, 1);
@@ -407,43 +413,83 @@ void GameScene::Collision() {
 						-2 < enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z) {
 
 						bulletA->OnCollision();
-						//enemy->Reset();
+						enemy->OnCollision();
 						//player->OnCollision();
 					}
 				}
 			}
 		}
 	}
-		//player-enemybullet
-		for (const std::unique_ptr<EnemyBullet>& bulletB : bullets1) {
 
-			if (player->GetPos().x - bulletB->GetWorldTransform().translation.x < 2 &&
-				-2 < player->GetPos().x - bulletB->GetWorldTransform().translation.x) {
-				if (player->GetPos().y - bulletB->GetWorldTransform().translation.y < 3 &&
-					-3 < player->GetPos().y - bulletB->GetWorldTransform().translation.y) {
-					if (player->GetPos().z - bulletB->GetWorldTransform().translation.z < 3 &&
-						-3 < player->GetPos().z - bulletB->GetWorldTransform().translation.z) {
+	for (std::unique_ptr<Enemy>& enemy : enemys2) {
 
-						//bulletB->OnCollision();
-						//enemy->Reset();
-						player->OnCollision();
+		//enemy2-player
+		if (enemy->GetWorldTransform().translation.x - player->GetPos().x < 2 &&
+			-2 < enemy->GetWorldTransform().translation.x - player->GetPos().x) {
+			if (enemy->GetWorldTransform().translation.y - player->GetPos().y < 3 &&
+				-3 < enemy->GetWorldTransform().translation.y - player->GetPos().y) {
+				if (enemy->GetWorldTransform().translation.z - player->GetPos().z < 3 &&
+					-3 < enemy->GetWorldTransform().translation.z - player->GetPos().z) {
+
+					player->OnCollision();
+
+				}
+			}
+		}
+		//bullet-enemy2
+
+		const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = player->GetBullets();
+		for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
+			if (input_.PushKey(DIK_P)) {
+				//player->OnCollision();
+				bulletA->OnCollision();
+			}
+			if (enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x < 2 &&
+				-2 < enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x) {
+				if (enemy->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y < 2 &&
+					-2 < enemy->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y) {
+					if (enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z < 2 &&
+						-2 < enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z) {
+
+						bulletA->OnCollision();
+						enemy->OnCollision();
+						//player->OnCollision();
 					}
 				}
 			}
 		}
-		for (const std::unique_ptr<EnemyBullet>& bulletC : bullets2) {
-			if (player->GetPos().x - bulletC->GetWorldTransform().translation.x < 2 &&
-				-2 < player->GetPos().x - bulletC->GetWorldTransform().translation.x) {
-				if (player->GetPos().y - bulletC->GetWorldTransform().translation.y < 2 &&
-					-2 < player->GetPos().y - bulletC->GetWorldTransform().translation.y) {
-					if (player->GetPos().z - bulletC->GetWorldTransform().translation.z < 2 &&
-						-2 < player->GetPos().z - bulletC->GetWorldTransform().translation.z) {
+	}
 
-						//bulletB->OnCollision();
-						//enemy->Reset();
-						player->OnCollision();
-					}
+	//player-enemybullet
+	for (const std::unique_ptr<EnemyBullet>& bulletB : bullets1) {
+
+		if (player->GetPos().x - bulletB->GetWorldTransform().translation.x < 2 &&
+			-2 < player->GetPos().x - bulletB->GetWorldTransform().translation.x) {
+			if (player->GetPos().y - bulletB->GetWorldTransform().translation.y < 3 &&
+				-3 < player->GetPos().y - bulletB->GetWorldTransform().translation.y) {
+				if (player->GetPos().z - bulletB->GetWorldTransform().translation.z < 3 &&
+					-3 < player->GetPos().z - bulletB->GetWorldTransform().translation.z) {
+
+					//bulletB->OnCollision();
+					//enemy->Reset();
+					player->OnCollision();
 				}
 			}
 		}
+	}
+	for (const std::unique_ptr<EnemyBullet>& bulletC : bullets2) {
+		if (player->GetPos().x - bulletC->GetWorldTransform().translation.x < 2 &&
+			-2 < player->GetPos().x - bulletC->GetWorldTransform().translation.x) {
+			if (player->GetPos().y - bulletC->GetWorldTransform().translation.y < 2 &&
+				-2 < player->GetPos().y - bulletC->GetWorldTransform().translation.y) {
+				if (player->GetPos().z - bulletC->GetWorldTransform().translation.z < 2 &&
+					-2 < player->GetPos().z - bulletC->GetWorldTransform().translation.z) {
+
+					//bulletB->OnCollision();
+					//enemy->Reset();
+					player->OnCollision();
+				}
+			}
+		}
+	}
 }

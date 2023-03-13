@@ -34,6 +34,8 @@ public:
 
 	void CoolTime();
 
+	void OnCollision();
+
 	const std::list<std::unique_ptr<EnemyBullet>>& GetBullets() { return bullets; }
 	//座標取得用
 	WorldTransform GetWorldTransform();

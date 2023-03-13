@@ -74,7 +74,7 @@ void Particle::Update() {
 			if (particleOff[i] == true) {
 
 				angle[i] = player->GetAngle();
-				gameObject[i]->worldTransform = player->GetWorldTransform();
+				gameObject[i]->worldTransform.translation = player->GetPos();
 
 
 				gameObject[i]->worldTransform.scale = { 0.5 , 0.5 , 0.5 };
@@ -84,9 +84,9 @@ void Particle::Update() {
 					0 ,
 					speed * -sinf(angle[i].y)
 				};
-
-				gameObject[i]->worldTransform.rotation = { distRot(engine) , distRot(engine) , distRot(engine) };
-
+				for (int j = 0; j < particleValue; j++) {
+					gameObject[i]->worldTransform.rotation = { 1.0f*j, 1.0f*j, 1.0f*j };
+				}
 				MathFunc::Affine::SetMatRotation(gameObject[i]->worldTransform.matWorld, gameObject[i]->worldTransform.rotation);
 
 				velocity[i] = MathFunc::Utility::MulVector3AndMatrix4(velocity[i], gameObject[i]->worldTransform.matWorld);
@@ -140,6 +140,7 @@ void Particle::Update2() {
 
 					angle[i] = bulletA->GetAngle();
 					gameObject[i]->worldTransform = bulletA->GetWorldTransform();
+					gameObject[i]->worldTransform.translation = bulletA->GetPos();
 
 					gameObject[i]->worldTransform.scale = { 0.5 , 0.5 , 0.5 };
 
@@ -150,7 +151,7 @@ void Particle::Update2() {
 					};
 
 					gameObject[i]->worldTransform.rotation = { distRot(engine) , distRot(engine) , distRot(engine) };
-
+					
 					MathFunc::Affine::SetMatRotation(gameObject[i]->worldTransform.matWorld, gameObject[i]->worldTransform.rotation);
 
 					velocity[i] = MathFunc::Utility::MulVector3AndMatrix4(velocity[i], gameObject[i]->worldTransform.matWorld);
@@ -158,7 +159,6 @@ void Particle::Update2() {
 					particleOff[i] = false;
 					isDead[i] = false;
 					timer[i] = 60;
-				
 			}
 		}
 	}

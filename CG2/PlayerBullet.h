@@ -22,6 +22,7 @@ public:
 	int GetIsDead();
 	Vector3 GetAngle();
 	WorldTransform GetWorldTransform();
+	Vector3 GetPos();
 
 	void OnCollision();
 
@@ -29,6 +30,8 @@ public:
 	void AttackPress();
 
 	void Attack(Vector3 playerPos, Vector3 bossPos);
+
+
 private:	//メンバ関数
 	
 private:	//メンバ変数
@@ -41,7 +44,7 @@ private:	//メンバ変数
 	//カウント
 	int bulletCount = 0;
 	//弾の移動速度
-	const float speed = -10.0f;
+	const float speed = -1.0f;
 	//弾のベクトル
 	Vector3 velocity;
 	//弾の移動範囲

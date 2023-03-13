@@ -24,6 +24,7 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 }
 
 void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int enemyNum) {
+	if (isDelete_ == false) {
 	attackSpeed -= 0.5f;
 	if (enemyNum == 0) {
 		switch (phase)
@@ -58,11 +59,15 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 
 		CoolTime();
 	}
-	gameObject->Update();
+	
+		gameObject->Update();
+	}
 }
 
 void Enemy::Draw() {
-	gameObject->Draw();
+	if (isDelete_ == false) {
+		gameObject->Draw();
+	}
 }
 
 void Enemy::Reset() {
@@ -148,4 +153,9 @@ bool Enemy::SetIsAttack(bool isAttack)
 Phase Enemy::GetPhase()
 {
 	return phase;
+}
+
+void Enemy::OnCollision()
+{
+	isDelete_ = true;
 }

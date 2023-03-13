@@ -84,8 +84,8 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos) {
 	if (isShot) 
 	{
 		//ボスと自機の差分ベクトルを求める
-		//velocity = newPlayerPos - newEnemyPos;
-		velocity = { 0.0f,0.0f,5.0f };
+		velocity = newPlayerPos - newEnemyPos;
+		//velocity = { 0.0f,0.0f,5.0f };
 		
 		//ベクトルの正規化
 		velocity.nomalize();
@@ -99,12 +99,12 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos) {
 			gameObject->worldTransform.translation.x > canMoveArea ||
 			gameObject->worldTransform.translation.y < -canMoveArea ||
 			gameObject->worldTransform.translation.y > canMoveArea ||
-			gameObject->worldTransform.translation.z < -canMoveArea - 00 ||
-			gameObject->worldTransform.translation.z > canMoveArea) 
+			gameObject->worldTransform.translation.z < -canMoveArea - bossPos.z - 200 ||
+			gameObject->worldTransform.translation.z > canMoveArea + bossPos.z) 
 		{
 			//一定の範囲外で消滅
-			//isShot = false;
-			//isDead_ = true;
+			isShot = false;
+			isDead_ = true;
 
 		}
 	}
@@ -133,4 +133,12 @@ WorldTransform PlayerBullet::GetWorldTransform() {
 
 Vector3 PlayerBullet::GetAngle() {
 	return angle;
+}
+
+Vector3 PlayerBullet::GetPos() {
+	return {
+		gameObject->worldTransform.matWorld.m[3][0],
+		gameObject->worldTransform.matWorld.m[3][1],
+		gameObject->worldTransform.matWorld.m[3][2],
+	};
 }
