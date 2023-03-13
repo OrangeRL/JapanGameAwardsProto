@@ -109,7 +109,7 @@ void GameScene::Update()
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
 		enemy->Update(&viewProjection_, &matProjection_, 0);
 #pragma region makeEnemyBullet
-		if (enemy->GetAttackSpeed() <= 0.0f && player->GetPos().z <= enemy->GetWorldTransform().translation.z) {
+		if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::move) {
 			//弾を生成
 			std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
 			//初期化
@@ -144,31 +144,6 @@ void GameScene::Update()
 
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
 		enemy->Update(&viewProjection_, &matProjection_, 1);
-#pragma region makeEnemyBullet
-		if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetCoolDown() == false) {
-			//弾を生成
-			std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
-			//初期化
-			bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetPos(), enemy->GetWorldTransform().translation);
-			bullet->SetTransform(enemy->GetWorldTransform().translation);
-			//使う弾の設定
-			bullet->SetBullet(1);
-			bullets2.push_back(std::move(bullet));
-			//攻撃頻度の設定 1(速い)~ >1(遅い)
-			enemy->SetAttackSpeed(15.0f);
-			if (enemy->GetIsAttack() == false) {
-				enemy->SetIsAttack(true);
-			}
-		}
-
-		if (enemy->GetIsAttack() == true) {
-			for (std::unique_ptr<EnemyBullet>& bullet : bullets2) {
-				bullet->Update();
-			}
-		}
-		//弾を削除する
-		bullets2.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {return bullet->IsDead(); });
-#pragma endregion
 	}
 	//敵の削除
 	enemys2.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });

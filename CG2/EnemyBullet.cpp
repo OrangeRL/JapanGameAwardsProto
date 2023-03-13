@@ -27,10 +27,6 @@ void EnemyBullet::Update()
 	if (bulletNum == 0){
 		gameObject->worldTransform.translation -= posC;
 	}
-	//正面にカーテン形成
-	else if (bulletNum == 1) {
-		gameObject->worldTransform.translation.z -= 0.1f;
-	}
 
 	if (--deleteTimer_ <= 0) {
 		isDelete_ = true;
