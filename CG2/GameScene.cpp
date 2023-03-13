@@ -109,7 +109,7 @@ void GameScene::Update()
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
 		enemy->Update(&viewProjection_, &matProjection_, 0);
 #pragma region makeEnemyBullet
-		if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::move) {
+		if (enemy->GetAttackSpeed() <= 0.0f && player->GetPos().z <= enemy->GetWorldTransform().translation.z) {
 			//弾を生成
 			std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
 			//初期化
@@ -167,6 +167,9 @@ void GameScene::Update()
 		bullets2.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {return bullet->IsDead(); });
 #pragma endregion
 	}
+	//敵の削除
+	enemys2.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
+
 	UpdateEnemyPopCommand();
 
 	if (player->GetIsDead() == false) {

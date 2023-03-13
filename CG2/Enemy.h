@@ -69,7 +69,7 @@ private:
 
 	//消えるまでの時間
 	// 60 * 消えるまでの時間:
-	static const int32_t deleteTime = 60 * 3;
+	static const int32_t deleteTime = 60 * 8;
 	//タイマー
 	int32_t deleteTimer_ = deleteTime;
 	//フラグ

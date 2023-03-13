@@ -26,37 +26,29 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int enemyNum) {
 	attackSpeed -= 0.5f;
 	if (enemyNum == 0) {
+	}
+	else if (enemyNum == 1) {
+		phaseTimer--;
 		switch (phase)
 		{
 		case Phase::normal:
-		default:
-			//移動
-			phaseTimer -= 0.3f;
 			gameObject->worldTransform.translation += moveSpeed;
 			if (phaseTimer <= 0.0f) {
-				phaseTimer = 300.0f;
 				phase = Phase::move;
+				phaseTimer = 300.0f;
 			}
 			break;
 		case Phase::move:
-			//攻撃
-
+			if (phaseTimer <= 0.0f) {
+				phase = Phase::leave;
+				phaseTimer = 300.0f;
+			}
+			break;
 			break;
 		case Phase::leave:
-			//離脱
-			Vector3 leaveSpeedt = { 0.5f,0.0f,0.3f };
-			Vector3 leaveSpeedf = { -0.5f,0.0f,0.3f };
-			Leave(leaveSpeedt, leaveSpeedf);
-			break;
+			Leave({ 0.3f,0,0 }, { -0.3f,0,0 });
 		}
 
-	}
-	else if (enemyNum == 1) {
-		gameObject->worldTransform.translation += moveSpeed;
-		//�㉺�𔽕��ړ�
-		//Repetition();
-
-		CoolTime();
 	}
 	gameObject->Update();
 }
@@ -81,6 +73,11 @@ void Enemy::Leave(Vector3 leaveSpeedt,Vector3 leaveSpeedf)
 	if (gameObject->worldTransform.translation.x <= -1) {
 		gameObject->worldTransform.translation += leaveSpeedf;
 	}
+
+	if (--deleteTimer_ <= 0) {
+		isDelete_ = true;
+	}
+
 }
 //弾のクールタイム
 void Enemy::CoolTime()
