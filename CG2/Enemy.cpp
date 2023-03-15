@@ -20,7 +20,7 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 
 	gameObject->worldTransform.translation = { 0 , 0 , 100 };
 	gameObject->worldTransform.scale = { 2 , 2 , 2 };
-	
+
 }
 
 //Num が 1の奴は移動のみ
@@ -41,9 +41,7 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 		}
 		break;
 	case Phase::normal:
-		if (enemyNum == 1) {
-			gameObject->worldTransform.translation += moveSpeed;
-		}
+		gameObject->worldTransform.translation += moveSpeed;
 		if (phaseTimer <= 0.0f) {
 			phase = Phase::move;
 			phaseTimer = 300.0f;
@@ -157,7 +155,3 @@ Phase Enemy::GetPhase()
 	return phase;
 }
 
-Vector3 Enemy::GetAngle()
-{
-	return angle;
-}

@@ -53,8 +53,6 @@ public:
 
 	bool IsDead()const { return isDelete_; }
 
-	Vector3 GetAngle();
-
 private:
 	Phase phase = Phase::normal;
 
@@ -79,7 +77,6 @@ private:
 	//フラグ
 	bool isDelete_ = false;
 
-	Vector3 angle = {};
 };
 
 
