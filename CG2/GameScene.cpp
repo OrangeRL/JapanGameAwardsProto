@@ -16,7 +16,6 @@ GameScene::~GameScene() {
 	delete particle;
 	delete particle2;
 	delete reilCamera;
-	delete item;
 }
 
 void GameScene::Initialize(WinApp* winApp) 
@@ -25,7 +24,6 @@ void GameScene::Initialize(WinApp* winApp)
 	Sprite::LoadTexture(10, L"Resources/debugfont.png");
 	// デバッグテキスト初期化
 	debugText.Initialize(10);
-
 
 
 	//透視投影変換行列の計算
@@ -72,8 +70,8 @@ void GameScene::Initialize(WinApp* winApp)
 	reilCamera->Initialize({ 0,0,-50 }, { 0,0,0 });
 
 	//アイテム
-	item = new Item();
-	item->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", {0.0f,0.0f,50.0f},2);
+	//item = new Item();
+	//item->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", {0.0f,0.0f,50.0f},2);
 
 	player = new Player();
 	player->Initialize(&viewProjection_, &matProjection_);
@@ -98,6 +96,9 @@ void GameScene::Initialize(WinApp* winApp)
 
 void GameScene::Update() 
 {  
+	//ランダムな整数
+	std::default_random_engine engine(seed_gen());
+
 	viewProjection_ = reilCamera->GetViewProjection();
 
 	viewProjection_.UpdateView();
@@ -113,7 +114,27 @@ void GameScene::Update()
   
 	skydome->Update();
 
-	item->Update();
+	//アイテムの更新処理
+	for (std::unique_ptr<Item>& item : items_) {
+		item->Update();
+	}
+
+	//デスフラグの立ったアイテムを削除
+	items_.remove_if([](std::unique_ptr<Item>& item) {
+		return item->GetIsDead();
+		});
+
+	//アイテム生成
+	if (input_.TriggerKey(DIK_T)) {
+		std::uniform_int_distribution<> dist(0, 4);
+		int value = dist(engine);
+		//アイテムを生成し、初期化
+		std::unique_ptr<Item>item = std::make_unique<Item>();
+		item->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", { player->GetPos().x,player->GetPos().y,player->GetPos().z + 20.0f}, value);
+
+		//アイテムを登録する
+		items_.push_back(std::move(item));
+	}
   
 	//敵の更新処理
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
@@ -219,10 +240,10 @@ void GameScene::Update()
 	debugText.Printf(0, 180, 1.0f, 17, " measureCount:%d", rhythm->GetSoundState().measureCount);
 	debugText.Printf(0, 200, 1.0f, 9, " weapon:%d", rhythm->GetSoundState().weapon);
 
-	debugText.Printf(0, 220, 1.0f, 27, " %f,%f,%f",
-		item->GetWorldTransform().matWorld.m[3][0],
-		item->GetWorldTransform().matWorld.m[3][1],
-		item->GetWorldTransform().matWorld.m[3][2]);
+	//debugText.Printf(0, 220, 1.0f, 27, " %f,%f,%f",
+	//	item->GetWorldTransform().matWorld.m[3][0],
+	//	item->GetWorldTransform().matWorld.m[3][1],
+	//	item->GetWorldTransform().matWorld.m[3][2]);
 
 }
 
@@ -246,7 +267,8 @@ void GameScene::Draw() {
 		bullet->Draw();
 	}
 
-	item->Draw();
+	//アイテム描画
+	for (std::unique_ptr<Item>& item : items_) { item->Draw(); }
 	skydome->Draw();
 
 	//スプライト描画
@@ -459,33 +481,35 @@ void GameScene::Collision() {
 		}
 
 		//自機とアイテムの当たり判定
-		if (player->GetPos().x - item->GetWorldTransform().translation.x < 2 &&
-			-2 < player->GetPos().x - item->GetWorldTransform().translation.x) {
-			if (player->GetPos().y - item->GetWorldTransform().translation.y < 2 &&
-				-2 < player->GetPos().y - item->GetWorldTransform().translation.y) {
-				if (player->GetPos().z - item->GetWorldTransform().translation.z < 2 &&
-					-2 < player->GetPos().z - item->GetWorldTransform().translation.z) {
+		for (const std::unique_ptr<Item>& item : items_) {
+			if (player->GetPos().x - item->GetPos().x < 2 &&
+				-2 < player->GetPos().x - item->GetPos().x) {
+				if (player->GetPos().y - item->GetPos().y < 2 &&
+					-2 < player->GetPos().y - item->GetPos().y) {
+					if (player->GetPos().z - item->GetPos().z < 2 &&
+						-2 < player->GetPos().z - item->GetPos().z) {
 
-					if (item->GetIsAlve()) {
-						item->OnCollision();
+						if (item->GetIsDead() == false) {
+							item->OnCollision();
 
-						if (item->GetWeapon() == 0) {
-							rhythm->SetWeapon(Weapons::Normal);
-						}
-						else if (item->GetWeapon() == 1) {
-							rhythm->SetWeapon(Weapons::Rapid);
-						}
-						else if (item->GetWeapon() == 2) {
-							rhythm->SetWeapon(Weapons::ThreeWay);
-						}
-						else if (item->GetWeapon() == 3) {
-							rhythm->SetWeapon(Weapons::Explosion);
-						}
-						else if (item->GetWeapon() == 4) {
-							rhythm->SetWeapon(Weapons::Laser);
-						}
+							if (item->GetWeapon() == 0) {
+								rhythm->SetWeapon(Weapons::Normal);
+							}
+							else if (item->GetWeapon() == 1) {
+								rhythm->SetWeapon(Weapons::Rapid);
+							}
+							else if (item->GetWeapon() == 2) {
+								rhythm->SetWeapon(Weapons::ThreeWay);
+							}
+							else if (item->GetWeapon() == 3) {
+								rhythm->SetWeapon(Weapons::Explosion);
+							}
+							else if (item->GetWeapon() == 4) {
+								rhythm->SetWeapon(Weapons::Laser);
+							}
 
-						rhythm->ItemSoundPlay(1.0f);
+							rhythm->ItemSoundPlay(1.0f);
+						}
 					}
 				}
 			}

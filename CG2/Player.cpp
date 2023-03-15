@@ -123,6 +123,9 @@ void Player::Move() {
 		if (input.PushKey(DIK_A) && input.PushKey(DIK_S)) { move = { -moveSpeed,-moveSpeed,0 }; }
 	}
 
+	if (input.TriggerKey(DIK_M)) {
+		isDead = false;
+	}
 
 	gameObject->worldTransform.translation += move;
 }

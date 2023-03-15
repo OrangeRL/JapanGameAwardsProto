@@ -14,15 +14,16 @@ public:
 
 	void OnCollision();
 
+	Vector3 GetPos();
 	WorldTransform GetWorldTransform() { return gameObject->worldTransform; }
-	bool GetIsAlve() { return isAlive; }
+	bool GetIsDead() { return isDead; }
 	int GetWeapon() { return weapon; }
 
 private:
 	GameObject3D* gameObject = nullptr;
 
-	bool isAlive = true;
-	Vector3 rotation = { 0.0f,0.0f,0.0f };
+	bool isDead = false;
+	Vector3 rotation = { 0.0f,0.01f,0.0f };
 	int weapon = 0;
 };
 

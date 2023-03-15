@@ -11,7 +11,7 @@
 #include "Sprite.h"
 #include <memory>
 #include <list>
-
+#include <random>
 #include "Player.h"
 #include "Map.h"
 #include "Goal.h"
@@ -63,6 +63,9 @@ private: // メンバ変数
 	XMMATRIX matProjection_ = {};
 	DebugText debugText;
 
+	//ランダムな整数
+	std::random_device seed_gen;
+
 	Rhythm* rhythm = nullptr;
 	//SoundManager* soundManager_ = nullptr;
 	ViewProjection viewProjection_;
@@ -85,7 +88,7 @@ private: // メンバ変数
 	GameObject3D* skydome = nullptr;
 
 	//アイテム
-	Item* item = nullptr;
+	std::list<std::unique_ptr<Item>>items_;
 
 	Vector3 enemyPos = {};
 	//シーン管理

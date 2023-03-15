@@ -18,26 +18,31 @@ void Item::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, c
 }
 
 void Item::Update() {
-	//gameObject->worldTransform.translation = { 0.0f,0.0f,0.0f };
-	//gameObject->worldTransform.rotation.y = rotation.y;
-	//rotation.y += 1.01f;
-	//MathFunc::Affine::SetMatRotation(gameObject->worldTransform.matWorld, rotation);
+
+	//‰ñ“]‚³‚¹‚é
+	gameObject->worldTransform.rotation += rotation;
+	if (gameObject->worldTransform.rotation.y > 2.0f * 3.14f) {
+		gameObject->worldTransform.rotation.y = 0.0f;
+	}
 	
-	//gameObject->Update();
-
-	//gameObject->worldTransform.rotation.y = 0.0f;
-	//gameObject->worldTransform.translation = { 0.0f,0.0f,10.0f };
 	gameObject->Update();
-
 }
 
 void Item::Draw() {
 
-	if (isAlive) {
+	if (isDead == false) {
 		gameObject->Draw();
 	}
 }
 
 void Item::OnCollision() {
-	isAlive = false;
+	isDead = true;
+}
+
+Vector3 Item::GetPos() {
+	return {
+		gameObject->worldTransform.matWorld.m[3][0],
+		gameObject->worldTransform.matWorld.m[3][1],
+		gameObject->worldTransform.matWorld.m[3][2]
+	};
 }
