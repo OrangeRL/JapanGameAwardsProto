@@ -82,7 +82,7 @@ void GameScene::Initialize(WinApp* winApp)
 	particle2 = new Particle;
 	particle2->Initialize(&viewProjection_, &matProjection_, player);
 
-	loadEnemyPopData();
+	loadEnemyPopData(2);
 
 	rhythm = new Rhythm();
 	rhythm->Initialize();
@@ -230,16 +230,30 @@ void GameScene::Draw() {
 
 }
 
-void GameScene::loadEnemyPopData()
+void GameScene::loadEnemyPopData(int stageNum)
 {
-	//ファイルを開く
-	std::ifstream file;
-	file.open("Resources/enemy.csv");
-	assert(file.is_open());
-	//ファイルの内容を文字列ストリームにコピー
-	enemyPopCommand << file.rdbuf();
-	//ファイルを閉じる
-	file.close();
+
+	if (stageNum == 1) {
+		//ファイルを開く
+		std::ifstream file;
+		file.open("Resources/csv/enemy.csv");
+		assert(file.is_open());
+		//ファイルの内容を文字列ストリームにコピー
+		enemyPopCommand << file.rdbuf();
+		//ファイルを閉じる
+		file.close();
+	}
+	
+	if (stageNum == 2) {
+		//ファイルを開く
+		std::ifstream file;
+		file.open("Resources/csv/enemy2.csv");
+		assert(file.is_open());
+		//ファイルの内容を文字列ストリームにコピー
+		enemyPopCommand << file.rdbuf();
+		//ファイルを閉じる
+		file.close();
+	}
 }
 
 void GameScene::UpdateEnemyPopCommand()

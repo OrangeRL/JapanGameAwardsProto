@@ -47,7 +47,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 敵発生データの読み込み
 	/// </summary>
-	void loadEnemyPopData();
+	void loadEnemyPopData(int stageNum);
 	/// <summary>
 	/// 敵発生コマンドの更新
 	/// </summary>
