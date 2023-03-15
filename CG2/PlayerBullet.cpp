@@ -24,7 +24,7 @@ void PlayerBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProje
 	gameObject->SetViewProjection(viewProjection);
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
-	gameObject->worldTransform.scale = Vector3{ 1,1,1 };
+	gameObject->worldTransform.scale = Vector3{ 2,2,2 };
 	gameObject->Update();
 	isDead_ = false;
 	newPlayerPos = playerPos;
@@ -41,7 +41,7 @@ void PlayerBullet::Update() {
 	rotation.x = rotationSpeed;
 	rotation.z = rotationSpeed;
 	angle = gameObject->worldTransform.rotation;
-	//gameObject->worldTransform.rotation += rotation;
+	gameObject->worldTransform.rotation += rotation;
 
 	Attack(newPlayerPos, newEnemyPos);
 	if (isShot) 
@@ -55,11 +55,11 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos) {
 
 	Vector3 rotation = { 0 , 0 , 0 };
 
-	//rotation.y = rotationSpeed;
-	//rotation.x = rotationSpeed;
-	//rotation.z = rotationSpeed;
+	rotation.y = rotationSpeed;
+	rotation.x = rotationSpeed;
+	rotation.z = rotationSpeed;
 
-	//gameObject->worldTransform.rotation += rotation;
+	gameObject->worldTransform.rotation += rotation;
 	if (!isShot) 
 	{
 		//‚»‚Ì”Ô†‚Ì’e‚Ì”­Ëƒtƒ‰ƒO‚ªfalse‚È‚çtrue‚É‚·‚é
@@ -100,11 +100,11 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos) {
 			gameObject->worldTransform.translation.y < -canMoveArea ||
 			gameObject->worldTransform.translation.y > canMoveArea ||
 			gameObject->worldTransform.translation.z < -canMoveArea - 00 ||
-			gameObject->worldTransform.translation.z > canMoveArea) 
+			gameObject->worldTransform.translation.z > canMoveArea + playerPos.z + 400) 
 		{
 			//ˆê’è‚Ì”ÍˆÍŠO‚ÅÁ–Å
-			//isShot = false;
-			//isDead_ = true;
+			isShot = false;
+			isDead_ = true;
 
 		}
 	}

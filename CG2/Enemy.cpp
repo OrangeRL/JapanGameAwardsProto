@@ -146,3 +146,7 @@ Phase Enemy::GetPhase()
 {
 	return phase;
 }
+
+void Enemy::OnCollision() {
+	isDelete_ = true;
+}

@@ -47,8 +47,9 @@ void Player::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 
 void Player::Update(WorldTransform wt) {
 	playerPos = GetWorldTransform().translation;
-	//Reset();
+	
 	Move();
+
 	//enemyPos = enemy->GetWorldTransform().translation;
 	//デスフラグの立った弾を削除
 	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
@@ -83,7 +84,7 @@ void Player::Draw() {
 }
 
 void Player::Reset() {
-	gameObject->worldTransform.translation = { -10 , 0 , -10 };
+	//gameObject->worldTransform.translation = { -10 , 0 , -10 };
 	moveSpeed = 0;
 	isDead = false;
 }

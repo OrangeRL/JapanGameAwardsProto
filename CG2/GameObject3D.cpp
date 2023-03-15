@@ -41,12 +41,12 @@ void GameObject3D::Update() {
 	constMapTransform->mat *= viewProjection->matView;
 	constMapTransform->mat *= MathFunc::Utility::ConvertXMMATRIXtoMatrix4(*matProjection);
 
-	MathFunc::Affine::SetMatRotation(worldTransform.matWorld, worldTransform.rotation);
+	//MathFunc::Affine::SetMatRotation(worldTransform.matWorld, worldTransform.rotation);
 
-	//定数バッファへデータ転送
-	constMapTransform->mat = worldTransform.matWorld;
-	constMapTransform->mat *= viewProjection->matView;
-	constMapTransform->mat *= MathFunc::Utility::ConvertXMMATRIXtoMatrix4(*matProjection);
+	////定数バッファへデータ転送
+	//constMapTransform->mat = worldTransform.matWorld;
+	//constMapTransform->mat *= viewProjection->matView;
+	//constMapTransform->mat *= MathFunc::Utility::ConvertXMMATRIXtoMatrix4(*matProjection);
 }
 
 void GameObject3D::Draw() {
