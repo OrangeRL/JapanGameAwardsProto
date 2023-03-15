@@ -31,6 +31,15 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 
 	switch (phase)
 	{
+	case Phase::spown:
+		//ここに敵のスポーン時の演出を追加する↓
+		
+		//-------------------------------------
+		if (phaseTimer <= 0.0f) {
+			phase = Phase::normal;
+			phaseTimer = 400.0f;
+		}
+		break;
 	case Phase::normal:
 		if (enemyNum == 1) {
 			gameObject->worldTransform.translation += moveSpeed;

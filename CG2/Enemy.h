@@ -4,6 +4,7 @@
 #include <memory>
 #include <list>
 enum class Phase {
+	spown,
 	normal,
 	move,
 	leave,
