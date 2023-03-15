@@ -56,7 +56,7 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 		}
 		break;
 	case Phase::leave:
-		Leave({ 0.3f,0,0 }, { -0.3f,0,0 });
+		Leave({ 0.3f,0,0 }, { -0.3f,0,0 },enemyNum);
 	}
 	gameObject->Update();
 }
@@ -73,13 +73,15 @@ void Enemy::Repetition()
 {
 }
 //離脱
-void Enemy::Leave(Vector3 leaveSpeedt,Vector3 leaveSpeedf)
+void Enemy::Leave(Vector3 leaveSpeedt,Vector3 leaveSpeedf, int enemyNum)
 {
-	if (gameObject->worldTransform.translation.x >= 1) {
-		gameObject->worldTransform.translation += leaveSpeedt;
-	}
-	if (gameObject->worldTransform.translation.x <= -1) {
-		gameObject->worldTransform.translation += leaveSpeedf;
+	if (enemyNum == 1) {
+		if (gameObject->worldTransform.translation.x >= 1) {
+			gameObject->worldTransform.translation += leaveSpeedt;
+		}
+		if (gameObject->worldTransform.translation.x <= -1) {
+			gameObject->worldTransform.translation += leaveSpeedf;
+		}
 	}
 
 	if (--deleteTimer_ <= 0) {
@@ -153,4 +155,9 @@ bool Enemy::SetIsAttack(bool isAttack)
 Phase Enemy::GetPhase()
 {
 	return phase;
+}
+
+Vector3 Enemy::GetAngle()
+{
+	return angle;
 }

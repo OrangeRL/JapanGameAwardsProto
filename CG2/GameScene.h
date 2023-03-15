@@ -73,6 +73,7 @@ private: // メンバ変数
 
 	Particle* particle = nullptr;
 	Particle* particle2 = nullptr;
+	Particle* particle3 = nullptr;
 
 	//敵
 	std::list<std::unique_ptr<Enemy>> enemys1;

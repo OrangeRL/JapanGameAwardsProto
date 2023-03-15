@@ -31,7 +31,7 @@ public:
 	//反復
 	void Repetition();
 	//離脱
-	void Leave(Vector3 leaveSpeedt, Vector3 leaveSpeedf);
+	void Leave(Vector3 leaveSpeedt, Vector3 leaveSpeedf,int enemyNum);
 
 	void CoolTime();
 
@@ -52,6 +52,9 @@ public:
 	Phase GetPhase();
 
 	bool IsDead()const { return isDelete_; }
+
+	Vector3 GetAngle();
+
 private:
 	Phase phase = Phase::normal;
 
@@ -75,6 +78,8 @@ private:
 	int32_t deleteTimer_ = deleteTime;
 	//フラグ
 	bool isDelete_ = false;
+
+	Vector3 angle = {};
 };
 
 
