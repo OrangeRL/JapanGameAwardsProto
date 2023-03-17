@@ -81,10 +81,14 @@ void Enemy::Leave(Vector3 leaveSpeedt,Vector3 leaveSpeedf, int enemyNum)
 			gameObject->worldTransform.translation += leaveSpeedf;
 		}
 	}
+	if (enemyNum == 2) {
+		deleteTimer_ =960;
+	}
 
 	if (--deleteTimer_ <= 0) {
 		isDelete_ = true;
 	}
+
 
 }
 //弾のクールタイム

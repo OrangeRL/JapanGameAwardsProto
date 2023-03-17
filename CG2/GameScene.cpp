@@ -82,7 +82,7 @@ void GameScene::Initialize(WinApp* winApp)
 	particle2 = new Particle;
 	particle2->Initialize(&viewProjection_, &matProjection_, player);
 
-	loadEnemyPopData(2);
+	loadEnemyPopData(1);
 
 	rhythm = new Rhythm();
 	rhythm->Initialize();
@@ -148,6 +148,12 @@ void GameScene::Update()
 	//敵の削除
 	enemys2.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
 
+	for (std::unique_ptr<Enemy>& enemy : enemys3) {
+		enemy->Update(&viewProjection_, &matProjection_, 2);
+	}
+	//敵の削除
+	enemys3.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
+
 	UpdateEnemyPopCommand();
 
 	if (player->GetIsDead() == false) {
@@ -207,6 +213,9 @@ void GameScene::Draw() {
 		enemy->Draw();
 	}
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
+		enemy->Draw();
+	}
+	for (std::unique_ptr<Enemy>& enemy : enemys3) {
 		enemy->Draw();
 	}
 	for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
@@ -280,7 +289,7 @@ void GameScene::UpdateEnemyPopCommand()
 			continue;
 		}
 		//POPコマンド
-		if (world.find("Enemy1") == 0) {
+		if (world.find("Enemy1") == 0) {	//固定砲台
 			//CSVに書いてある値を変数に入れる
 			//x座標
 			std::getline(line_stream, world, ',');
@@ -309,7 +318,7 @@ void GameScene::UpdateEnemyPopCommand()
 			//敵を登録
 			enemys1.push_back(std::move(newEnemy));
 		}
-		if (world.find("Enemy2") == 0) {
+		if (world.find("Enemy2") == 0) {	//移動のみ
 			//CSVに書いてある値を変数に入れる
 			//x座標
 			std::getline(line_stream, world, ',');
@@ -337,6 +346,35 @@ void GameScene::UpdateEnemyPopCommand()
 			newEnemy->SetSpeed(speedX, speedY, speedZ);
 			//敵を登録
 			enemys2.push_back(std::move(newEnemy));
+		}
+		if (world.find("Enemy3") == 0) {	//移動も攻撃もしない
+			//CSVに書いてある値を変数に入れる
+			//x座標
+			std::getline(line_stream, world, ',');
+			float x = (float)std::atof(world.c_str());
+			//y座標
+			std::getline(line_stream, world, ',');
+			float y = (float)std::atof(world.c_str());
+			//z座標
+			std::getline(line_stream, world, ',');
+			float z = (float)std::atof(world.c_str());
+			//移動速度
+			std::getline(line_stream, world, ',');
+			float speedX = (float)std::atof(world.c_str());
+			std::getline(line_stream, world, ',');
+			float speedY = (float)std::atof(world.c_str());
+			std::getline(line_stream, world, ',');
+			float speedZ = (float)std::atof(world.c_str());
+			//敵を発生させる
+			//-------ここにEnemy発生関数---------//
+			//複数化するためにuniq_ptrに変更
+			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
+			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/red.png");
+			//上で書いてある物をEnemyの座標としてセットする
+			newEnemy->Settransform(x, y, z);
+			newEnemy->SetSpeed(speedX, speedY, speedZ);
+			//敵を登録
+			enemys3.push_back(std::move(newEnemy));
 		}
 		//WAITコマンド
 		else if (world.find("WAIT") == 0)
