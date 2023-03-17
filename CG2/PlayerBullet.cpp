@@ -16,7 +16,7 @@ void PlayerBullet::OnCollision() {
 	isDead_ = true;
 }
 
-void PlayerBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 playerPos, Vector3 bossPos) 
+void PlayerBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 playerPos, Vector3 bossPos)
 {
 	gameObject = new GameObject3D();
 	//gameObject->PreLoadModel("Resources/star/star.obj");
@@ -32,7 +32,7 @@ void PlayerBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProje
 	gameObject->worldTransform.translation = bossPos;
 }
 
-void PlayerBullet::Update() {
+void PlayerBullet::Update(Vector3 vec) {
 	const float rotationSpeed = MathFunc::Utility::Deg2Rad(0.1f);
 
 	Vector3 rotation = { 0 , 0 , 0 };
@@ -43,14 +43,14 @@ void PlayerBullet::Update() {
 	angle = gameObject->worldTransform.rotation;
 	//gameObject->worldTransform.rotation += rotation;
 
-	Attack(newPlayerPos, newEnemyPos);
+	Attack(newPlayerPos, newEnemyPos, vec);
 	if (isShot) 
 	{
 		gameObject->Update();
 	}
 	
 }
-void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos) {
+void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos, Vector3 vec) {
 	const float rotationSpeed = MathFunc::Utility::Deg2Rad(60.0f);
 
 	Vector3 rotation = { 0 , 0 , 0 };
@@ -58,7 +58,7 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos) {
 	//rotation.y = rotationSpeed;
 	//rotation.x = rotationSpeed;
 	//rotation.z = rotationSpeed;
-
+	
 	//gameObject->worldTransform.rotation += rotation;
 	if (!isShot) 
 	{
@@ -71,10 +71,10 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos) {
 		//gameObject->worldTransform.translation = bossPos;
 		//ボスと自機の差分ベクトルを求める
 		//velocity = newPlayerPos - newEnemyPos;
-		velocity = { 0.0f,0.0f,0.0f };
+		velocity = { sin(vec.y),-vec.x,cos(vec.y)};
 
 		//ベクトルの正規化
-		velocity.nomalize();
+		//velocity.nomalize();
 		//ベクトルの長さを速さに合わせる
 		velocity.x *= speed;
 		velocity.y *= speed;
@@ -85,14 +85,14 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos) {
 	{
 		//ボスと自機の差分ベクトルを求める
 		//velocity = newPlayerPos - newEnemyPos;
-		velocity = { 0.0f,0.0f,5.0f };
+		//velocity = { wt.rotation.x,wt.rotation.y,wt.rotation.z };
 		
 		//ベクトルの正規化
-		velocity.nomalize();
+		//velocity.nomalize();
 		//ベクトルの長さを速さに合わせる
-		velocity.x *= speed;
+		/*velocity.x *= speed;
 		velocity.y *= speed;
-		velocity.z *= speed;
+		velocity.z *= speed;*/
 		//発射フラグがtrueならその時点での自機の座標に向かって移動する
 		gameObject->worldTransform.translation -= velocity;
 		if (gameObject->worldTransform.translation.x < -canMoveArea ||

@@ -45,7 +45,7 @@ void Player::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 	Reset();
 }
 
-void Player::Update(WorldTransform wt) {
+void Player::Update(WorldTransform wt, Vector3 vec) {
 	playerPos = GetWorldTransform().translation;
 	//Reset();
 	Move();
@@ -67,7 +67,7 @@ void Player::Update(WorldTransform wt) {
 	}
   
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
-		bullet->Update();
+		bullet->Update(vec);
 	}
 	Collision();
 
@@ -142,7 +142,7 @@ void Player::NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 	timer--;
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
 		//bullet->AttackPress();
-		bullet->Update();
+		//bullet->Update();
 	}
 	const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = GetBullets();
 	for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {

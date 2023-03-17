@@ -13,7 +13,7 @@ public:
 	//初期化
 	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 playerPos, Vector3 bossPos);
 	//更新
-	void Update();
+	void Update(Vector3 vec);
 	//描画
 	void Draw();
 
@@ -28,7 +28,7 @@ public:
 	//攻撃
 	void AttackPress();
 
-	void Attack(Vector3 playerPos, Vector3 bossPos);
+	void Attack(Vector3 playerPos, Vector3 bossPos, Vector3 vec);
 private:	//メンバ関数
 	
 private:	//メンバ変数
@@ -41,7 +41,7 @@ private:	//メンバ変数
 	//カウント
 	int bulletCount = 0;
 	//弾の移動速度
-	const float speed = -10.0f;
+	const float speed = -5.0f;
 	//弾のベクトル
 	Vector3 velocity;
 	//弾の移動範囲

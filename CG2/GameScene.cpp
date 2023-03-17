@@ -106,7 +106,7 @@ void GameScene::Update()
 		//player->OnCollision();
 	}
 
-	player->Update(reilCamera->GetWorldTransform());
+	player->Update(reilCamera->GetWorldTransform(), reilCamera->GetWorldTransform().rotation);
 	reilCamera->Update(&input_);
 
 	particle->Update();
