@@ -340,7 +340,7 @@ void GameScene::UpdateEnemyPopCommand()
 			//-------ここにEnemy発生関数---------//
 			//複数化するためにuniq_ptrに変更
 			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
-			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/red.png");
+			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/star/star.jpg");
 			//上で書いてある物をEnemyの座標としてセットする
 			newEnemy->Settransform(x, y, z);
 			newEnemy->SetSpeed(speedX, speedY, speedZ);
@@ -369,7 +369,7 @@ void GameScene::UpdateEnemyPopCommand()
 			//-------ここにEnemy発生関数---------//
 			//複数化するためにuniq_ptrに変更
 			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
-			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/red.png");
+			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/star/star.jpg");
 			//上で書いてある物をEnemyの座標としてセットする
 			newEnemy->Settransform(x, y, z);
 			newEnemy->SetSpeed(speedX, speedY, speedZ);
