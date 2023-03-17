@@ -45,6 +45,9 @@ void GameObject3D::Update() {
 	constMapTransform->mat = worldTransform.matWorld;
 	constMapTransform->mat *= viewProjection->matView;
 	constMapTransform->mat *= MathFunc::Utility::ConvertXMMATRIXtoMatrix4(*matProjection);
+
+	//値を書き込むと自動的に転送される
+	constMapMaterial->color = color;
 }
 
 void GameObject3D::Draw() {
@@ -124,13 +127,13 @@ void GameObject3D::InitializeConstMapMaterial() {
 	assert(SUCCEEDED(result));
 
 	//定数バッファのマッピング
-	ConstBufferDataMaterial* constMapMaterial = nullptr;
+	//ConstBufferDataMaterial* constMapMaterial = nullptr;
 	result = constBuffMaterial->Map(0 , nullptr , (void**)&constMapMaterial); // マッピング
 	assert(SUCCEEDED(result));
 
 	//定数バッファへのデータ転送
 	//値を書き込むと自動的に転送される
-	constMapMaterial->color = Vector4(1.0f , 1.0f , 1.0f , 0.5f);
+	constMapMaterial->color = color;
 
 }
 

@@ -37,7 +37,7 @@ void Player::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 
 	gameObject = new GameObject3D();
 	gameObject->PreLoadModel("Resources/tofu/tofu.obj");
-	gameObject->PreLoadTexture(L"Resources/star/star.jpg");
+	gameObject->PreLoadTexture(L"Resources/red.png");
 	gameObject->SetViewProjection(viewProjection_);
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();

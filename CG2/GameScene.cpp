@@ -46,7 +46,7 @@ void GameScene::Initialize(WinApp* winApp)
 
 
 	for (int i = 0; i < 10; i++) {
-		num_[i] = new Sprite(i, { 0,0 }, { 64,64 }, { 1.0f,1.0f,1.0f,1.0f }, { 0,0 }, 0, 0);
+		num_[i] = new Sprite(i, { 0,0 }, { 64,64 }, { 1.0f,1.0f,1.0f,0.5f }, { 0,0 }, 0, 0);
 		num_[i]->Initialize();
 	}
 
@@ -91,7 +91,7 @@ void GameScene::Initialize(WinApp* winApp)
 	loadEnemyPopData();
 
 	rhythm = new Rhythm();
-	rhythm->Initialize();
+	rhythm->Initialize(&viewProjection_, &matProjection_);
 }
 
 void GameScene::Update() 
@@ -130,7 +130,7 @@ void GameScene::Update()
 		int value = dist(engine);
 		//アイテムを生成し、初期化
 		std::unique_ptr<Item>item = std::make_unique<Item>();
-		item->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", { player->GetPos().x,player->GetPos().y,player->GetPos().z + 20.0f}, value);
+		item->Initialize(&viewProjection_, &matProjection_, L"Resources/circle.png", { player->GetPos().x,player->GetPos().y,player->GetPos().z + 20.0f}, value);
 
 		//アイテムを登録する
 		items_.push_back(std::move(item));
@@ -224,7 +224,7 @@ void GameScene::Update()
 		}
 	}*/
 
-	rhythm->Update(&input_);
+	rhythm->Update(&input_,player->GetPos(),reilCamera->GetWorldTransform().rotation);
 
 	//プレイヤーの弾発射処理
 	if (input_.TriggerKey(DIK_SPACE) && rhythm->GetSoundState().isFireSucces) {
@@ -251,6 +251,8 @@ void GameScene::Draw() {
 	//3D描画
 	//プレイヤー描画
 	player->Draw();
+
+	rhythm->Draw();
 	particle->Draw();
 	particle2->Draw();
 	//敵の描画
@@ -274,6 +276,9 @@ void GameScene::Draw() {
 	//スプライト描画
 	Sprite::PreDraw(dx12base_.GetCmdList().Get());
 
+	for (int i = 0; i < 10; i++) {
+		num_[i]->Draw();
+	}
 
 	// デバッグテキストの描画
 	debugText.DrawAll(dx12base_.GetCmdList().Get());

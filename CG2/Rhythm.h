@@ -1,6 +1,7 @@
 #pragma once
 #include "Input.h"
 #include "Audio.h"
+#include "GameObject3D.h"
 
 enum class Weapons {
 	Normal,		//通常弾
@@ -41,9 +42,11 @@ public:
 
 	~Rhythm();
 
-	void Initialize();
+	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection);
 
-	void Update(Input* input);
+	void Update(Input* input, Vector3 pos, Vector3 rot);
+
+	void Draw();
 
 	void SoundUnload(SoundData soundData);
 
@@ -62,6 +65,9 @@ public:
 	SoundState GetSoundState() { return soundState; }
 
 private:
+	static const int circleNum = 2;
+	GameObject3D* circle[circleNum];
+
 	SoundState soundState;
 
 	//一小節の時間
@@ -81,6 +87,8 @@ private:
 	bool isFireActive = 1;
 	//爆裂弾の発射が成功したかどうか(仮)
 	int isSuccess = 0;
+
+	Vector3 shrinkSpeed = { 0.1f,0.1f,0.0f };
 
 	//サウンドマネージャー
 	SoundManager* soundManager_ = nullptr;
