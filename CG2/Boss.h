@@ -5,6 +5,7 @@
 enum BossPhase {
 	spown,
 	attack,
+	attack2,
 	defence,
 };
 
@@ -19,5 +20,12 @@ private:
 	GameObject3D* gameObject = nullptr;
 
 	Vector3 moveSpeed = { 0,0,0 };
+
+	//s“®•Ï‰»
+	float phaseTimer = 300.0f;
+	BossPhase phase = BossPhase::spown;
+
+	bool isDead = false;
+	int HP = 10;
 };
 

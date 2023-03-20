@@ -15,6 +15,35 @@ void Boss::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 
 void Boss::Update()
 {
+	phaseTimer--;
+	switch (phase)
+	{
+	case BossPhase::spown:	// ’a¶
+		if (phaseTimer >= 0.0f) {
+			phase = BossPhase::attack;
+			phaseTimer = 400.0f;
+		}
+		break;
+	case BossPhase::attack:	//UŒ‚1
+		if (phaseTimer >= 0.0f) {
+			phase = BossPhase::attack2;
+			phaseTimer = 400.0f;
+		}
+		break;
+	case BossPhase::attack2:	//UŒ‚2
+		if (phaseTimer >= 0.0f) {
+			phase = BossPhase::defence;
+			phaseTimer = 400.0f;
+		}
+		break;
+	case BossPhase::defence:	//‰ñ”ð,–hŒä
+		if (phaseTimer >= 0.0f) {
+			phase = BossPhase::attack;
+			phaseTimer = 200.0f;
+		}
+		break;
+	}
+
 	gameObject->Update();
 }
 
