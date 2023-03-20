@@ -12,7 +12,7 @@ void GameObject3D::PreLoadModel(const char* modelFileName) {
 
 //ƒƒ“ƒoŠÖ”
 void GameObject3D::PreLoadTexture(const wchar_t* textureFileName) {
-	this->textureFileName = textureFileName;
+	this->textureFileName = textureFileName;	
 }
 
 void GameObject3D::Initialize() {
