@@ -71,6 +71,9 @@ void GameScene::Initialize(WinApp* winApp)
 	player->Initialize(&viewProjection_, &matProjection_);
 	player->SetPos({ 0.0f, 0.0f, 20.0f });
 
+	boss = new Boss();
+	boss->Initialize(&viewProjection_, &matProjection_);
+
 	viewProjection_ = reilCamera->GetViewProjection();
 
 	//player->SetMap(map);
@@ -156,6 +159,8 @@ void GameScene::Update()
 
 	UpdateEnemyPopCommand();
 
+	boss->Update();
+
 	if (player->GetIsDead() == false) {
 		//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
 	}
@@ -218,6 +223,9 @@ void GameScene::Draw() {
 	for (std::unique_ptr<Enemy>& enemy : enemys3) {
 		enemy->Draw();
 	}
+
+	boss->Draw();
+
 	for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
 		bullet->Draw();
 	}

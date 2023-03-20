@@ -144,6 +144,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Audio.cpp" />
+    <ClCompile Include="Boss.cpp" />
     <ClCompile Include="DebugText.cpp" />
     <ClCompile Include="DX12base.cpp" />
     <ClCompile Include="Enemy.cpp" />
@@ -212,6 +213,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Audio.h" />
+    <ClInclude Include="Boss.h" />
     <ClInclude Include="DebugText.h" />
     <ClInclude Include="DX12base.h" />
     <ClInclude Include="Enemy.h" />

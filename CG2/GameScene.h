@@ -13,6 +13,7 @@
 #include <list>
 
 #include "Player.h"
+#include "Boss.h"
 #include "Map.h"
 #include "Goal.h"
 #include "Particle.h"
@@ -70,6 +71,8 @@ private: // メンバ変数
 
 	Player* player = nullptr;
 	PlayerBullet* playerBullet = nullptr;
+
+	Boss* boss = nullptr;
 
 	Particle* particle = nullptr;
 	Particle* particle2 = nullptr;
