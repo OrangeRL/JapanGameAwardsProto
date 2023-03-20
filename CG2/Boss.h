@@ -14,7 +14,10 @@ public:
 	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection);
 	void Update();
 	void Draw();
+
 private:
 	GameObject3D* gameObject = nullptr;
+
+	Vector3 moveSpeed = { 0,0,0 };
 };
 

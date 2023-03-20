@@ -157,9 +157,10 @@ void GameScene::Update()
 	//敵の削除
 	enemys3.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
 
-	UpdateEnemyPopCommand();
-
 	boss->Update();
+
+	UpdateEnemyPopCommand();
+	
 
 	if (player->GetIsDead() == false) {
 		//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
