@@ -3,6 +3,7 @@
 #include "MathFunc.h"
 #include <memory>
 #include <list>
+#include <random>
 
 enum BossPhase {
 	spown,
@@ -21,6 +22,8 @@ public:
 	void Attack();
 	void Attack2();
 	void Defence();
+
+	float Random(float minValue, float maxValue);
 
 	//À•Wæ“¾—p
 	WorldTransform GetWorldTransform();
@@ -46,4 +49,5 @@ private:
 	float attackSpeed = 200.0f;
 	bool isAttack = false;
 };
+
 

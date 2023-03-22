@@ -164,7 +164,7 @@ void GameScene::Update()
 		if (boss->GetPhase() == BossPhase::attack2 && boss->GetAttackSpeed() <= 0.0f) {
 			//弾を生成
 			std::unique_ptr<BossBullet> bullet = std::make_unique<BossBullet>();
-			bullet->Initialize(&viewProjection_, &matProjection_);
+			bullet->Initialize(&viewProjection_, &matProjection_, boss->Random(-0.5f, 0.1f));
 			bullet->SetTransform(boss->GetWorldTransform().translation);
 			bossBullet.push_back(std::move(bullet));
 			boss->SetAttackSpeed(200.0f);
@@ -177,11 +177,6 @@ void GameScene::Update()
 				bullet->Update();
 			}
 		}
-		//弾&敵を削除する
-		bossBullet.remove_if([](std::unique_ptr<BossBullet>& bullet) { return bullet->IsDead(); });
-		debugText.Printf(0, 260, 1.0f, 11, "bossPhase %d",boss->GetPhase());
-		debugText.Printf(0, 280, 1.0f, 14, "bossSpeed %f", boss->GetAttackSpeed());
-		debugText.Printf(0, 300, 1.0f, 14, "bossAttack %d", boss->GetIsAttack());
 	}	
 #pragma endregion
 

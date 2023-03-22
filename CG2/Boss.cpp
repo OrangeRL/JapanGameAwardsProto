@@ -78,6 +78,18 @@ void Boss::Defence()	//ダメージを軽減させる :
 
 }
 
+float Boss::Random(float minValue, float maxValue)
+{
+	//シード値乱数生成器
+	std::random_device rnd;
+	//メルセンヌ・ツイスタ方を使って乱数を作る
+	std::mt19937_64 mt64(rnd());
+	//範囲内の離散分布を作る
+	std::uniform_real_distribution<float> genRandFloat(minValue, maxValue);
+	//分布の中から生成した乱数を使って1つだけ値を取り出す
+	return genRandFloat(mt64);
+}
+
 WorldTransform Boss::GetWorldTransform()
 {
 	return gameObject->worldTransform;

@@ -3,7 +3,7 @@
 class BossBullet
 {
 public:
-	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection);
+	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, float Random);
 	void Update();
 	void Draw();
 
