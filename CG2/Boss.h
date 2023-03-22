@@ -16,6 +16,9 @@ public:
 	void Update();
 	void Draw();
 
+	void Attack();
+	void Attack2();
+	void Defence();
 private:
 	GameObject3D* gameObject = nullptr;
 
@@ -25,7 +28,7 @@ private:
 	float phaseTimer = 300.0f;
 	BossPhase phase = BossPhase::spown;
 
-	bool isDead = false;
+	bool isDead = true;
 	int HP = 10;
 };
 
