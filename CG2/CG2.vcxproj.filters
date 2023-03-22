@@ -90,6 +90,7 @@
     <ClCompile Include="PlayerBullet.cpp" />
     <ClCompile Include="ReilCamera.cpp" />
     <ClCompile Include="Boss.cpp" />
+    <ClCompile Include="BossBullet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FPS.h">
@@ -170,6 +171,7 @@
     <ClInclude Include="PlayerBullet.h" />
     <ClInclude Include="ReilCamera.h" />
     <ClInclude Include="Boss.h" />
+    <ClInclude Include="BossBullet.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Basic.hlsli">

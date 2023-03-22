@@ -33,7 +33,7 @@ void EnemyBullet::Update()
 	}
 
 	gameObject->Update();
-	
+
 }
 
 

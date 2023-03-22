@@ -157,7 +157,33 @@ void GameScene::Update()
 	//敵の削除
 	enemys3.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
 
+	//ボス関連
 	boss->Update();
+#pragma region made BossBullet
+	if (boss->GetIsDead()==false) {
+		if (boss->GetPhase() == BossPhase::attack2 && boss->GetAttackSpeed() <= 0.0f) {
+			//弾を生成
+			std::unique_ptr<BossBullet> bullet = std::make_unique<BossBullet>();
+			bullet->Initialize(&viewProjection_, &matProjection_);
+			bullet->SetTransform(boss->GetWorldTransform().translation);
+			bossBullet.push_back(std::move(bullet));
+			boss->SetAttackSpeed(200.0f);
+			if (boss->GetIsAttack() == false) {
+				boss->SetIsAttack(true);
+			}
+		}
+		if (boss->GetIsAttack() == true) {
+			for (std::unique_ptr<BossBullet>& bullet : bossBullet) {
+				bullet->Update();
+			}
+		}
+		//弾&敵を削除する
+		bossBullet.remove_if([](std::unique_ptr<BossBullet>& bullet) { return bullet->IsDead(); });
+		debugText.Printf(0, 260, 1.0f, 11, "bossPhase %d",boss->GetPhase());
+		debugText.Printf(0, 280, 1.0f, 14, "bossSpeed %f", boss->GetAttackSpeed());
+		debugText.Printf(0, 300, 1.0f, 14, "bossAttack %d", boss->GetIsAttack());
+	}	
+#pragma endregion
 
 	UpdateEnemyPopCommand();
 	
@@ -202,10 +228,6 @@ void GameScene::Update()
 	debugText.Printf(0, 180, 1.0f, 17, " measureCount:%d", rhythm->GetSoundState().measureCount);
 	debugText.Printf(0, 200, 1.0f, 9, " weapon:%d", rhythm->GetSoundState().weapon);
 
-	debugText.Printf(0, 220, 1.0f, 27, " %f,%f,%f",
-		player->GetWorldTransform().matWorld.m[3][0],
-		player->GetWorldTransform().matWorld.m[3][1],
-		player->GetWorldTransform().matWorld.m[3][2]);
 }
 
 void GameScene::Draw() {
@@ -225,7 +247,9 @@ void GameScene::Draw() {
 		enemy->Draw();
 	}
 
-	boss->Draw();
+	boss->Draw(); for (std::unique_ptr<BossBullet>& bullet : bossBullet) {
+		bullet->Draw();
+	}
 
 	for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
 		bullet->Draw();

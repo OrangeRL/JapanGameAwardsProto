@@ -1,6 +1,5 @@
 #pragma once
 #include "GameObject3D.h"
-#include "EnemyBullet.h"
 #include <memory>
 #include <list>
 enum class Phase {
@@ -35,7 +34,6 @@ public:
 
 	void CoolTime();
 
-	const std::list<std::unique_ptr<EnemyBullet>>& GetBullets() { return bullets; }
 	//座標取得用
 	WorldTransform GetWorldTransform();
 	//生成される場所を設定
@@ -57,8 +55,6 @@ private:
 	Phase phase = Phase::normal;
 
 	GameObject3D* gameObject = nullptr;
-	std::list<std::unique_ptr<EnemyBullet>> bullets;
-	EnemyBullet* enemyBullet = nullptr;
 
 	Vector3 moveSpeed = { 0,0,0 };
 	float attackSpeed = 100.0f;

@@ -15,6 +15,7 @@ void Boss::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 
 void Boss::Update()
 {
+	attackSpeed -= 0.5f;
 	phaseTimer--;
 	switch (phase)
 	{
@@ -22,20 +23,19 @@ void Boss::Update()
 		if (phaseTimer <= 0.0f) {
 			phase = BossPhase::attack;
 			isDead = false;
-			phaseTimer = 400.0f;
+			phaseTimer = 500.0f;
 		}
 		break;
 	case BossPhase::attack:	//UŒ‚1 ƒ‰ƒCƒ“(Ž})‚ð’£‚è‚»‚ê‚ð‰ñ“]‚³‚¹‚é
-		// «UŒ‚ˆ—
-		Attack();
 		//-----------------------
+		Attack();	//Ž©•ª‚ª‰ñ“]‚·‚é‚¾‚¯‚ÌˆÚ“®
 		if (phaseTimer <= 0.0f) {
 			phase = BossPhase::attack2;
-			phaseTimer = 400.0f;
+			phaseTimer = 1000.0f;
 		}
 		break;
-	case BossPhase::attack2:	//UŒ‚2
-		// «UŒ‚ˆ—2@ˆÚ“®êŠ‚ði‚ç‚¹‚é & ƒ‰ƒ“ƒ_ƒ€ƒVƒ‡ƒbƒg
+	case BossPhase::attack2:	//UŒ‚2 ˆÚ“®êŠ‚ði‚ç‚¹‚é & ƒ‰ƒ“ƒ_ƒ€ƒVƒ‡ƒbƒg
+		// «UŒ‚ˆ—2@
 		Attack2();
 		//-----------------------
 		if (phaseTimer <= 0.0f) {
@@ -53,7 +53,6 @@ void Boss::Update()
 		}
 		break;
 	}
-
 	gameObject->Update();
 }
 
@@ -64,17 +63,56 @@ void Boss::Draw()
 	}
 }
 
-void Boss::Attack()	//ƒ‰ƒCƒ“ó‚É’e‚ð“WŠJ‰ñ“]‚³‚¹‚é
+void Boss::Attack()	//ƒ‰ƒCƒ“ó‚É’e‚ð“WŠJ‰ñ“]‚³‚¹‚é : Ž©‹@‚ð‰ñ“]‚³‚¹‚é
 {
 
 }
 
-void Boss::Attack2()	//ˆÚ“®êŠ‚ð§ŒÀ‚·‚é&ƒ‰ƒ“ƒ_ƒ€ƒVƒ‡ƒbƒg
+void Boss::Attack2()	//ˆÚ“®êŠ‚ð§ŒÀ‚·‚é&ƒ‰ƒ“ƒ_ƒ€ƒVƒ‡ƒbƒg : 
 {
 
 }
 
-void Boss::Defence()	//ƒ_ƒ[ƒW‚ðŒyŒ¸‚³‚¹‚é
+void Boss::Defence()	//ƒ_ƒ[ƒW‚ðŒyŒ¸‚³‚¹‚é : 
 {
 
+}
+
+WorldTransform Boss::GetWorldTransform()
+{
+	return gameObject->worldTransform;
+}
+
+BossPhase Boss::GetPhase()
+{
+	return phase;
+}
+
+float Boss::GetAttackSpeed()
+{
+	return attackSpeed;
+}
+
+float Boss::SetAttackSpeed(float speed)
+{
+	this->attackSpeed = speed;
+
+	return this->attackSpeed;
+}
+
+bool Boss::GetIsAttack()
+{
+	return isAttack;
+}
+
+bool Boss::SetIsAttack(bool isAttack)
+{
+	this->isAttack = isAttack;
+
+	return this->isAttack;
+}
+
+bool Boss::GetIsDead()
+{
+	return isDead;
 }

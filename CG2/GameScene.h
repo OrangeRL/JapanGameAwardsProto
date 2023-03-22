@@ -21,6 +21,7 @@
 #include "Rhythm.h"
 #include "DebugText.h"
 #include "PlayerBullet.h"
+#include "BossBullet.h"
 #include "ReilCamera.h"
 
 class GameScene {
@@ -73,6 +74,7 @@ private: // メンバ変数
 	PlayerBullet* playerBullet = nullptr;
 
 	Boss* boss = nullptr;
+	std::list<std::unique_ptr<BossBullet>> bossBullet;
 
 	Particle* particle = nullptr;
 	Particle* particle2 = nullptr;

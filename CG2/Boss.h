@@ -1,6 +1,8 @@
 #pragma once
 #include "GameObject3D.h"
 #include "MathFunc.h"
+#include <memory>
+#include <list>
 
 enum BossPhase {
 	spown,
@@ -15,10 +17,20 @@ public:
 	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection);
 	void Update();
 	void Draw();
-
+	//↓行動指示用
 	void Attack();
 	void Attack2();
 	void Defence();
+
+	//座標取得用
+	WorldTransform GetWorldTransform();
+	BossPhase GetPhase();
+	
+	float GetAttackSpeed();
+	float SetAttackSpeed(float speed);
+	bool GetIsAttack();
+	bool SetIsAttack(bool isAttack);
+	bool GetIsDead();
 private:
 	GameObject3D* gameObject = nullptr;
 
@@ -30,5 +42,8 @@ private:
 
 	bool isDead = true;
 	int HP = 10;
+
+	float attackSpeed = 200.0f;
+	bool isAttack = false;
 };
 
