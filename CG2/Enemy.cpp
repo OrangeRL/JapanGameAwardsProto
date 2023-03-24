@@ -12,7 +12,7 @@ Enemy::~Enemy() {
 void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName) {
 
 	gameObject = new GameObject3D();
-	gameObject->PreLoadModel("Resources/star/star.obj");
+	gameObject->PreLoadModel("Resources/enemy/enemy.obj");
 	gameObject->PreLoadTexture(textureFileName/*L"Resources/monster/monster.png"*/);
 	gameObject->SetViewProjection(viewProjection);
 	gameObject->SetMatProjection(matProjection);

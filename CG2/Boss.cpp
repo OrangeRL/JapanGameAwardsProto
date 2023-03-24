@@ -66,17 +66,17 @@ void Boss::Draw()
 
 void Boss::Attack()	//ライン状に弾を展開回転させる : 自機を回転させる
 {
-
+	gameObject->worldTransform.rotation.y += 0.5f;
 }
 
 void Boss::Attack2()	//移動場所を制限する&ランダムショット : 
 {
-
+	
 }
 
 void Boss::Defence()	//ダメージを軽減させる : 
 {
-
+	
 }
 
 float Boss::Random(float minValue, float maxValue)
