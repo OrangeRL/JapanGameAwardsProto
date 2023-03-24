@@ -24,6 +24,8 @@ public:
 
 	void Update(WorldTransform wt);
 
+	void Aim(Vector3 player, Vector3 enemy);
+
 	void Draw();
 
 	void Reset();
@@ -48,6 +50,11 @@ public:
 	ViewProjection* GetViewProjection() { return viewProjection; }
 	WorldTransform GetWorldTransform();
 	Vector3 GetPos();
+
+	Vector3 GetAimPos();
+	int GetIsAimHit();
+	void AimHit();
+
 	Vector3 centerVec = { 0,0,0 };
 	Vector3 angle = {};
 
@@ -68,6 +75,7 @@ private:
 
 	//ゲームオブジェクト
 	GameObject3D* gameObject = nullptr;
+	GameObject3D* aimObject = nullptr;
 
 	ViewProjection* viewProjection;
 
@@ -78,7 +86,7 @@ private:
 	const float accelaration = 0.0025f;
 
 	float moveSpeed = 0;
-
+	float distance = 1;
 	const float maxSpeed = 0.5;
 	float ct = 0;
 	const float g = 3;
@@ -87,6 +95,10 @@ private:
 	Vector3 target;
 
 	int isDead = false;
+
+	int isAimHit = false;
+
+	int aimTouch = false;
 
 	int isHitMap = false;
 
@@ -108,9 +120,11 @@ private:
 	std::list<std::unique_ptr<PlayerBullet>>bullets_;
 	PlayerBullet* playerBullet = nullptr;
 
-
-	//std::list<std::unique_ptr<EnemyBullet>> enemyBullets;
-	//EnemyBullet* enemyBullet = nullptr;
+	//3Dレティクル用ワールドトランスフォーム
+	WorldTransform worldTransform3DReticle_;
 	
+	Vector3 posA;
+	Vector3 posB;
+	Vector3 posC;
 };
 

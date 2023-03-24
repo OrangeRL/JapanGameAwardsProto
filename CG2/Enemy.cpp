@@ -17,13 +17,20 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
 
-
 	gameObject->worldTransform.translation = { 0 , 0 , 100 };
 	gameObject->worldTransform.scale = { 2 , 2 , 2 };
 	
+	pManager.Initialize(viewProjection, matProjection);
+	//spManager.Initialize(viewProjection, matProjection);
 }
 
 void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int enemyNum) {
+	pManager.Update(gameObject->worldTransform.translation);
+	if (pManager.GetIsDead() == false) {
+		pManager.Update(gameObject->worldTransform.translation);
+	}
+	//spManager.Update(viewProjection, matProjection,gameObject->worldTransform.translation);
+
 	attackSpeed -= 0.5f;
 	if (enemyNum == 0) {
 	}
@@ -54,7 +61,11 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 }
 
 void Enemy::Draw() {
-	gameObject->Draw();
+	if (pManager.GetIsDead() == true) {
+		gameObject->Draw();
+	}
+	pManager.Draw();
+	//spManager.Draw();
 }
 
 void Enemy::Reset() {

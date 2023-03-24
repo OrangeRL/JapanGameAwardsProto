@@ -1,6 +1,8 @@
 #pragma once
 #include "GameObject3D.h"
 #include "EnemyBullet.h"
+#include "SpawnParticleManager.h"
+#include "Particle2.h"
 #include <memory>
 #include <list>
 enum class Phase {
@@ -76,6 +78,9 @@ private:
 	int32_t deleteTimer_ = deleteTime;
 	//フラグ
 	bool isDelete_ = false;
+
+	SpawnParticleManager spManager;
+	Particle2 pManager;
 };
 
 

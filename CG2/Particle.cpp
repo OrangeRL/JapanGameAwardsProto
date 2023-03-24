@@ -1,5 +1,6 @@
 #include "Particle.h"
 #include <random>
+#include <random>
 
 //—”ƒV[ƒh¶¬Ší
 std::random_device seed_gen;
@@ -80,9 +81,9 @@ void Particle::Update() {
 				gameObject[i]->worldTransform.scale = { 0.5 , 0.5 , 0.5 };
 
 				velocity[i] = {
-					speed * cosf(angle[i].y) ,
+					speed * cosf(1.8) ,
 					0 ,
-					speed * -sinf(angle[i].y)
+					speed * -sinf(1.8)
 				};
 
 				gameObject[i]->worldTransform.rotation = { distRot(engine) , distRot(engine) , distRot(engine) };

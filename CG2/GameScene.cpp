@@ -45,6 +45,9 @@ void GameScene::Initialize(WinApp* winApp)
 	num_[8]->LoadTexture(8, L"Resources/8.png");
 	num_[9]->LoadTexture(9, L"Resources/9.png");
 
+	crosshair->LoadTexture(11, L"Resources/crosshair.png");
+	crosshair = Sprite::Create(11, { 0,0 });
+
 	for (int i = 0; i < 10; i++) {
 		num_[i] = new Sprite(i, { 0,0 }, { 64,64 }, { 1.0f,1.0f,1.0f,1.0f }, { 0,0 }, 0, 0);
 		num_[i]->Initialize();
@@ -82,6 +85,9 @@ void GameScene::Initialize(WinApp* winApp)
 	particle2 = new Particle;
 	particle2->Initialize(&viewProjection_, &matProjection_, player);
 
+	particle3 = new Particle;
+	particle3->Initialize(&viewProjection_, &matProjection_, player);
+
 	loadEnemyPopData();
 
 	rhythm = new Rhythm();
@@ -98,13 +104,17 @@ void GameScene::Update()
 	}
 
 	player->Update(reilCamera->GetWorldTransform());
+	
 	reilCamera->Update(&input_);
 
 	particle->Update();
 	particle2->Update2();
 
 	skydome->Update();
-
+	player->Aim(player->GetWorldTransform().translation, {0,0,100});
+	
+	crosshair->SetPosition({ player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y });
+	crosshair->Sprite::SetSize({ 1,1 });
 	//敵の更新処理
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
 		enemy->Update(&viewProjection_, &matProjection_, 0);
@@ -136,7 +146,6 @@ void GameScene::Update()
 		bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
 		enemyPos = enemy->GetWorldTransform().translation;
 #pragma endregion
-		
 	}
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
 		enemy->Update(&viewProjection_, &matProjection_, 1);
@@ -183,7 +192,6 @@ void GameScene::Update()
 		player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
 	}
 
-
 	Collision();
 #pragma region DebugText
 	debugText.Printf(0, 100, 1.0f, 18, " Q,E...offset:%f", rhythm->GetSoundState().offset);
@@ -226,7 +234,7 @@ void GameScene::Draw() {
 	//スプライト描画
 	Sprite::PreDraw(dx12base_.GetCmdList().Get());
 
-
+	crosshair->Draw();
 	// デバッグテキストの描画
 	debugText.DrawAll(dx12base_.GetCmdList().Get());
 
@@ -369,6 +377,19 @@ void GameScene::Collision() {
 					}
 				}
 			}
+
+		/*	if (enemy->GetWorldTransform().translation.x -				player->GetAimPos().x < 2 &&
+				-0.1 < enemy->GetWorldTransform().translation.x -			player->GetAimPos().x) {
+				if (enemy->GetWorldTransform().translation.y -			player->GetAimPos().y < 2 &&
+					-0.1 < enemy->GetWorldTransform().translation.y -		player->GetAimPos().y) {
+					if (enemy->GetWorldTransform().translation.z -		player->GetAimPos().z < 100 &&
+						-2 < enemy->GetWorldTransform().translation.z - player->GetAimPos().z) {
+
+						player->OnCollision();
+
+					}
+				}
+			}*/
 #pragma endregion
 
 #pragma region bulletToEnemyCollisions

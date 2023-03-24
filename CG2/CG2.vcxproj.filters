@@ -89,6 +89,12 @@
     <ClCompile Include="EnemyBullet.cpp" />
     <ClCompile Include="PlayerBullet.cpp" />
     <ClCompile Include="ReilCamera.cpp" />
+    <ClCompile Include="SpawnParticle.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="SpawnParticleManager.cpp" />
+    <ClCompile Include="Particle2.cpp" />
+    <ClCompile Include="ParticleManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FPS.h">
@@ -168,6 +174,12 @@
     <ClInclude Include="EnemyBullet.h" />
     <ClInclude Include="PlayerBullet.h" />
     <ClInclude Include="ReilCamera.h" />
+    <ClInclude Include="SpawnParticle.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnParticleManager.h" />
+    <ClInclude Include="Particle2.h" />
+    <ClInclude Include="ParticleManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Basic.hlsli">
