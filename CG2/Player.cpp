@@ -110,9 +110,8 @@ void Player::Aim(Vector3 player, Vector3 enemy) {
 
 	aimObject->worldTransform.translation = gameObject->worldTransform.translation + offset * kDistancePlayerTo3DReticle;
 
-	AimHit();
 	if (isAimHit == true) {
-		distance = posB.z;
+		distance = 0;
 	}
 
 }

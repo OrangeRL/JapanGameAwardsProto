@@ -5,6 +5,7 @@
 #include "WinApp.h"
 #include "ViewProjection.h"
 #include "Audio.h"
+#include "Collision.h"
 //#include <xaudio2.h>
 #pragma comment(lib,"xaudio2.lib")
 #include <sstream>

@@ -377,19 +377,6 @@ void GameScene::Collision() {
 					}
 				}
 			}
-
-		/*	if (enemy->GetWorldTransform().translation.x -				player->GetAimPos().x < 2 &&
-				-0.1 < enemy->GetWorldTransform().translation.x -			player->GetAimPos().x) {
-				if (enemy->GetWorldTransform().translation.y -			player->GetAimPos().y < 2 &&
-					-0.1 < enemy->GetWorldTransform().translation.y -		player->GetAimPos().y) {
-					if (enemy->GetWorldTransform().translation.z -		player->GetAimPos().z < 100 &&
-						-2 < enemy->GetWorldTransform().translation.z - player->GetAimPos().z) {
-
-						player->OnCollision();
-
-					}
-				}
-			}*/
 #pragma endregion
 
 #pragma region bulletToEnemyCollisions
@@ -512,4 +499,18 @@ void GameScene::Collision() {
 			}
 		}
 #pragma endregion
+		for (std::unique_ptr<Enemy>& enemy : enemys1) {
+			if (enemy->GetWorldTransform().translation.x - player->GetAimPos().x < 2 &&
+				-2 < enemy->GetWorldTransform().translation.x - player->GetAimPos().x) {
+				if (enemy->GetWorldTransform().translation.y - player->GetAimPos().y < 2 &&
+					-2 < enemy->GetWorldTransform().translation.y - player->GetAimPos().y) {
+					if (enemy->GetWorldTransform().translation.z - player->GetAimPos().z < 100 &&
+						-2 < enemy->GetWorldTransform().translation.z - player->GetAimPos().z) {
+
+						player->AimHit();
+
+					}
+				}
+			}
+		}
 }
