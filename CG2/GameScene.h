@@ -22,6 +22,7 @@
 #include "PlayerBullet.h"
 #include "ReilCamera.h"
 #include "Item.h"
+#include "UIManager.h"
 
 class GameScene {
 
@@ -107,6 +108,9 @@ private: // メンバ変数
 	ReilCamera* reilCamera = nullptr;
 
 	Sprite* num_[10];
+
+	//UI関連
+	UIManager UIManager;
 
 // 敵コマンド関係
 //------------------------------------

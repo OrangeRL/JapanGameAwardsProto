@@ -20,6 +20,8 @@ void Rhythm::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 
 	soundManager_ = new SoundManager();
 	soundManager_->Initialize();
+	soundState.wave = 1;
+	soundState.measureCount = 0;
 
 	for (int i = 0; i < circleNum; i++) {
 		circle[i] = new GameObject3D();
@@ -35,7 +37,8 @@ void Rhythm::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 
 void Rhythm::Update(Input* input, Vector3 pos, Vector3 rot) {
 
-	if (soundState.timer == 0 && soundState.measureCount <= 0) {
+	if (soundState.wave == 1 && soundState.timer == 0 && soundState.measureCount <= 0) {
+		
 		soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), stage1BGM, false, soundState.BGMVolume);
 		stage1BGM.pSourceVoice->SetFrequencyRatio(1.0003f);
 	}
@@ -135,9 +138,11 @@ void Rhythm::Update(Input* input, Vector3 pos, Vector3 rot) {
 			soundState.measureCount++;
 		}
 
-		//小節が一定までいったら曲を最初からにする(仮)
-		if (soundState.measureCount >= 16) {
-			//soundState.measureCount = 0;
+		//小節が一定までいったらリセット
+		if (soundState.wave == 1 && soundState.measureCount >= 80 ||
+			soundState.wave == 2 && soundState.measureCount >= 88) {
+			soundState.measureCount = 0;
+			soundState.wave++;
 		}
 	}
 
@@ -157,30 +162,37 @@ void Rhythm::Update(Input* input, Vector3 pos, Vector3 rot) {
 		}
 	}
 
-	//音量調節
-	//BGM
-	if (input->PushKey(DIK_UP) && soundState.BGMVolume < 2.0f) {
-		soundState.BGMVolume += 0.01;
+	if (input->TriggerKey(DIK_LEFT)) {
+		soundState.wave--;
 	}
-	if (input->PushKey(DIK_DOWN) && soundState.BGMVolume >= 0.0f) {
-		soundState.BGMVolume -= 0.01;
-		if (soundState.BGMVolume <= 0.0f) {
-			soundState.BGMVolume = 0;
-		}
-	}
-	//SE
-	if (input->PushKey(DIK_RIGHT) && soundState.guideSEVolume < 2.0f) {
-		soundState.guideSEVolume += 0.01;
-	}
-	if (input->PushKey(DIK_LEFT) && soundState.guideSEVolume >= 0.0f) {
-		soundState.guideSEVolume -= 0.01;
-		if (soundState.guideSEVolume <= 0.0f) {
-			soundState.guideSEVolume = 0;
-		}
+	else if (input->TriggerKey(DIK_RIGHT)) {
+		soundState.wave++;
 	}
 
+	//音量調節
+	//BGM
+	//if (input->PushKey(DIK_UP) && soundState.BGMVolume < 2.0f) {
+	//	soundState.BGMVolume += 0.01;
+	//}
+	//if (input->PushKey(DIK_DOWN) && soundState.BGMVolume >= 0.0f) {
+	//	soundState.BGMVolume -= 0.01;
+	//	if (soundState.BGMVolume <= 0.0f) {
+	//		soundState.BGMVolume = 0;
+	//	}
+	//}
+	////SE
+	//if (input->PushKey(DIK_RIGHT) && soundState.guideSEVolume < 2.0f) {
+	//	soundState.guideSEVolume += 0.01;
+	//}
+	//if (input->PushKey(DIK_LEFT) && soundState.guideSEVolume >= 0.0f) {
+	//	soundState.guideSEVolume -= 0.01;
+	//	if (soundState.guideSEVolume <= 0.0f) {
+	//		soundState.guideSEVolume = 0;
+	//	}
+	//}
+
 	//demoBGM.pSourceVoice->SetVolume(BGMVolume);
-	stage1BGM.pSourceVoice->SetVolume(soundState.BGMVolume);
+	//stage1BGM.pSourceVoice->SetVolume(soundState.BGMVolume);
 
 	//UIの更新
 	circle[0]->color = { 1.0f,1.0f,0.5f,0.0f };

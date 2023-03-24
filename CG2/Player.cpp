@@ -146,10 +146,10 @@ void Player::NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 	}
 	const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = GetBullets();
 	for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
-		if (input.PushKey(DIK_P)) {
+		/*if (input.PushKey(DIK_P)) {
 			isDead = true;
 			bulletA->OnCollision();
-		}
+		}*/
 	}
 }
 void Player::Collision() {

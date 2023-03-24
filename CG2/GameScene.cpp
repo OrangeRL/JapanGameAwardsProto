@@ -7,15 +7,17 @@ GameScene::GameScene() {
 
 GameScene::~GameScene() {
 	delete rhythm;
-	for (int i = 0; i < 10; i++) {
-		delete num_[i];
-	}
 	delete player;
 	delete playerBullet;
 	delete skydome;
 	delete particle;
 	delete particle2;
 	delete reilCamera;
+	//delete UIManager;
+	//画像の解放
+	for (int i = 0; i < 10; i++) {
+		delete num_[i];
+	}
 }
 
 void GameScene::Initialize(WinApp* winApp) 
@@ -45,10 +47,14 @@ void GameScene::Initialize(WinApp* winApp)
 	num_[9]->LoadTexture(9, L"Resources/9.png");
 
 
+
 	for (int i = 0; i < 10; i++) {
 		num_[i] = new Sprite(i, { 0,0 }, { 64,64 }, { 1.0f,1.0f,1.0f,0.5f }, { 0,0 }, 0, 0);
 		num_[i]->Initialize();
 	}
+
+	//UI初期化
+	UIManager.Initialize();
 
 	viewProjection_.Initialize();
 
@@ -94,137 +100,146 @@ void GameScene::Initialize(WinApp* winApp)
 	rhythm->Initialize(&viewProjection_, &matProjection_);
 }
 
-void GameScene::Update() 
-{  
+void GameScene::Update()
+{
 	//ランダムな整数
 	std::default_random_engine engine(seed_gen());
 
 	viewProjection_ = reilCamera->GetViewProjection();
 
 	viewProjection_.UpdateView();
-	if (input_.PushKey(DIK_P)) {
-		//player->OnCollision();
-	}
 
-	player->Update(reilCamera->GetWorldTransform(), reilCamera->GetWorldTransform().rotation);
-	reilCamera->Update(&input_);
+	if (rhythm->GetSoundState().isPause == 0) {
 
-	particle->Update();
-	particle2->Update2();
-  
-	skydome->Update();
 
-	//アイテムの更新処理
-	for (std::unique_ptr<Item>& item : items_) {
-		item->Update();
-	}
+		player->Update(reilCamera->GetWorldTransform(), reilCamera->GetWorldTransform().rotation);
+		reilCamera->Update(&input_);
 
-	//デスフラグの立ったアイテムを削除
-	items_.remove_if([](std::unique_ptr<Item>& item) {
-		return item->GetIsDead();
-		});
+		particle->Update();
+		particle2->Update2();
 
-	//アイテム生成
-	if (input_.TriggerKey(DIK_T)) {
-		std::uniform_int_distribution<> dist(0, 4);
-		int value = dist(engine);
-		//アイテムを生成し、初期化
-		std::unique_ptr<Item>item = std::make_unique<Item>();
-		item->Initialize(&viewProjection_, &matProjection_, L"Resources/circle.png", { player->GetPos().x,player->GetPos().y,player->GetPos().z + 20.0f}, value);
+		skydome->Update();
 
-		//アイテムを登録する
-		items_.push_back(std::move(item));
-	}
-  
-	//敵の更新処理
-	for (std::unique_ptr<Enemy>& enemy : enemys1) {
-		enemy->Update(&viewProjection_, &matProjection_, 0);
+		//UI更新
+		UIManager.Update(rhythm);
+
+
+		//アイテムの更新処理
+		for (std::unique_ptr<Item>& item : items_) {
+			item->Update();
+		}
+
+		//デスフラグの立ったアイテムを削除
+		items_.remove_if([](std::unique_ptr<Item>& item) {
+			return item->GetIsDead();
+			});
+
+		//アイテム生成
+		if (input_.TriggerKey(DIK_T)) {
+			std::uniform_int_distribution<> dist(0, 4);
+			int value = dist(engine);
+			//アイテムを生成し、初期化
+			std::unique_ptr<Item>item = std::make_unique<Item>();
+			item->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", { player->GetPos().x,player->GetPos().y,player->GetPos().z + 20.0f }, value);
+
+			//アイテムを登録する
+			items_.push_back(std::move(item));
+		}
+
+		//敵の更新処理
+		for (std::unique_ptr<Enemy>& enemy : enemys1) {
+			enemy->Update(&viewProjection_, &matProjection_, 0);
 #pragma region makeEnemyBullet
-		if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::move) {
-			//弾を生成
-			std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
-			//初期化
-			bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetPos(), enemy->GetWorldTransform().translation);
-			bullet->SetTransform(enemy->GetWorldTransform().translation);
-			//使う弾の設定
-			bullet->SetBullet(0);
-			bullets1.push_back(std::move(bullet));
-			//攻撃頻度の設定 1(速い)~ >1(遅い)
-			enemy->SetAttackSpeed(150.0f);
+			if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::move) {
+				//弾を生成
+				std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
+				//初期化
+				bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetPos(), enemy->GetWorldTransform().translation);
+				bullet->SetTransform(enemy->GetWorldTransform().translation);
+				//使う弾の設定
+				bullet->SetBullet(0);
+				bullets1.push_back(std::move(bullet));
+				//攻撃頻度の設定 1(速い)~ >1(遅い)
+				enemy->SetAttackSpeed(150.0f);
 
-			if (enemy->GetIsAttack() == false) {
-				enemy->SetIsAttack(true);
+				if (enemy->GetIsAttack() == false) {
+					enemy->SetIsAttack(true);
+				}
 			}
-		}
-		if (enemy->GetIsAttack() == true) {
+			if (enemy->GetIsAttack() == true) {
 
-			for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
-				bullet->Update();
+				for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
+					bullet->Update();
+				}
 			}
-		}
 
-		//弾&敵を削除する
-		bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
+			//弾&敵を削除する
+			bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
 #pragma endregion
-		enemyPos = enemy->GetWorldTransform().translation;
-		//player->SetEnemy(enemy);
-		//player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
-	}
-	for (std::unique_ptr<Enemy>& enemy : enemys2) {
-		enemy->Update(&viewProjection_, &matProjection_, 1);
+			enemyPos = enemy->GetWorldTransform().translation;
+			//player->SetEnemy(enemy);
+			//player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
+		}
+		for (std::unique_ptr<Enemy>& enemy : enemys2) {
+			enemy->Update(&viewProjection_, &matProjection_, 1);
 #pragma region makeEnemyBullet
-		if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetCoolDown() == false) {
-			//弾を生成
-			std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
-			//初期化
-			bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetPos(), enemy->GetWorldTransform().translation);
-			bullet->SetTransform(enemy->GetWorldTransform().translation);
-			//使う弾の設定
-			bullet->SetBullet(1);
-			bullets2.push_back(std::move(bullet));
-			//攻撃頻度の設定 1(速い)~ >1(遅い)
-			enemy->SetAttackSpeed(15.0f);
-			if (enemy->GetIsAttack() == false) {
-				enemy->SetIsAttack(true);
+			if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetCoolDown() == false) {
+				//弾を生成
+				std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
+				//初期化
+				bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetPos(), enemy->GetWorldTransform().translation);
+				bullet->SetTransform(enemy->GetWorldTransform().translation);
+				//使う弾の設定
+				bullet->SetBullet(1);
+				bullets2.push_back(std::move(bullet));
+				//攻撃頻度の設定 1(速い)~ >1(遅い)
+				enemy->SetAttackSpeed(15.0f);
+				if (enemy->GetIsAttack() == false) {
+					enemy->SetIsAttack(true);
+				}
 			}
-		}
 
-		if (enemy->GetIsAttack() == true) {
-			for (std::unique_ptr<EnemyBullet>& bullet : bullets2) {
-				bullet->Update();
+			if (enemy->GetIsAttack() == true) {
+				for (std::unique_ptr<EnemyBullet>& bullet : bullets2) {
+					bullet->Update();
+				}
 			}
-		}
-		//弾を削除する
-		bullets2.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {return bullet->IsDead(); });
+			//弾を削除する
+			bullets2.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {return bullet->IsDead(); });
 #pragma endregion
-	}
-	UpdateEnemyPopCommand();
-
-	if (player->GetIsDead() == false) {
-		//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
-	}
-
-
-	if (input_.PushKey(DIK_R)) {
-		Reset();
-
-	}
-
-	/*if (player->GetIsDead() == true && particle->GetIsDead() == true) {
-		if (gameoverTimer <= 0) {
-			gameoverTimer = 5;
 		}
-		else {
-			gameoverTimer--;
+		UpdateEnemyPopCommand();
+
+		if (player->GetIsDead() == false) {
+			//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
+		}
+
+
+		if (input_.PushKey(DIK_R)) {
+			Reset();
+
+		}
+
+		/*if (player->GetIsDead() == true && particle->GetIsDead() == true) {
 			if (gameoverTimer <= 0) {
-				stage = 1;
-				Reset();
-				scene_ = Scene::Title;
+				gameoverTimer = 5;
 			}
-		}
-	}*/
+			else {
+				gameoverTimer--;
+				if (gameoverTimer <= 0) {
+					stage = 1;
+					Reset();
+					scene_ = Scene::Title;
+				}
+			}
+		}*/
 
-	rhythm->Update(&input_,player->GetPos(),reilCamera->GetWorldTransform().rotation);
+	}
+	else {
+		debugText.Printf(window_width/2, window_height/2, 1.0f, 6, " PAUSE");
+	}
+
+	rhythm->Update(&input_, player->GetPos(), reilCamera->GetWorldTransform().rotation);
 
 	//プレイヤーの弾発射処理
 	if (input_.TriggerKey(DIK_SPACE) && rhythm->GetSoundState().isFireSucces) {
@@ -239,11 +254,8 @@ void GameScene::Update()
 	debugText.Printf(0, 120, 1.0f, 10, " Timer:%f", rhythm->GetSoundState().timer);
 	debugText.Printf(0, 180, 1.0f, 17, " measureCount:%d", rhythm->GetSoundState().measureCount);
 	debugText.Printf(0, 200, 1.0f, 9, " weapon:%d", rhythm->GetSoundState().weapon);
-
-	//debugText.Printf(0, 220, 1.0f, 27, " %f,%f,%f",
-	//	item->GetWorldTransform().matWorld.m[3][0],
-	//	item->GetWorldTransform().matWorld.m[3][1],
-	//	item->GetWorldTransform().matWorld.m[3][2]);
+	debugText.Printf(0, 220, 1.0f, 7, " wave:%f", rhythm->GetSoundState().wave);
+	debugText.Printf(0, 240, 1.0f, 11, " rotY:%f", reilCamera->GetRotation().x);
 
 }
 
@@ -279,6 +291,7 @@ void GameScene::Draw() {
 	for (int i = 0; i < 10; i++) {
 		num_[i]->Draw();
 	}
+	UIManager.Draw(rhythm);
 
 	// デバッグテキストの描画
 	debugText.DrawAll(dx12base_.GetCmdList().Get());
@@ -409,8 +422,8 @@ void GameScene::Collision() {
 	const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = player->GetBullets();
 	for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
 		if (input_.PushKey(DIK_P)) {
-			player->OnCollision();
-			bulletA->OnCollision();
+			//player->OnCollision();
+			//bulletA->OnCollision();
 			break;
 		}
 	}
@@ -435,7 +448,7 @@ void GameScene::Collision() {
 		for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
 			if (input_.PushKey(DIK_P)) {
 				//player->OnCollision();
-				bulletA->OnCollision();
+				//bulletA->OnCollision();
 			}
 			if (enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x < 2 &&
 				-2 < enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x) {

@@ -34,6 +34,8 @@ struct SoundState {
 	float normalSEVolume = 1.0f;
 	//ガイドSE音量
 	float guideSEVolume = 1.0f;
+	//現在のウェーブ数
+	float wave = 1.0f;
 };
 
 class Rhythm

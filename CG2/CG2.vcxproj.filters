@@ -90,6 +90,7 @@
     <ClCompile Include="PlayerBullet.cpp" />
     <ClCompile Include="ReilCamera.cpp" />
     <ClCompile Include="Item.cpp" />
+    <ClCompile Include="UIManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FPS.h">
@@ -170,6 +171,7 @@
     <ClInclude Include="PlayerBullet.h" />
     <ClInclude Include="ReilCamera.h" />
     <ClInclude Include="Item.h" />
+    <ClInclude Include="UIManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Basic.hlsli">
