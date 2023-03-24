@@ -155,6 +155,7 @@
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="Goal.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="Item.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Model.cpp" />
@@ -165,6 +166,7 @@
     <ClCompile Include="PlayerBullet.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="UIManager.cpp" />
     <ClCompile Include="ViewProjection.cpp" />
     <ClCompile Include="MathFunc.cpp" />
     <ClCompile Include="Matrix4.cpp" />
@@ -226,6 +228,7 @@
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="Goal.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="Item.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Particle.h" />
@@ -236,6 +239,7 @@
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="UIManager.h" />
     <ClInclude Include="ViewProjection.h" />
     <ClInclude Include="MathFunc.h" />
     <ClInclude Include="Matrix4.h" />

@@ -1,6 +1,7 @@
 #pragma once
 #include "Input.h"
 #include "Audio.h"
+#include "GameObject3D.h"
 
 enum class Weapons {
 	Normal,		//通常弾
@@ -33,6 +34,8 @@ struct SoundState {
 	float normalSEVolume = 1.0f;
 	//ガイドSE音量
 	float guideSEVolume = 1.0f;
+	//現在のウェーブ数
+	float wave = 1.0f;
 };
 
 class Rhythm
@@ -41,13 +44,17 @@ public:
 
 	~Rhythm();
 
-	void Initialize();
+	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection);
 
-	void Update(Input* input);
+	void Update(Input* input, Vector3 pos, Vector3 rot);
+
+	void Draw();
 
 	void SoundUnload(SoundData soundData);
 
 	void SoundPlayWave(SoundData soundData, float volume);
+
+	void ItemSoundPlay(float volume);
 
 	void NormalShot(SoundState s, Input* input);
 	void RapidShot(SoundState s, Input* input);
@@ -60,6 +67,9 @@ public:
 	SoundState GetSoundState() { return soundState; }
 
 private:
+	static const int circleNum = 2;
+	GameObject3D* circle[circleNum];
+
 	SoundState soundState;
 
 	//一小節の時間
@@ -80,6 +90,8 @@ private:
 	//爆裂弾の発射が成功したかどうか(仮)
 	int isSuccess = 0;
 
+	Vector3 shrinkSpeed = { 0.1f,0.1f,0.0f };
+
 	//サウンドマネージャー
 	SoundManager* soundManager_ = nullptr;
 
@@ -93,7 +105,6 @@ private:
 	SoundData explosionSound = soundManager_->SoundLoadWave("Resources/shot3.wav");
 	SoundData demoBGM = soundManager_->SoundLoadWave("Resources/demo.wav");
 	SoundData stage1BGM = soundManager_->SoundLoadWave("Resources/stage1.wav");
-
-
+	SoundData itemSound = soundManager_->SoundLoadWave("Resources/item.wav");
 
 };

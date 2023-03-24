@@ -7,15 +7,17 @@ GameScene::GameScene() {
 
 GameScene::~GameScene() {
 	delete rhythm;
-	for (int i = 0; i < 10; i++) {
-		delete num_[i];
-	}
 	delete player;
 	delete playerBullet;
 	delete skydome;
 	delete particle;
 	delete particle2;
 	delete reilCamera;
+	//delete UIManager;
+	//画像の解放
+	for (int i = 0; i < 10; i++) {
+		delete num_[i];
+	}
 }
 
 void GameScene::Initialize(WinApp* winApp) 
@@ -24,7 +26,6 @@ void GameScene::Initialize(WinApp* winApp)
 	Sprite::LoadTexture(10, L"Resources/debugfont.png");
 	// デバッグテキスト初期化
 	debugText.Initialize(10);
-
 
 
 	//透視投影変換行列の計算
@@ -45,16 +46,23 @@ void GameScene::Initialize(WinApp* winApp)
 	num_[8]->LoadTexture(8, L"Resources/8.png");
 	num_[9]->LoadTexture(9, L"Resources/9.png");
 
+
+
 	for (int i = 0; i < 10; i++) {
-		num_[i] = new Sprite(i, { 0,0 }, { 64,64 }, { 1.0f,1.0f,1.0f,1.0f }, { 0,0 }, 0, 0);
+		num_[i] = new Sprite(i, { 0,0 }, { 64,64 }, { 1.0f,1.0f,1.0f,0.5f }, { 0,0 }, 0, 0);
 		num_[i]->Initialize();
 	}
+
+	//UI初期化
+	UIManager.Initialize();
 
 	viewProjection_.Initialize();
 
 	//XAudioエンジンのインスタンスを生成
-	soundManager_.Initialize();
+	//soundManager_ = new SoundManager();
+	//soundManager_->Initialize();
 
+	//天球
 	skydome = new GameObject3D();
 	skydome->PreLoadModel("Resources/skydome/skydome.obj");
 	skydome->PreLoadTexture(L"Resources/skydome/Fine_Basin.jpg");
@@ -66,6 +74,10 @@ void GameScene::Initialize(WinApp* winApp)
 	//レールカメラ
 	reilCamera = new ReilCamera();
 	reilCamera->Initialize({ 0,0,-50 }, { 0,0,0 });
+
+	//アイテム
+	//item = new Item();
+	//item->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", {0.0f,0.0f,50.0f},2);
 
 	player = new Player();
 	player->Initialize(&viewProjection_, &matProjection_);
@@ -89,55 +101,84 @@ void GameScene::Initialize(WinApp* winApp)
 	loadBossPopData(1);
 
 	rhythm = new Rhythm();
-	rhythm->Initialize();
+	rhythm->Initialize(&viewProjection_, &matProjection_);
 }
 
-void GameScene::Update() 
-{  
+void GameScene::Update()
+{
+	//ランダムな整数
+	std::default_random_engine engine(seed_gen());
+
 	viewProjection_ = reilCamera->GetViewProjection();
 
 	viewProjection_.UpdateView();
-	if (input_.PushKey(DIK_P)) {
-		//player->OnCollision();
-	}
 
-	player->Update(reilCamera->GetWorldTransform());
-	reilCamera->Update(&input_);
+	if (rhythm->GetSoundState().isPause == 0) {
 
-	particle->Update();
-	particle2->Update2();
-  
-	skydome->Update();
-  
-	//敵の更新処理
-	for (std::unique_ptr<Enemy>& enemy : enemys1) {
-		enemy->Update(&viewProjection_, &matProjection_, 0);
+
+		player->Update(reilCamera->GetWorldTransform(), reilCamera->GetWorldTransform().rotation);
+		reilCamera->Update(&input_);
+
+		particle->Update();
+		particle2->Update2();
+
+		skydome->Update();
+
+		//UI更新
+		UIManager.Update(rhythm);
+
+
+		//アイテムの更新処理
+		for (std::unique_ptr<Item>& item : items_) {
+			item->Update();
+		}
+
+		//デスフラグの立ったアイテムを削除
+		items_.remove_if([](std::unique_ptr<Item>& item) {
+			return item->GetIsDead();
+			});
+
+		//アイテム生成
+		if (input_.TriggerKey(DIK_T)) {
+			std::uniform_int_distribution<> dist(0, 4);
+			int value = dist(engine);
+			//アイテムを生成し、初期化
+			std::unique_ptr<Item>item = std::make_unique<Item>();
+			item->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", { player->GetPos().x,player->GetPos().y,player->GetPos().z + 20.0f }, value);
+
+			//アイテムを登録する
+			items_.push_back(std::move(item));
+		}
+
+		//敵の更新処理
+		for (std::unique_ptr<Enemy>& enemy : enemys1) {
+			enemy->Update(&viewProjection_, &matProjection_, 0);
 #pragma region makeEnemyBullet
-		if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::move) {
-			//弾を生成
-			std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
-			//初期化
-			bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetPos(), enemy->GetWorldTransform().translation);
-			bullet->SetTransform(enemy->GetWorldTransform().translation);
-			//使う弾の設定
-			bullet->SetBullet(0);
-			bullets1.push_back(std::move(bullet));
-			//攻撃頻度の設定 1(速い)~ >1(遅い)
-			enemy->SetAttackSpeed(150.0f);
+			if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::move) {
+				//弾を生成
+				std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
+				//初期化
+				bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetPos(), enemy->GetWorldTransform().translation);
+				bullet->SetTransform(enemy->GetWorldTransform().translation);
+				//使う弾の設定
+				bullet->SetBullet(0);
+				bullets1.push_back(std::move(bullet));
+				//攻撃頻度の設定 1(速い)~ >1(遅い)
+				enemy->SetAttackSpeed(150.0f);
 
-			if (enemy->GetIsAttack() == false) {
-				enemy->SetIsAttack(true);
+				if (enemy->GetIsAttack() == false) {
+					enemy->SetIsAttack(true);
+				}
 			}
-		}
-		if (enemy->GetIsAttack() == true) {
+			if (enemy->GetIsAttack() == true) {
 
-			for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
-				bullet->Update();
+				for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
+					bullet->Update();
+				}
 			}
-		}
 
-		//弾&敵を削除する
-		bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
+			//弾&敵を削除する
+			bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
 #pragma endregion
 		enemyPos = enemy->GetWorldTransform().translation;
 		//player->SetEnemy(enemy);
@@ -191,10 +232,13 @@ void GameScene::Update()
 		//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
 	}
 
+	if (player->GetIsDead() == false) {
+		//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
+	}
 
 	if (input_.PushKey(DIK_R)) {
 		Reset();
-
+    
 	}
 
 	/*if (player->GetIsDead() == true && particle->GetIsDead() == true) {
@@ -210,13 +254,18 @@ void GameScene::Update()
 			}
 		}
 	}*/
+  
+}
+	else {
+		debugText.Printf(window_width/2, window_height/2, 1.0f, 6, " PAUSE");
+	}
 
-	rhythm->Update(&input_);
+	rhythm->Update(&input_, player->GetPos(), reilCamera->GetWorldTransform().rotation);
+
 	//プレイヤーの弾発射処理
 	if (input_.TriggerKey(DIK_SPACE) && rhythm->GetSoundState().isFireSucces) {
 		player->NewBullet(&viewProjection_, &matProjection_, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,0.0f });
 	}
-
 
 	Collision();
 
@@ -226,14 +275,17 @@ void GameScene::Update()
 	debugText.Printf(0, 120, 1.0f, 10, " Timer:%f", rhythm->GetSoundState().timer);
 	debugText.Printf(0, 180, 1.0f, 17, " measureCount:%d", rhythm->GetSoundState().measureCount);
 	debugText.Printf(0, 200, 1.0f, 9, " weapon:%d", rhythm->GetSoundState().weapon);
-
-	debugText.Printf(0, 240, 1.0f, 14, "BossPhase : %d", boss->GetPhase());
+	debugText.Printf(0, 220, 1.0f, 7, " wave:%f", rhythm->GetSoundState().wave);
+	debugText.Printf(0, 240, 1.0f, 11, " rotY:%f", reilCamera->GetRotation().x);
+  
 }
 
 void GameScene::Draw() {
 	//3D描画
 	//プレイヤー描画
 	player->Draw();
+
+	rhythm->Draw();
 	particle->Draw();
 	particle2->Draw();
 	//敵の描画
@@ -258,12 +310,17 @@ void GameScene::Draw() {
 		bullet->Draw();
 	}
 
-
+	//アイテム描画
+	for (std::unique_ptr<Item>& item : items_) { item->Draw(); }
 	skydome->Draw();
 
 	//スプライト描画
 	Sprite::PreDraw(dx12base_.GetCmdList().Get());
 
+	for (int i = 0; i < 10; i++) {
+		num_[i]->Draw();
+	}
+	UIManager.Draw(rhythm);
 
 	// デバッグテキストの描画
 	debugText.DrawAll(dx12base_.GetCmdList().Get());
@@ -519,8 +576,8 @@ void GameScene::Collision() {
 	const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = player->GetBullets();
 	for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
 		if (input_.PushKey(DIK_P)) {
-			player->OnCollision();
-			bulletA->OnCollision();
+			//player->OnCollision();
+			//bulletA->OnCollision();
 			break;
 		}
 	}
@@ -545,7 +602,7 @@ void GameScene::Collision() {
 		for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
 			if (input_.PushKey(DIK_P)) {
 				//player->OnCollision();
-				bulletA->OnCollision();
+				//bulletA->OnCollision();
 			}
 			if (enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x < 2 &&
 				-2 < enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x) {
@@ -590,6 +647,41 @@ void GameScene::Collision() {
 						//bulletB->OnCollision();
 						//enemy->Reset();
 						player->OnCollision();
+					}
+				}
+			}
+		}
+
+		//自機とアイテムの当たり判定
+		for (const std::unique_ptr<Item>& item : items_) {
+			if (player->GetPos().x - item->GetPos().x < 2 &&
+				-2 < player->GetPos().x - item->GetPos().x) {
+				if (player->GetPos().y - item->GetPos().y < 2 &&
+					-2 < player->GetPos().y - item->GetPos().y) {
+					if (player->GetPos().z - item->GetPos().z < 2 &&
+						-2 < player->GetPos().z - item->GetPos().z) {
+
+						if (item->GetIsDead() == false) {
+							item->OnCollision();
+
+							if (item->GetWeapon() == 0) {
+								rhythm->SetWeapon(Weapons::Normal);
+							}
+							else if (item->GetWeapon() == 1) {
+								rhythm->SetWeapon(Weapons::Rapid);
+							}
+							else if (item->GetWeapon() == 2) {
+								rhythm->SetWeapon(Weapons::ThreeWay);
+							}
+							else if (item->GetWeapon() == 3) {
+								rhythm->SetWeapon(Weapons::Explosion);
+							}
+							else if (item->GetWeapon() == 4) {
+								rhythm->SetWeapon(Weapons::Laser);
+							}
+
+							rhythm->ItemSoundPlay(1.0f);
+						}
 					}
 				}
 			}

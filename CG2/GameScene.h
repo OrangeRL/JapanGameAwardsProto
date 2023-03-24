@@ -11,7 +11,7 @@
 #include "Sprite.h"
 #include <memory>
 #include <list>
-
+#include <random>
 #include "Player.h"
 #include "Boss.h"
 #include "Map.h"
@@ -23,6 +23,8 @@
 #include "PlayerBullet.h"
 #include "BossBullet.h"
 #include "ReilCamera.h"
+#include "Item.h"
+#include "UIManager.h"
 
 class GameScene {
 
@@ -72,8 +74,11 @@ private: // メンバ変数
 	XMMATRIX matProjection_ = {};
 	DebugText debugText;
 
+	//ランダムな整数
+	std::random_device seed_gen;
+
 	Rhythm* rhythm = nullptr;
-	SoundManager soundManager_;
+	//SoundManager* soundManager_ = nullptr;
 	ViewProjection viewProjection_;
 
 	bool isPlayingBGM = false;
@@ -95,7 +100,11 @@ private: // メンバ変数
 	std::list<std::unique_ptr<EnemyBullet>> bullets1;
 	std::list<std::unique_ptr<EnemyBullet>> bullets2;
 
+	//天球
 	GameObject3D* skydome = nullptr;
+
+	//アイテム
+	std::list<std::unique_ptr<Item>>items_;
 
 	Vector3 enemyPos = {};
 	//シーン管理
@@ -114,6 +123,9 @@ private: // メンバ変数
 	ReilCamera* reilCamera = nullptr;
 
 	Sprite* num_[10];
+
+	//UI関連
+	UIManager UIManager;
 
 // 敵コマンド関係
 //------------------------------------

@@ -7,20 +7,38 @@ Rhythm::~Rhythm() {
 	SoundUnload(shotSound);
 	SoundUnload(laserSound);
 	SoundUnload(explosionSound);
+	SoundUnload(itemSound);
 	SoundUnload(missSound);
 	SoundUnload(demoBGM);
 	delete soundManager_;
+	for (int i = 0; i < circleNum; i++) {
+		delete circle[i];
+	}
 }
 
-void Rhythm::Initialize() {
+void Rhythm::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection) {
 
 	soundManager_ = new SoundManager();
 	soundManager_->Initialize();
+	soundState.wave = 1;
+	soundState.measureCount = 0;
+
+	for (int i = 0; i < circleNum; i++) {
+		circle[i] = new GameObject3D();
+		circle[i]->PreLoadModel("Resources/circle/circle.obj");
+		circle[i]->PreLoadTexture(L"Resources/white1x1.png");
+		circle[i]->SetViewProjection(viewProjection);
+		circle[i]->SetMatProjection(matProjection);
+		circle[i]->Initialize();
+
+		circle[i]->worldTransform.scale = { 2.0f,2.0f,1.0f };
+	}
 }
 
-void Rhythm::Update(Input* input) {
+void Rhythm::Update(Input* input, Vector3 pos, Vector3 rot) {
 
-	if (soundState.timer == 0 && soundState.measureCount <= 0) {
+	if (soundState.wave == 1 && soundState.timer == 0 && soundState.measureCount <= 0) {
+		
 		soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), stage1BGM, false, soundState.BGMVolume);
 		stage1BGM.pSourceVoice->SetFrequencyRatio(1.0003f);
 	}
@@ -68,26 +86,36 @@ void Rhythm::Update(Input* input) {
 			//通常弾のリズム
 			if (soundState.weapon == Weapons::Normal) {
 				NormalShot(soundState, input);
-				if (input->PushKey(DIK_SPACE)) {
-					//soundState.isActive = 0;
-				}
+				shrinkSpeed = { 0.1f,0.1f,0.0f };
+				circle[1]->color.z -= 0.05f;
 			}
 			//速射弾のリズム
 			else if (soundState.weapon == Weapons::Rapid) {
 				RapidShot(soundState, input);
+				shrinkSpeed = { 0.2f,0.2f,0.0f };
+				circle[1]->color.z -= 0.1f;
 			}
 			//3way弾のリズム
 			else if (soundState.weapon == Weapons::ThreeWay) {
 				ThreeWayShot(soundState, input);
+				shrinkSpeed = { 0.15f,0.15f,0.0f };
+				circle[1]->color.z -= 0.075f;
 			}
 			//爆裂弾のリズム
 			else if (soundState.weapon == Weapons::Explosion) {
+				shrinkSpeed = { 0.05f,0.05f,0.0f };
+				circle[1]->color.z -= 0.025f;
 				ExplosionShot(soundState, input);
 			}
 			//レーザー弾のリズム
 			else if (soundState.weapon == Weapons::Laser) {
+				shrinkSpeed = { 0.0f,0.0f,0.0f };
+				circle[1]->color.z -= 0.025f;
 				LaserShot(soundState, input);
 			}
+
+			//UIの円を徐々に小さくする
+			circle[1]->worldTransform.scale -= shrinkSpeed;
 
 			//曲が一周したら最初から再生(仮)
 			if (soundState.measureCount == 0 && soundState.timer == 0) {
@@ -110,9 +138,11 @@ void Rhythm::Update(Input* input) {
 			soundState.measureCount++;
 		}
 
-		//小節が一定までいったら曲を最初からにする(仮)
-		if (soundState.measureCount >= 16) {
-			//soundState.measureCount = 0;
+		//小節が一定までいったらリセット
+		if (soundState.wave == 1 && soundState.measureCount >= 80 ||
+			soundState.wave == 2 && soundState.measureCount >= 88) {
+			soundState.measureCount = 0;
+			soundState.wave++;
 		}
 	}
 
@@ -132,30 +162,53 @@ void Rhythm::Update(Input* input) {
 		}
 	}
 
-	//音量調節
-	//BGM
-	if (input->PushKey(DIK_UP) && soundState.BGMVolume < 2.0f) {
-		soundState.BGMVolume += 0.01;
+	if (input->TriggerKey(DIK_LEFT)) {
+		soundState.wave--;
 	}
-	if (input->PushKey(DIK_DOWN) && soundState.BGMVolume >= 0.0f) {
-		soundState.BGMVolume -= 0.01;
-		if (soundState.BGMVolume <= 0.0f) {
-			soundState.BGMVolume = 0;
-		}
-	}
-	//SE
-	if (input->PushKey(DIK_RIGHT) && soundState.guideSEVolume < 2.0f) {
-		soundState.guideSEVolume += 0.01;
-	}
-	if (input->PushKey(DIK_LEFT) && soundState.guideSEVolume >= 0.0f) {
-		soundState.guideSEVolume -= 0.01;
-		if (soundState.guideSEVolume <= 0.0f) {
-			soundState.guideSEVolume = 0;
-		}
+	else if (input->TriggerKey(DIK_RIGHT)) {
+		soundState.wave++;
 	}
 
+	//音量調節
+	//BGM
+	//if (input->PushKey(DIK_UP) && soundState.BGMVolume < 2.0f) {
+	//	soundState.BGMVolume += 0.01;
+	//}
+	//if (input->PushKey(DIK_DOWN) && soundState.BGMVolume >= 0.0f) {
+	//	soundState.BGMVolume -= 0.01;
+	//	if (soundState.BGMVolume <= 0.0f) {
+	//		soundState.BGMVolume = 0;
+	//	}
+	//}
+	////SE
+	//if (input->PushKey(DIK_RIGHT) && soundState.guideSEVolume < 2.0f) {
+	//	soundState.guideSEVolume += 0.01;
+	//}
+	//if (input->PushKey(DIK_LEFT) && soundState.guideSEVolume >= 0.0f) {
+	//	soundState.guideSEVolume -= 0.01;
+	//	if (soundState.guideSEVolume <= 0.0f) {
+	//		soundState.guideSEVolume = 0;
+	//	}
+	//}
+
 	//demoBGM.pSourceVoice->SetVolume(BGMVolume);
-	stage1BGM.pSourceVoice->SetVolume(soundState.BGMVolume);
+	//stage1BGM.pSourceVoice->SetVolume(soundState.BGMVolume);
+
+	//UIの更新
+	circle[0]->color = { 1.0f,1.0f,0.5f,0.0f };
+
+	for (int i = 0; i < circleNum; i++) {
+		circle[i]->worldTransform.translation = pos;
+		circle[i]->worldTransform.rotation = rot;
+		circle[i]->Update();
+	}
+
+}
+
+void Rhythm::Draw() {
+	for (int i = 0; i < circleNum; i++) {
+		circle[i]->Draw();
+	}
 }
 
 void Rhythm::SoundPlayWave(SoundData soundData, float volume) {
@@ -168,6 +221,11 @@ void Rhythm::SoundUnload(SoundData soundData) {
 	soundManager_->SoundUnload(soundData);
 }
 
+void Rhythm::ItemSoundPlay(float volume) {
+	soundManager_->StopWave(itemSound);
+	soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), itemSound, false, volume);
+}
+
 //通常弾
 void Rhythm::NormalShot(SoundState s, Input* input) {
 	shotTiming1 = 30.0f;	//弾発射タイミング1
@@ -175,6 +233,8 @@ void Rhythm::NormalShot(SoundState s, Input* input) {
 
 	//一定のタイミングで音を鳴らす
 	if (s.timer == 0.0f || s.timer == shotTiming1) {
+		circle[1]->worldTransform.scale = { 5.0f,5.0f,0.0f };
+		circle[1]->color.z = 1.0f;
 		SoundPlayWave(guideSound2, s.guideSEVolume);
 	}
 	//一定のタイミングで弾を装填する
@@ -214,6 +274,8 @@ void Rhythm::RapidShot(SoundState s, Input* input) {
 	//一定のタイミングで音を鳴らす
 	if (s.timer == 0.0f || s.timer == shotTiming1 || s.timer == shotTiming2 || s.timer == shotTiming3) {
 		SoundPlayWave(guideSound2, s.guideSEVolume);
+		circle[1]->worldTransform.scale = { 5.0f,5.0f,0.0f };
+		circle[1]->color.z = 1.0f;
 	}
 	//一定のタイミングで弾を装填する
 	if (s.timer == reloadTiming || s.timer == shotTiming1 + reloadTiming ||
@@ -253,6 +315,8 @@ void Rhythm::ThreeWayShot(SoundState s, Input* input) {
 
 	//一定のタイミングで音を鳴らす
 	if (s.timer == 0.0f ||s. timer == shotTiming1 || s.timer == shotTiming2) {
+		circle[1]->worldTransform.scale = { 5.0f,5.0f,0.0f };
+		circle[1]->color.z = 1.0f;
 		SoundPlayWave(guideSound2, s.guideSEVolume);
 
 	}
@@ -292,6 +356,8 @@ void Rhythm::ExplosionShot(SoundState s, Input* input) {
 
 	//一定のタイミングで音を鳴らす
 	if (s.timer == 0.0f) {
+		circle[1]->worldTransform.scale = { 5.0f,5.0f,0.0f };
+		circle[1]->color.z = 1.0f;
 		SoundPlayWave(guideSound2, s.guideSEVolume);
 	}
 	//一定のタイミングで弾を装填する
@@ -329,7 +395,7 @@ void Rhythm::ExplosionShot(SoundState s, Input* input) {
 
 //レーザー弾
 void Rhythm::LaserShot(SoundState s, Input* input) {
-	reloadTiming = 0.0f;	//弾が装填されるタイミング
+	reloadTiming = 0.0f;	//弾が装填されるタイミング}
 
 	//一定のタイミングで音を鳴らす
 	if (s.timer == 0.0f && s.isLaserActive == 1) {
@@ -337,6 +403,8 @@ void Rhythm::LaserShot(SoundState s, Input* input) {
 	}
 	//一定のタイミングで弾を装填する
 	if (s.timer == reloadTiming && s.isLaserActive == 0) {
+		circle[1]->worldTransform.scale = { 5.0f,5.0f,0.0f };
+		circle[1]->color.z = 1.0f;
 		isFireActive = 1;
 	}
 
@@ -359,8 +427,13 @@ void Rhythm::LaserShot(SoundState s, Input* input) {
 
 			isFireActive = 0;
 		}
+		shrinkSpeed = { 0.05f,0.05f,0.0f };
+
 	}
 
+	if (circle[1]->worldTransform.scale.x <= 0) {
+		shrinkSpeed = { 0.0f,0.0f,0.0f };
+	}
 	//ボタンを離すと止まる
 	if (input->PushKey(DIK_SPACE) == 0 && laserSound.pSourceVoice != nullptr) {
 		laserSound.pSourceVoice->Stop(0);

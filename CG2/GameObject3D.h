@@ -51,7 +51,7 @@ private:
 public:
 	//ワールド変換
 	WorldTransform worldTransform;
-
+	Vector4 color = {1.0f,1.0f,1.0f,1.0f};
 
 private:
 	//モデル
@@ -86,5 +86,7 @@ private:
 	//ビュープロジェクション
 	ViewProjection* viewProjection;
 
+	//定数バッファのマッピング
+	ConstBufferDataMaterial* constMapMaterial = nullptr;
 };
 
