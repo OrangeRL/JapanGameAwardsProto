@@ -3,20 +3,21 @@
 void Boss::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 {
 	gameObject = new GameObject3D();
-	gameObject->PreLoadTexture(L"Resources/red.png");
+	gameObject->PreLoadModel("Resources/tree/tree.obj");
+	gameObject->PreLoadTexture(L"Resources/tree/tree.jpg");
 	gameObject->SetViewProjection(viewProjection);
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
 
-
+	gameObject->worldTransform.scale = { 1 , 1 , 1 };
+	gameObject->worldTransform.rotation = { 0,30,0 };
 	gameObject->worldTransform.translation = { 0 , 0 , 600 };
-	gameObject->worldTransform.scale = { 10 , 15 , 10 };
 }
 
 void Boss::Update()
 {
 	attackSpeed -= 0.5f;
-	phaseTimer--;
+	phaseTimer -= 0.1f;
 	switch (phase)
 	{
 	case BossPhase::spown:	// íaê∂

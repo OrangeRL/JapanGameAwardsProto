@@ -164,7 +164,7 @@ void GameScene::Update()
 				bullet->SetBullet(0);
 				bullets1.push_back(std::move(bullet));
 				//攻撃頻度の設定 1(速い)~ >1(遅い)
-				enemy->SetAttackSpeed(150.0f);
+				enemy->SetAttackSpeed(100.0f);
 
 				if (enemy->GetIsAttack() == false) {
 					enemy->SetIsAttack(true);
