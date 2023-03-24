@@ -83,6 +83,9 @@ void GameScene::Initialize(WinApp* winApp)
 	player->Initialize(&viewProjection_, &matProjection_);
 	player->SetPos({ 0.0f, 0.0f, 20.0f });
 
+	boss = new Boss();
+	boss->Initialize(&viewProjection_, &matProjection_);
+
 	viewProjection_ = reilCamera->GetViewProjection();
 
 	//player->SetMap(map);
@@ -94,7 +97,8 @@ void GameScene::Initialize(WinApp* winApp)
 	particle2 = new Particle;
 	particle2->Initialize(&viewProjection_, &matProjection_, player);
 
-	loadEnemyPopData();
+	loadEnemyPopData(1);
+	loadBossPopData(1);
 
 	rhythm = new Rhythm();
 	rhythm->Initialize(&viewProjection_, &matProjection_);
@@ -176,65 +180,82 @@ void GameScene::Update()
 			//弾&敵を削除する
 			bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
 #pragma endregion
-			enemyPos = enemy->GetWorldTransform().translation;
-			//player->SetEnemy(enemy);
-			//player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
-		}
-		for (std::unique_ptr<Enemy>& enemy : enemys2) {
-			enemy->Update(&viewProjection_, &matProjection_, 1);
-#pragma region makeEnemyBullet
-			if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetCoolDown() == false) {
-				//弾を生成
-				std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
-				//初期化
-				bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetPos(), enemy->GetWorldTransform().translation);
-				bullet->SetTransform(enemy->GetWorldTransform().translation);
-				//使う弾の設定
-				bullet->SetBullet(1);
-				bullets2.push_back(std::move(bullet));
-				//攻撃頻度の設定 1(速い)~ >1(遅い)
-				enemy->SetAttackSpeed(15.0f);
-				if (enemy->GetIsAttack() == false) {
-					enemy->SetIsAttack(true);
-				}
-			}
-
-			if (enemy->GetIsAttack() == true) {
-				for (std::unique_ptr<EnemyBullet>& bullet : bullets2) {
-					bullet->Update();
-				}
-			}
-			//弾を削除する
-			bullets2.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {return bullet->IsDead(); });
-#pragma endregion
-		}
-		UpdateEnemyPopCommand();
-
-		if (player->GetIsDead() == false) {
-			//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
-		}
-
-
-		if (input_.PushKey(DIK_R)) {
-			Reset();
-
-		}
-
-		/*if (player->GetIsDead() == true && particle->GetIsDead() == true) {
-			if (gameoverTimer <= 0) {
-				gameoverTimer = 5;
-			}
-			else {
-				gameoverTimer--;
-				if (gameoverTimer <= 0) {
-					stage = 1;
-					Reset();
-					scene_ = Scene::Title;
-				}
-			}
-		}*/
-
+		enemyPos = enemy->GetWorldTransform().translation;
+		//player->SetEnemy(enemy);
+		//player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
 	}
+	//敵1の削除
+	enemys1.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
+
+	for (std::unique_ptr<Enemy>& enemy : enemys2) {
+		enemy->Update(&viewProjection_, &matProjection_, 1);
+	}
+	//敵の削除
+	enemys2.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
+
+	for (std::unique_ptr<Enemy>& enemy : enemys3) {
+		enemy->Update(&viewProjection_, &matProjection_, 2);
+	}
+	//敵の削除
+	enemys3.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
+
+	//ボス関連
+	boss->Update();
+#pragma region made BossBullet
+	if (boss->GetIsDead()==false) {
+		if (boss->GetPhase() == BossPhase::attack2 && boss->GetAttackSpeed() <= 0.0f) {
+			//弾を生成
+			std::unique_ptr<BossBullet> bullet = std::make_unique<BossBullet>();
+			bullet->Initialize(&viewProjection_, &matProjection_, boss->Random(-0.5f, 0.1f));
+			bullet->SetTransform(boss->GetWorldTransform().translation);
+			bossBullet.push_back(std::move(bullet));
+			boss->SetAttackSpeed(200.0f);
+			if (boss->GetIsAttack() == false) {
+				boss->SetIsAttack(true);
+			}
+		}
+		if (boss->GetIsAttack() == true) {
+			for (std::unique_ptr<BossBullet>& bullet : bossBullet) {
+				bullet->Update();
+			}
+		}
+	}	
+#pragma endregion
+
+	UpdateEnemyPopCommand();
+	if (boss->GetPhase() == BossPhase::defence) {
+		UpdateBossPopCommand();
+	}
+
+
+	if (player->GetIsDead() == false) {
+		//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
+	}
+
+	if (player->GetIsDead() == false) {
+		//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
+	}
+
+	if (input_.PushKey(DIK_R)) {
+		Reset();
+    
+	}
+
+	/*if (player->GetIsDead() == true && particle->GetIsDead() == true) {
+		if (gameoverTimer <= 0) {
+			gameoverTimer = 5;
+		}
+		else {
+			gameoverTimer--;
+			if (gameoverTimer <= 0) {
+				stage = 1;
+				Reset();
+				scene_ = Scene::Title;
+			}
+		}
+	}*/
+  
+}
 	else {
 		debugText.Printf(window_width/2, window_height/2, 1.0f, 6, " PAUSE");
 	}
@@ -256,7 +277,7 @@ void GameScene::Update()
 	debugText.Printf(0, 200, 1.0f, 9, " weapon:%d", rhythm->GetSoundState().weapon);
 	debugText.Printf(0, 220, 1.0f, 7, " wave:%f", rhythm->GetSoundState().wave);
 	debugText.Printf(0, 240, 1.0f, 11, " rotY:%f", reilCamera->GetRotation().x);
-
+  
 }
 
 void GameScene::Draw() {
@@ -274,6 +295,14 @@ void GameScene::Draw() {
 	for (std::unique_ptr<Enemy>& enemy : enemys2) {
 		enemy->Draw();
 	}
+	for (std::unique_ptr<Enemy>& enemy : enemys3) {
+		enemy->Draw();
+	}
+
+	boss->Draw(); for (std::unique_ptr<BossBullet>& bullet : bossBullet) {
+		bullet->Draw();
+	}
+
 	for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
 		bullet->Draw();
 	}
@@ -300,16 +329,30 @@ void GameScene::Draw() {
 
 }
 
-void GameScene::loadEnemyPopData()
+void GameScene::loadEnemyPopData(int stageNum)
 {
-	//ファイルを開く
-	std::ifstream file;
-	file.open("Resources/enemy.csv");
-	assert(file.is_open());
-	//ファイルの内容を文字列ストリームにコピー
-	enemyPopCommand << file.rdbuf();
-	//ファイルを閉じる
-	file.close();
+
+	if (stageNum == 1) {
+		//ファイルを開く
+		std::ifstream file;
+		file.open("Resources/csv/enemy.csv");
+		assert(file.is_open());
+		//ファイルの内容を文字列ストリームにコピー
+		enemyPopCommand << file.rdbuf();
+		//ファイルを閉じる
+		file.close();
+	}
+	
+	if (stageNum == 2) {
+		//ファイルを開く
+		std::ifstream file;
+		file.open("Resources/csv/enemy2.csv");
+		assert(file.is_open());
+		//ファイルの内容を文字列ストリームにコピー
+		enemyPopCommand << file.rdbuf();
+		//ファイルを閉じる
+		file.close();
+	}
 }
 
 void GameScene::UpdateEnemyPopCommand()
@@ -336,7 +379,7 @@ void GameScene::UpdateEnemyPopCommand()
 			continue;
 		}
 		//POPコマンド
-		if (world.find("Enemy1") == 0) {
+		if (world.find("Enemy1") == 0) {	//固定砲台
 			//CSVに書いてある値を変数に入れる
 			//x座標
 			std::getline(line_stream, world, ',');
@@ -365,7 +408,118 @@ void GameScene::UpdateEnemyPopCommand()
 			//敵を登録
 			enemys1.push_back(std::move(newEnemy));
 		}
-		if (world.find("Enemy2") == 0) {
+		if (world.find("Enemy2") == 0) {	//移動のみ
+			//CSVに書いてある値を変数に入れる
+			//x座標
+			std::getline(line_stream, world, ',');
+			float x = (float)std::atof(world.c_str());
+			//y座標
+			std::getline(line_stream, world, ',');
+			float y = (float)std::atof(world.c_str());
+			//z座標
+			std::getline(line_stream, world, ',');
+			float z = (float)std::atof(world.c_str());
+			//移動速度
+			std::getline(line_stream, world, ',');
+			float speedX = (float)std::atof(world.c_str());
+			std::getline(line_stream, world, ',');
+			float speedY = (float)std::atof(world.c_str());
+			std::getline(line_stream, world, ',');
+			float speedZ = (float)std::atof(world.c_str());
+			//敵を発生させる
+			//-------ここにEnemy発生関数---------//
+			//複数化するためにuniq_ptrに変更
+			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
+			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/star/star.jpg");
+			//上で書いてある物をEnemyの座標としてセットする
+			newEnemy->Settransform(x, y, z);
+			newEnemy->SetSpeed(speedX, speedY, speedZ);
+			//敵を登録
+			enemys2.push_back(std::move(newEnemy));
+		}
+		if (world.find("Enemy3") == 0) {	//移動も攻撃もしない
+			//CSVに書いてある値を変数に入れる
+			//x座標
+			std::getline(line_stream, world, ',');
+			float x = (float)std::atof(world.c_str());
+			//y座標
+			std::getline(line_stream, world, ',');
+			float y = (float)std::atof(world.c_str());
+			//z座標
+			std::getline(line_stream, world, ',');
+			float z = (float)std::atof(world.c_str());
+			//移動速度
+			std::getline(line_stream, world, ',');
+			float speedX = (float)std::atof(world.c_str());
+			std::getline(line_stream, world, ',');
+			float speedY = (float)std::atof(world.c_str());
+			std::getline(line_stream, world, ',');
+			float speedZ = (float)std::atof(world.c_str());
+			//敵を発生させる
+			//-------ここにEnemy発生関数---------//
+			//複数化するためにuniq_ptrに変更
+			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
+			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/star/star.jpg");
+			//上で書いてある物をEnemyの座標としてセットする
+			newEnemy->Settransform(x, y, z);
+			newEnemy->SetSpeed(speedX, speedY, speedZ);
+			//敵を登録
+			enemys3.push_back(std::move(newEnemy));
+		}
+		//WAITコマンド
+		else if (world.find("WAIT") == 0)
+		{
+			std::getline(line_stream, world, ',');
+			//待ち時間
+			int32_t waitTime = atoi(world.c_str());
+			//待ち時間
+			waitFlag = true;
+			waitTime_ = waitTime;
+			//コマンドループを抜ける
+			break;
+		}
+	}
+}
+
+void GameScene::loadBossPopData(int stageNum)
+{
+	if (stageNum == 1) {
+		//ファイルを開く
+		std::ifstream file;
+		file.open("Resources/csv/bossAttack.csv");
+		assert(file.is_open());
+		//ファイルの内容を文字列ストリームにコピー
+		bossPopCommand << file.rdbuf();
+		//ファイルを閉じる
+		file.close();
+	}
+}
+
+void GameScene::UpdateBossPopCommand()
+{
+	if (bossWaitFlag) {
+		bossWaitTime_--;
+		if (bossWaitTime_ <= 0.0f) {
+			//待機完了
+			bossWaitFlag = false;
+		}
+		return;
+	}
+	//1行分の文字列を入れる
+	std::string line;
+	//コマンド実行
+	while (std::getline(bossPopCommand, line)) {
+		//1行分の文字列をストリームに変換
+		std::istringstream line_stream(line);
+		std::string world;
+		// ,区切りで行の先頭文字列を取得
+		std::getline(line_stream, world, ',');
+		//"//"から始まる行はコメント
+		if (world.find("//") == 0) {
+			continue;
+		}
+		//POPコマンド
+		if (world.find("Enemy1") == 0) {	//固定砲台
 			//CSVに書いてある値を変数に入れる
 			//x座標
 			std::getline(line_stream, world, ',');
@@ -392,7 +546,7 @@ void GameScene::UpdateEnemyPopCommand()
 			newEnemy->Settransform(x, y, z);
 			newEnemy->SetSpeed(speedX, speedY, speedZ);
 			//敵を登録
-			enemys2.push_back(std::move(newEnemy));
+			enemys1.push_back(std::move(newEnemy));
 		}
 		//WAITコマンド
 		else if (world.find("WAIT") == 0)

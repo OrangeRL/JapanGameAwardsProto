@@ -12,7 +12,8 @@ Enemy::~Enemy() {
 void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName) {
 
 	gameObject = new GameObject3D();
-	gameObject->PreLoadTexture(textureFileName);
+	gameObject->PreLoadModel("Resources/star/star.obj");
+	gameObject->PreLoadTexture(textureFileName/*L"Resources/monster/monster.png"*/);
 	gameObject->SetViewProjection(viewProjection);
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
@@ -20,43 +21,41 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 
 	gameObject->worldTransform.translation = { 0 , 0 , 100 };
 	gameObject->worldTransform.scale = { 2 , 2 , 2 };
-	
+
 }
 
+//Num が 1の奴は移動のみ
+//Num が 0は固定砲台
 void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int enemyNum) {
 	attackSpeed -= 0.5f;
-	if (enemyNum == 0) {
-		switch (phase)
-		{
-		case Phase::normal:
-		default:
-			//移動
-			phaseTimer -= 0.3f;
-			gameObject->worldTransform.translation += moveSpeed;
-			if (phaseTimer <= 0.0f) {
-				phaseTimer = 300.0f;
-				phase = Phase::move;
-			}
-			break;
-		case Phase::move:
-			//攻撃
+	phaseTimer--;
 
-			break;
-		case Phase::leave:
-			//離脱
-			Vector3 leaveSpeedt = { 0.5f,0.0f,0.3f };
-			Vector3 leaveSpeedf = { -0.5f,0.0f,0.3f };
-			Leave(leaveSpeedt, leaveSpeedf);
-			break;
+	switch (phase)
+	{
+	case Phase::spown:
+		//ここに敵のスポーン時の演出を追加する↓
+		
+		//-------------------------------------
+		if (phaseTimer <= 0.0f) {
+			phase = Phase::normal;
+			phaseTimer = 400.0f;
 		}
-
-	}
-	else if (enemyNum == 1) {
+		break;
+	case Phase::normal:
 		gameObject->worldTransform.translation += moveSpeed;
-		//�㉺�𔽕��ړ�
-		//Repetition();
-
-		CoolTime();
+		if (phaseTimer <= 0.0f) {
+			phase = Phase::move;
+			phaseTimer = 300.0f;
+		}
+		break;
+	case Phase::move:
+		if (phaseTimer <= 0.0f) {
+			phase = Phase::leave;
+			phaseTimer = 300.0f;
+		}
+		break;
+	case Phase::leave:
+		Leave({ 0.3f,0,0 }, { -0.3f,0,0 },enemyNum);
 	}
 	gameObject->Update();
 }
@@ -73,14 +72,25 @@ void Enemy::Repetition()
 {
 }
 //離脱
-void Enemy::Leave(Vector3 leaveSpeedt,Vector3 leaveSpeedf)
+void Enemy::Leave(Vector3 leaveSpeedt,Vector3 leaveSpeedf, int enemyNum)
 {
-	if (gameObject->worldTransform.translation.x >= 1) {
-		gameObject->worldTransform.translation += leaveSpeedt;
+	if (enemyNum == 1) {
+		if (gameObject->worldTransform.translation.x >= 1) {
+			gameObject->worldTransform.translation += leaveSpeedt;
+		}
+		if (gameObject->worldTransform.translation.x <= -1) {
+			gameObject->worldTransform.translation += leaveSpeedf;
+		}
 	}
-	if (gameObject->worldTransform.translation.x <= -1) {
-		gameObject->worldTransform.translation += leaveSpeedf;
+	if (enemyNum == 2) {
+		deleteTimer_ =960;
 	}
+
+	if (--deleteTimer_ <= 0) {
+		isDelete_ = true;
+	}
+
+
 }
 //弾のクールタイム
 void Enemy::CoolTime()
@@ -149,3 +159,4 @@ Phase Enemy::GetPhase()
 {
 	return phase;
 }
+

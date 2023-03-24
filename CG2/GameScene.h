@@ -13,6 +13,7 @@
 #include <list>
 #include <random>
 #include "Player.h"
+#include "Boss.h"
 #include "Map.h"
 #include "Goal.h"
 #include "Particle.h"
@@ -20,6 +21,7 @@
 #include "Rhythm.h"
 #include "DebugText.h"
 #include "PlayerBullet.h"
+#include "BossBullet.h"
 #include "ReilCamera.h"
 #include "Item.h"
 #include "UIManager.h"
@@ -49,12 +51,20 @@ public: // メンバ関数
 	/// <summary>
 	/// 敵発生データの読み込み
 	/// </summary>
-	void loadEnemyPopData();
+	void loadEnemyPopData(int stageNum);
 	/// <summary>
 	/// 敵発生コマンドの更新
 	/// </summary>
 	void UpdateEnemyPopCommand();
 
+	/// <summary>
+	/// 敵発生データの読み込み
+	/// </summary>
+	void loadBossPopData(int stageNum);
+	/// <summary>
+	/// 敵発生コマンドの更新
+	/// </summary>
+	void UpdateBossPopCommand();
 
 	const std::list<std::unique_ptr<Enemy>>& GetEnemies() { return enemys1; }
 private: // メンバ変数
@@ -76,12 +86,17 @@ private: // メンバ変数
 	Player* player = nullptr;
 	PlayerBullet* playerBullet = nullptr;
 
+	Boss* boss = nullptr;
+	std::list<std::unique_ptr<BossBullet>> bossBullet;
+
 	Particle* particle = nullptr;
 	Particle* particle2 = nullptr;
+	Particle* particle3 = nullptr;
 
 	//敵
 	std::list<std::unique_ptr<Enemy>> enemys1;
 	std::list<std::unique_ptr<Enemy>> enemys2;
+	std::list<std::unique_ptr<Enemy>> enemys3;
 	std::list<std::unique_ptr<EnemyBullet>> bullets1;
 	std::list<std::unique_ptr<EnemyBullet>> bullets2;
 
@@ -117,5 +132,11 @@ private: // メンバ変数
 	std::stringstream enemyPopCommand;
 	bool waitFlag = false;
 	float waitTime_;
+//------------------------------------
+//ボスコマンド関係
+//------------------------------------
+	std::stringstream bossPopCommand;
+	bool bossWaitFlag = false;
+	float bossWaitTime_;
 //------------------------------------
 };

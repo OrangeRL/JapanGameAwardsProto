@@ -1,9 +1,9 @@
 #pragma once
 #include "GameObject3D.h"
-#include "EnemyBullet.h"
 #include <memory>
 #include <list>
 enum class Phase {
+	spown,
 	normal,
 	move,
 	leave,
@@ -30,11 +30,10 @@ public:
 	//反復
 	void Repetition();
 	//離脱
-	void Leave(Vector3 leaveSpeedt, Vector3 leaveSpeedf);
+	void Leave(Vector3 leaveSpeedt, Vector3 leaveSpeedf,int enemyNum);
 
 	void CoolTime();
 
-	const std::list<std::unique_ptr<EnemyBullet>>& GetBullets() { return bullets; }
 	//座標取得用
 	WorldTransform GetWorldTransform();
 	//生成される場所を設定
@@ -51,12 +50,11 @@ public:
 	Phase GetPhase();
 
 	bool IsDead()const { return isDelete_; }
+
 private:
 	Phase phase = Phase::normal;
 
 	GameObject3D* gameObject = nullptr;
-	std::list<std::unique_ptr<EnemyBullet>> bullets;
-	EnemyBullet* enemyBullet = nullptr;
 
 	Vector3 moveSpeed = { 0,0,0 };
 	float attackSpeed = 100.0f;
@@ -69,11 +67,12 @@ private:
 
 	//消えるまでの時間
 	// 60 * 消えるまでの時間:
-	static const int32_t deleteTime = 60 * 3;
+	static const int32_t deleteTime = 60 * 8;
 	//タイマー
 	int32_t deleteTimer_ = deleteTime;
 	//フラグ
 	bool isDelete_ = false;
+
 };
 
 
