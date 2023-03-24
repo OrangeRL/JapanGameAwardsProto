@@ -86,6 +86,7 @@ void GameScene::Initialize(WinApp* winApp)
 	particle2->Initialize(&viewProjection_, &matProjection_, player);
 
 	loadEnemyPopData(1);
+	loadBossPopData(1);
 
 	rhythm = new Rhythm();
 	rhythm->Initialize();
@@ -181,7 +182,10 @@ void GameScene::Update()
 #pragma endregion
 
 	UpdateEnemyPopCommand();
-	
+	if (boss->GetPhase() == BossPhase::defence) {
+		UpdateBossPopCommand();
+	}
+
 
 	if (player->GetIsDead() == false) {
 		//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
@@ -223,6 +227,7 @@ void GameScene::Update()
 	debugText.Printf(0, 180, 1.0f, 17, " measureCount:%d", rhythm->GetSoundState().measureCount);
 	debugText.Printf(0, 200, 1.0f, 9, " weapon:%d", rhythm->GetSoundState().weapon);
 
+	debugText.Printf(0, 240, 1.0f, 14, "BossPhase : %d", boss->GetPhase());
 }
 
 void GameScene::Draw() {
@@ -403,6 +408,88 @@ void GameScene::UpdateEnemyPopCommand()
 			newEnemy->SetSpeed(speedX, speedY, speedZ);
 			//敵を登録
 			enemys3.push_back(std::move(newEnemy));
+		}
+		//WAITコマンド
+		else if (world.find("WAIT") == 0)
+		{
+			std::getline(line_stream, world, ',');
+			//待ち時間
+			int32_t waitTime = atoi(world.c_str());
+			//待ち時間
+			waitFlag = true;
+			waitTime_ = waitTime;
+			//コマンドループを抜ける
+			break;
+		}
+	}
+}
+
+void GameScene::loadBossPopData(int stageNum)
+{
+	if (stageNum == 1) {
+		//ファイルを開く
+		std::ifstream file;
+		file.open("Resources/csv/bossAttack.csv");
+		assert(file.is_open());
+		//ファイルの内容を文字列ストリームにコピー
+		bossPopCommand << file.rdbuf();
+		//ファイルを閉じる
+		file.close();
+	}
+}
+
+void GameScene::UpdateBossPopCommand()
+{
+	if (bossWaitFlag) {
+		bossWaitTime_--;
+		if (bossWaitTime_ <= 0.0f) {
+			//待機完了
+			bossWaitFlag = false;
+		}
+		return;
+	}
+	//1行分の文字列を入れる
+	std::string line;
+	//コマンド実行
+	while (std::getline(bossPopCommand, line)) {
+		//1行分の文字列をストリームに変換
+		std::istringstream line_stream(line);
+		std::string world;
+		// ,区切りで行の先頭文字列を取得
+		std::getline(line_stream, world, ',');
+		//"//"から始まる行はコメント
+		if (world.find("//") == 0) {
+			continue;
+		}
+		//POPコマンド
+		if (world.find("Enemy1") == 0) {	//固定砲台
+			//CSVに書いてある値を変数に入れる
+			//x座標
+			std::getline(line_stream, world, ',');
+			float x = (float)std::atof(world.c_str());
+			//y座標
+			std::getline(line_stream, world, ',');
+			float y = (float)std::atof(world.c_str());
+			//z座標
+			std::getline(line_stream, world, ',');
+			float z = (float)std::atof(world.c_str());
+			//移動速度
+			std::getline(line_stream, world, ',');
+			float speedX = (float)std::atof(world.c_str());
+			std::getline(line_stream, world, ',');
+			float speedY = (float)std::atof(world.c_str());
+			std::getline(line_stream, world, ',');
+			float speedZ = (float)std::atof(world.c_str());
+			//敵を発生させる
+			//-------ここにEnemy発生関数---------//
+			//複数化するためにuniq_ptrに変更
+			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
+			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/red.png");
+			//上で書いてある物をEnemyの座標としてセットする
+			newEnemy->Settransform(x, y, z);
+			newEnemy->SetSpeed(speedX, speedY, speedZ);
+			//敵を登録
+			enemys1.push_back(std::move(newEnemy));
 		}
 		//WAITコマンド
 		else if (world.find("WAIT") == 0)

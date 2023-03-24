@@ -7,7 +7,7 @@ void BossBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProject
 	gameObject->SetViewProjection(viewProjection);
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
-	speed = { Random,Random,Random };
+	speed = { 0.0f,0.0f,0.1f };
 
 }
 

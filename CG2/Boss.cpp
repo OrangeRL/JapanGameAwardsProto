@@ -23,7 +23,7 @@ void Boss::Update()
 		if (phaseTimer <= 0.0f) {
 			phase = BossPhase::attack;
 			isDead = false;
-			phaseTimer = 500.0f;
+			phaseTimer = 1000.0f;
 		}
 		break;
 	case BossPhase::attack:	//UŒ‚1 ƒ‰ƒCƒ“(Ž})‚ð’£‚è‚»‚ê‚ð‰ñ“]‚³‚¹‚é

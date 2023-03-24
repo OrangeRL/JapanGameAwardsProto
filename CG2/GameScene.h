@@ -55,6 +55,14 @@ public: // メンバ関数
 	/// </summary>
 	void UpdateEnemyPopCommand();
 
+	/// <summary>
+	/// 敵発生データの読み込み
+	/// </summary>
+	void loadBossPopData(int stageNum);
+	/// <summary>
+	/// 敵発生コマンドの更新
+	/// </summary>
+	void UpdateBossPopCommand();
 
 	const std::list<std::unique_ptr<Enemy>>& GetEnemies() { return enemys1; }
 private: // メンバ変数
@@ -112,5 +120,11 @@ private: // メンバ変数
 	std::stringstream enemyPopCommand;
 	bool waitFlag = false;
 	float waitTime_;
+//------------------------------------
+//ボスコマンド関係
+//------------------------------------
+	std::stringstream bossPopCommand;
+	bool bossWaitFlag = false;
+	float bossWaitTime_;
 //------------------------------------
 };
