@@ -195,6 +195,33 @@ void GameScene::Update()
 
 	for (std::unique_ptr<Enemy>& enemy : enemys3) {
 		enemy->Update(&viewProjection_, &matProjection_, 2);
+#pragma region makeEnemyBullet
+		if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::move) {
+			//弾を生成
+			std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
+			//初期化
+			bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetPos(), enemy->GetWorldTransform().translation);
+			bullet->SetTransform(enemy->GetWorldTransform().translation);
+			//使う弾の設定
+			bullet->SetBullet(1);
+			bullets2.push_back(std::move(bullet));
+			//攻撃頻度の設定 1(速い)~ >1(遅い)
+			enemy->SetAttackSpeed(5.0f);
+
+			if (enemy->GetIsAttack() == false) {
+				enemy->SetIsAttack(true);
+			}
+		}
+		if (enemy->GetIsAttack() == true) {
+
+			for (std::unique_ptr<EnemyBullet>& bullet : bullets2) {
+				bullet->Update();
+			}
+		}
+
+		//弾&敵を削除する
+		bullets2.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
+#pragma endregion
 	}
 	//敵の削除
 	enemys3.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
@@ -277,7 +304,7 @@ void GameScene::Update()
 	debugText.Printf(0, 200, 1.0f, 9, " weapon:%d", rhythm->GetSoundState().weapon);
 	debugText.Printf(0, 220, 1.0f, 7, " wave:%f", rhythm->GetSoundState().wave);
 	debugText.Printf(0, 240, 1.0f, 11, " rotY:%f", reilCamera->GetRotation().x);
-  
+
 }
 
 void GameScene::Draw() {
@@ -299,9 +326,9 @@ void GameScene::Draw() {
 		enemy->Draw();
 	}
 
-	boss->Draw(); for (std::unique_ptr<BossBullet>& bullet : bossBullet) {
+	/*boss->Draw(); for (std::unique_ptr<BossBullet>& bullet : bossBullet) {
 		bullet->Draw();
-	}
+	}*/
 
 	for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
 		bullet->Draw();

@@ -12,15 +12,16 @@ Enemy::~Enemy() {
 void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName) {
 
 	gameObject = new GameObject3D();
-	gameObject->PreLoadModel("Resources/enemy/enemy.obj");
+	gameObject->PreLoadModel("Resources/star/star.obj");
 	gameObject->PreLoadTexture(textureFileName/*L"Resources/monster/monster.png"*/);
 	gameObject->SetViewProjection(viewProjection);
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
 
-
-	gameObject->worldTransform.translation = { 0 , 0 , 100 };
 	gameObject->worldTransform.scale = { 2 , 2 , 2 };
+	gameObject->worldTransform.rotation = { 0,0,0 };
+	gameObject->worldTransform.translation = { 0 , 0 , 100 };
+
 
 }
 
@@ -33,28 +34,29 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 	switch (phase)
 	{
 	case Phase::spown:
-		//ここに敵のスポーン時の演出を追加する↓
-		
-		//-------------------------------------
 		if (phaseTimer <= 0.0f) {
 			phase = Phase::normal;
 			phaseTimer = 400.0f;
 		}
 		break;
-	case Phase::normal:
+	case Phase::normal:	//通常
 		gameObject->worldTransform.translation += moveSpeed;
 		if (phaseTimer <= 0.0f) {
 			phase = Phase::move;
 			phaseTimer = 300.0f;
 		}
 		break;
-	case Phase::move:
+	case Phase::move:	//行動
+		if (enemyNum == 2) {
+			gameObject->worldTransform.rotation.y += 0.1f;
+			gameObject->worldTransform.translation.z -= 0.1f;
+		}
 		if (phaseTimer <= 0.0f) {
 			phase = Phase::leave;
 			phaseTimer = 300.0f;
 		}
 		break;
-	case Phase::leave:
+	case Phase::leave:	//離脱
 		Leave({ 0.3f,0,0 }, { -0.3f,0,0 },enemyNum);
 	}
 	gameObject->Update();
@@ -74,7 +76,11 @@ void Enemy::Repetition()
 //離脱
 void Enemy::Leave(Vector3 leaveSpeedt,Vector3 leaveSpeedf, int enemyNum)
 {
-	if (enemyNum == 1) {
+	if (enemyNum == 0) {	//固定砲台
+
+	}
+
+	if (enemyNum == 1) {	//ゲート
 		if (gameObject->worldTransform.translation.x >= 1) {
 			gameObject->worldTransform.translation += leaveSpeedt;
 		}
@@ -82,8 +88,9 @@ void Enemy::Leave(Vector3 leaveSpeedt,Vector3 leaveSpeedf, int enemyNum)
 			gameObject->worldTransform.translation += leaveSpeedf;
 		}
 	}
-	if (enemyNum == 2) {
-		deleteTimer_ =960;
+
+	if (enemyNum == 2) {	//直線レーザータレット
+		gameObject->worldTransform.rotation.y += 0.3f;
 	}
 
 	if (--deleteTimer_ <= 0) {
@@ -92,6 +99,7 @@ void Enemy::Leave(Vector3 leaveSpeedt,Vector3 leaveSpeedf, int enemyNum)
 
 
 }
+
 //弾のクールタイム
 void Enemy::CoolTime()
 {
