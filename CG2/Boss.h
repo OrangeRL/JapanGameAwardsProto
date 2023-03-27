@@ -40,7 +40,7 @@ private:
 	Vector3 moveSpeed = { 0,0,0 };
 
 	//s“®•Ï‰»
-	float phaseTimer = 3000.0f;
+	float phaseTimer = 100.0f;
 	BossPhase phase = BossPhase::spown;
 
 	bool isDead = true;

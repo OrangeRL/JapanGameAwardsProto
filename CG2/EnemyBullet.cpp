@@ -28,6 +28,15 @@ void EnemyBullet::Update()
 		gameObject->worldTransform.translation -= posC;
 	}
 
+	if (bulletNum == 1) {
+		if (gameObject->worldTransform.translation.y < 1.0f) {
+			gameObject->worldTransform.translation.y += 0.1f;
+		}
+		else if (gameObject->worldTransform.translation.y >= 1.0f) {
+			gameObject->worldTransform.translation.z -= 0.2f;
+		}
+	}
+
 	if (--deleteTimer_ <= 0) {
 		isDelete_ = true;
 	}
