@@ -37,7 +37,7 @@ private:
 		return -(cos(PI * number) - 1) / 2;
 		//return sin((number * PI) / 2);
 	}
-	const float MAX_FLAME = 50.0f;
+	const float MAX_FLAME = 100.0f;
 	float flameLeft = 0;
 	float flameRight = 0;
 	float flameUp = 0;

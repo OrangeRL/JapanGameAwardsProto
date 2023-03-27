@@ -65,7 +65,7 @@ void GameScene::Initialize(WinApp* winApp)
 	//天球
 	skydome = new GameObject3D();
 	skydome->PreLoadModel("Resources/skydome/skydome.obj");
-	skydome->PreLoadTexture(L"Resources/skydome/Fine_Basin.jpg");
+	skydome->PreLoadTexture(L"Resources/skydome/skydome.png");
 	skydome->SetViewProjection(&viewProjection_);
 	skydome->SetMatProjection(&matProjection_);
 	skydome->Initialize();
