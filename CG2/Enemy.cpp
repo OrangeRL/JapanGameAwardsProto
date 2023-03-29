@@ -43,7 +43,7 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 		gameObject->worldTransform.translation += moveSpeed;
 		if (phaseTimer <= 0.0f) {
 			phase = Phase::move;
-			phaseTimer = 300.0f;
+			phaseTimer = 200.0f;
 		}
 		break;
 	case Phase::move:	//行動
