@@ -307,7 +307,7 @@ void GameScene::Update()
 		player->NewBullet(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
 	}
 
-	player->NewBulletAim(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
+	//player->NewBulletAim(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
 	
 
 	Collisions();
@@ -813,6 +813,11 @@ void GameScene::Collisions() {
 							-5 < enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z) {
 
 							bulletA->OnCollision();
+						}
+					}
+				}
+			}
+		}
 
 		//自機とアイテムの当たり判定
 		for (const std::unique_ptr<Item>& item : items_) {
@@ -873,4 +878,4 @@ void GameScene::SetCollisionEnemy(Vector3 position, Vector3 scale)
 	std::unique_ptr<Collision>newCollision = std::make_unique<Collision>();
 	newCollision->SetObject(position, scale);
 	collisionsEnemy.push_back(std::move(newCollision));
-}
+};
