@@ -122,8 +122,6 @@ private: // メンバ変数
 
 	ReilCamera* reilCamera = nullptr;
 
-	Sprite* num_[10];
-
 	//UI関連
 	UIManager UIManager;
 

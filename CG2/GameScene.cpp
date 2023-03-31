@@ -14,18 +14,15 @@ GameScene::~GameScene() {
 	delete particle2;
 	delete reilCamera;
 	//delete UIManager;
-	//画像の解放
-	for (int i = 0; i < 10; i++) {
-		delete num_[i];
-	}
+
 }
 
 void GameScene::Initialize(WinApp* winApp) 
 {
 	// デバッグテキスト用テクスチャ読み込み
-	Sprite::LoadTexture(10, L"Resources/debugfont.png");
+	Sprite::LoadTexture(0, L"Resources/debugfont.png");
 	// デバッグテキスト初期化
-	debugText.Initialize(10);
+	debugText.Initialize(0);
 
 
 	//透視投影変換行列の計算
@@ -35,26 +32,12 @@ void GameScene::Initialize(WinApp* winApp)
 		0.1f, 1000.0f
 	);
 
-	num_[0]->LoadTexture(0, L"Resources/0.png");
-	num_[1]->LoadTexture(1, L"Resources/1.png");
-	num_[2]->LoadTexture(2, L"Resources/2.png");
-	num_[3]->LoadTexture(3, L"Resources/3.png");
-	num_[4]->LoadTexture(4, L"Resources/4.png");
-	num_[5]->LoadTexture(5, L"Resources/5.png");
-	num_[6]->LoadTexture(6, L"Resources/6.png");
-	num_[7]->LoadTexture(7, L"Resources/7.png");
-	num_[8]->LoadTexture(8, L"Resources/8.png");
-	num_[9]->LoadTexture(9, L"Resources/9.png");
-
-
-
-	for (int i = 0; i < 10; i++) {
-		num_[i] = new Sprite(i, { 0,0 }, { 64,64 }, { 1.0f,1.0f,1.0f,0.5f }, { 0,0 }, 0, 0);
-		num_[i]->Initialize();
-	}
-
+	// UI用テクスチャ読み込み
+	Sprite::LoadTexture(1, L"Resources/gamefont2.png");
+	Sprite::LoadTexture(2, L"Resources/text.png");
 	//UI初期化
-	UIManager.Initialize();
+	UIManager.Initialize(1);
+
 
 	viewProjection_.Initialize();
 
@@ -113,19 +96,21 @@ void GameScene::Update()
 
 	viewProjection_.UpdateView();
 
+	//UI更新
+	UIManager.Update(rhythm, player->GetIsDead());
+
 	if (rhythm->GetSoundState().isPause == 0) {
 
 
 		player->Update(reilCamera->GetWorldTransform(), reilCamera->GetWorldTransform().rotation);
-		reilCamera->Update(&input_);
+		if (player->GetIsDead() == false) {
+			reilCamera->Update(&input_);
+		}
 
 		particle->Update();
 		particle2->Update2();
 
 		skydome->Update();
-
-		//UI更新
-		UIManager.Update(rhythm);
 
 
 		//アイテムの更新処理
@@ -284,10 +269,10 @@ void GameScene::Update()
   
 }
 	else {
-		debugText.Printf(window_width/2, window_height/2, 1.0f, 6, " PAUSE");
+		//debugText.Printf(window_width/2, window_height/2, 1.0f, 6, " PAUSE");
 	}
 
-	rhythm->Update(&input_, player->GetPos(), reilCamera->GetWorldTransform().rotation);
+	rhythm->Update(&input_, player->GetPos(), reilCamera->GetWorldTransform().rotation,player->GetIsDead(),stage);
 
 	//プレイヤーの弾発射処理
 	if (input_.TriggerKey(DIK_SPACE) && rhythm->GetSoundState().isFireSucces) {
@@ -312,7 +297,7 @@ void GameScene::Draw() {
 	//プレイヤー描画
 	player->Draw();
 
-	rhythm->Draw();
+	rhythm->Draw(player->GetIsDead());
 	particle->Draw();
 	particle2->Draw();
 	//敵の描画
@@ -344,9 +329,6 @@ void GameScene::Draw() {
 	//スプライト描画
 	Sprite::PreDraw(dx12base_.GetCmdList().Get());
 
-	for (int i = 0; i < 10; i++) {
-		num_[i]->Draw();
-	}
 	UIManager.Draw(rhythm);
 
 	// デバッグテキストの描画
