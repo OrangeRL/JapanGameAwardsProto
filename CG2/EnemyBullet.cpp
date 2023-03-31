@@ -87,3 +87,8 @@ void EnemyBullet::Aim(Vector3 player, Vector3 enemy)
 	posC *= speed;
 }
 
+void EnemyBullet::OnCollision()
+{
+	isDelete_ = true;
+}
+

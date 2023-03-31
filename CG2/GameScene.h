@@ -5,6 +5,7 @@
 #include "WinApp.h"
 #include "ViewProjection.h"
 #include "Audio.h"
+#include "Collision.h"
 //#include <xaudio2.h>
 #pragma comment(lib,"xaudio2.lib")
 #include <sstream>
@@ -23,6 +24,7 @@
 #include "PlayerBullet.h"
 #include "BossBullet.h"
 #include "ReilCamera.h"
+#include "Pattern2.h"
 #include "Item.h"
 #include "UIManager.h"
 
@@ -46,7 +48,7 @@ public: // メンバ関数
 
 	void Reset();
 
-	void Collision();
+	void Collisions();
 
 	/// <summary>
 	/// 敵発生データの読み込み
@@ -56,7 +58,41 @@ public: // メンバ関数
 	/// 敵発生コマンドの更新
 	/// </summary>
 	void UpdateEnemyPopCommand();
+	const std::list<std::unique_ptr<Enemy>>& GetEnemies() { return enemys1; }
 
+	//セッター
+//変形行列セット
+	void SetPosition0(Vector3 pos) { position0 = pos; }
+	void SetRotation0(Vector3 rot) { rotation0 = rot; }
+	void SetScale0(Vector3 sca) { scale0 = sca; }
+	void SetPosition1(Vector3 pos) { position1 = pos; }
+	void SetRotation1(Vector3 rot) { rotation1 = rot; }
+	void SetScale1(Vector3 sca) { scale1 = sca; }
+
+	//当たり判定セット
+	void SetCollisionPlayer(Vector3 position, Vector3 scale);
+	void SetCollisionEnemy(Vector3 position, Vector3 scale);
+	void SetCollisionBullet(Vector3 position, Vector3 scale);
+	void SetCollisionEnemyBullet(Vector3 position, Vector3 scale);
+	void SetCollisionAim(Vector3 position, Vector3 scale);
+
+	//ゲッター
+//変形行列
+	Vector3 GetPosition0() { return position0; }
+	Vector3 GetRotation0() { return rotation0; }
+	Vector3 GetScale0() { return scale0; }
+	Vector3 GetPosition1() { return position1; }
+	Vector3 GetRotation1() { return rotation1; }
+	Vector3 GetScale1() { return scale1; }
+
+	//hitbox
+	Vector3 GetHitboxPosition0() { return hitboxPosition0; }
+	Vector3 GetHitboxRotation0() { return hitboxRotation0; }
+	Vector3 GetHitboxScale0() { return hitboxScale0; }
+	Vector3 GetHitboxPosition1() { return hitboxPosition1; }
+	Vector3 GetHitboxRotation1() { return hitboxRotation1; }
+	Vector3 GetHitboxScale1() { return hitboxScale1; }
+  
 	/// <summary>
 	/// 敵発生データの読み込み
 	/// </summary>
@@ -66,7 +102,6 @@ public: // メンバ関数
 	/// </summary>
 	void UpdateBossPopCommand();
 
-	const std::list<std::unique_ptr<Enemy>>& GetEnemies() { return enemys1; }
 private: // メンバ変数
 	WinApp* winApp_ = nullptr;
 	DX12base& dx12base_ = DX12base::GetInstance();
@@ -85,6 +120,7 @@ private: // メンバ変数
 
 	Player* player = nullptr;
 	PlayerBullet* playerBullet = nullptr;
+	Pattern2* pattern2 = nullptr;
 
 	Boss* boss = nullptr;
 	std::list<std::unique_ptr<BossBullet>> bossBullet;
@@ -123,6 +159,32 @@ private: // メンバ変数
 	ReilCamera* reilCamera = nullptr;
 
 	Sprite* num_[10];
+	Sprite* crosshair = nullptr;
+
+	//変形行列
+	Vector3 position0 = { 0.0f,0.0f,0.0f };
+	Vector3 rotation0 = { 0.0f,0.0f,0.0f };
+	Vector3 scale0 = { 0.01f,0.01f,0.01f };
+	Vector3 position1;
+	Vector3 rotation1;
+	Vector3 scale1;
+
+	//hitboxの変形行列
+	Vector3 hitboxPosition0 = { 0.0f,0.0f,0.0f };
+	Vector3 hitboxRotation0 = { 0.0f,0.0f,0.0f };
+	Vector3 hitboxScale0 = { 0.01f,0.01f,0.01f };
+	Vector3 hitboxPosition1;
+	Vector3 hitboxRotation1;
+	Vector3 hitboxScale1;
+
+	//当たり判定
+	std::list<std::unique_ptr<Collision>> collisionsPlayer;
+	std::list<std::unique_ptr<Collision>> collisionsEnemy;
+	std::list<std::unique_ptr<Collision>> collisionsBullet;
+	std::list<std::unique_ptr<Collision>> collisionsEnemyBullet;
+	std::list<std::unique_ptr<Collision>> collisionsAim;
+
+	int spawntime = 1;
 
 	//UI関連
 	UIManager UIManager;
@@ -139,4 +201,5 @@ private: // メンバ変数
 	bool bossWaitFlag = false;
 	float bossWaitTime_;
 //------------------------------------
+
 };

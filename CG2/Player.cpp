@@ -42,18 +42,33 @@ void Player::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
 
+	aimObject = new GameObject3D();
+	//aimObject->PreLoadModel("Resources/tofu/tofu.obj");
+	aimObject->PreLoadTexture(L"Resources/crosshair.png");
+	aimObject->SetViewProjection(viewProjection_);
+	aimObject->SetMatProjection(matProjection);
+	aimObject->Initialize();
+
 	Reset();
+
+	//3Dレティクルのワールドトランスフォーム初期化
+	worldTransform3DReticle_.initialize();
 }
 
 void Player::Update(WorldTransform wt, Vector3 vec) {
 	playerPos = GetWorldTransform().translation;
-	//Reset();
+
 	Move();
+	//Aim();
 	//enemyPos = enemy->GetWorldTransform().translation;
 	//デスフラグの立った弾を削除
 	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
 		return bullet->IsDead();
-	});
+		});
+
+	bulletsAim_.remove_if([](std::unique_ptr<Pattern2>& bullet) {
+		return bullet->IsDead();
+		});
 
 	//弾更新
 
@@ -61,29 +76,90 @@ void Player::Update(WorldTransform wt, Vector3 vec) {
 
 	if (isDead == false)
 	{
-
+		aimObject->worldTransform.parent = &wt;
 		gameObject->worldTransform.parent = &wt;
 		gameObject->Update();
+		aimObject->Update();
 	}
-  
+
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
 		bullet->Update(vec);
+	}
+
+	for (std::unique_ptr<Pattern2>& bullet : bulletsAim_) {
+		bullet->Update(enemyPos, playerPos);
 	}
 	Collision();
 
 	//SetPos({ 0.0f,0.0f,5.0f });
 }
 
+void Player::AimHit() {
+	isAimHit = true;
+}
+
+void Player::Aim(Vector3 player, Vector3 enemy) {
+
+	//自機から3Dレティクルへのオフセット(Z+向き)
+	Vector3 offset = { 0,0,1.0f };
+
+	float speed = -0.2f;
+	posA = player;
+	posB = enemy;
+	posC = posA - posB;
+	//posC.nomalize();
+	//posC *= speed;
+	 // Calculate the distance between the player and enemy vectors
+	distance++;
+	//自機から3Dレティクルへの距離
+	float kDistancePlayerTo3DReticle = distance;
+
+	aimObject->worldTransform.scale = { 1.0f, 1.0f, distance };
+
+	aimObject->worldTransform.translation = gameObject->worldTransform.translation + offset * kDistancePlayerTo3DReticle;
+
+	if (isAimHit == true) {
+		distance = 0;
+	}
+
+}
+//
+//void Player::Aim(Vector3 player, Vector3 enemy) {
+//	//自機から3Dレティクルへの距離
+//	const float kDistancePlayerTo3DReticle = 50.0f;
+//	//自機から3Dレティクルへのオフセット(Z+向き)
+//	Vector3 offset = { 0,0,1.0f };
+//	//自機のワールド行列の回転を反映
+//	//offset = MathFunc::Utility::MulVector3AndMatrix4(offset, gameObject->worldTransform.matWorld);
+//	////ベクトルの長さを整える
+//	//offset.nomalize();
+//	//offset * kDistancePlayerTo3DReticle;
+//	//3Dレティクルの座標を設定
+//	
+//	float speed = -0.2f;
+//	posA = player;
+//	posB = enemy;
+//	posC = posA - posB;
+//	//posC.nomalize();
+//	//posC *= speed;
+//
+//	aimObject->worldTransform.scale = { 0.1, 0.1, 50 };
+//
+//	aimObject->worldTransform.translation = gameObject->worldTransform.translation + offset*kDistancePlayerTo3DReticle;
+//}
+
 void Player::Draw() {
 	if (isDead == false) {
 		gameObject->Draw();
+		//aimObject->Draw();
 		//弾描画
 		for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Draw(); }
+		for (std::unique_ptr<Pattern2>& bullet : bulletsAim_) { bullet->Draw(); }
 	}
 }
 
 void Player::Reset() {
-	gameObject->worldTransform.translation = { -10 , 0 , -10 };
+	//gameObject->worldTransform.translation = { -10 , 0 , -10 };
 	moveSpeed = 0;
 	isDead = false;
 }
@@ -148,15 +224,15 @@ void Player::Move() {
 	gameObject->worldTransform.translation += move;
 }
 void Player::NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 enemyPos, Vector3 playerPos) {
-		playerPos = GetPos();
-		//enemyPos = enemy->GetWorldTransform().translation;
-		//弾を生成し、初期化
-		std::unique_ptr<PlayerBullet>newBullet = std::make_unique<PlayerBullet>();
-		newBullet->Initialize(viewProjection, matProjection, enemyPos, playerPos);
+	playerPos = GetPos();
+	//enemyPos = enemy->GetWorldTransform().translation;
+	//弾を生成し、初期化
+	std::unique_ptr<PlayerBullet>newBullet = std::make_unique<PlayerBullet>();
+	newBullet->Initialize(viewProjection, matProjection, enemyPos, playerPos);
 
-		//弾を登録する
-		bullets_.push_back(std::move(newBullet));
-	
+	//弾を登録する
+	bullets_.push_back(std::move(newBullet));
+
 	timer--;
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
 		//bullet->AttackPress();
@@ -169,6 +245,22 @@ void Player::NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 			bulletA->OnCollision();
 		}*/
 	}
+}
+
+void Player::NewBulletAim(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 enemyPos, Vector3 playerPos) {
+	playerPos = GetPos();
+
+	//弾を生成し、初期化
+	std::unique_ptr<Pattern2>newBullet = std::make_unique<Pattern2>();
+	newBullet->Initialize(viewProjection, matProjection);
+
+	//弾を登録する
+	bulletsAim_.push_back(std::move(newBullet));
+
+	for (std::unique_ptr<Pattern2>& bullet : bulletsAim_) {
+		bullet->Update(enemyPos,playerPos);
+	}
+
 }
 void Player::Collision() {
 
@@ -253,6 +345,10 @@ int Player::GetIsDead() {
 	return isDead;
 }
 
+int Player::GetIsAimHit() {
+	return isAimHit;
+}
+
 Vector3 Player::GetAngle() {
 	return angle;
 }
@@ -266,6 +362,14 @@ Vector3 Player::GetPos() {
 		gameObject->worldTransform.matWorld.m[3][0],
 		gameObject->worldTransform.matWorld.m[3][1],
 		gameObject->worldTransform.matWorld.m[3][2],
+	};
+}
+
+Vector3 Player::GetAimPos() {
+	return {
+		aimObject->worldTransform.matWorld.m[3][0],
+		aimObject->worldTransform.matWorld.m[3][1],
+		aimObject->worldTransform.matWorld.m[3][2],
 	};
 }
 
