@@ -12,8 +12,9 @@
 #include "Sprite.h"
 #include <memory>
 #include <list>
-
+#include <random>
 #include "Player.h"
+#include "Boss.h"
 #include "Map.h"
 #include "Goal.h"
 #include "Particle.h"
@@ -21,8 +22,11 @@
 #include "Rhythm.h"
 #include "DebugText.h"
 #include "PlayerBullet.h"
+#include "BossBullet.h"
 #include "ReilCamera.h"
 #include "Pattern2.h"
+#include "Item.h"
+#include "UIManager.h"
 
 class GameScene {
 
@@ -49,7 +53,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 敵発生データの読み込み
 	/// </summary>
-	void loadEnemyPopData();
+	void loadEnemyPopData(int stageNum);
 	/// <summary>
 	/// 敵発生コマンドの更新
 	/// </summary>
@@ -88,6 +92,15 @@ public: // メンバ関数
 	Vector3 GetHitboxPosition1() { return hitboxPosition1; }
 	Vector3 GetHitboxRotation1() { return hitboxRotation1; }
 	Vector3 GetHitboxScale1() { return hitboxScale1; }
+  
+	/// <summary>
+	/// 敵発生データの読み込み
+	/// </summary>
+	void loadBossPopData(int stageNum);
+	/// <summary>
+	/// 敵発生コマンドの更新
+	/// </summary>
+	void UpdateBossPopCommand();
 
 private: // メンバ変数
 	WinApp* winApp_ = nullptr;
@@ -96,8 +109,11 @@ private: // メンバ変数
 	XMMATRIX matProjection_ = {};
 	DebugText debugText;
 
+	//ランダムな整数
+	std::random_device seed_gen;
+
 	Rhythm* rhythm = nullptr;
-	SoundManager soundManager_;
+	//SoundManager* soundManager_ = nullptr;
 	ViewProjection viewProjection_;
 
 	bool isPlayingBGM = false;
@@ -106,6 +122,9 @@ private: // メンバ変数
 	PlayerBullet* playerBullet = nullptr;
 	Pattern2* pattern2 = nullptr;
 
+	Boss* boss = nullptr;
+	std::list<std::unique_ptr<BossBullet>> bossBullet;
+
 	Particle* particle = nullptr;
 	Particle* particle2 = nullptr;
 	Particle* particle3 = nullptr;
@@ -113,10 +132,15 @@ private: // メンバ変数
 	//敵
 	std::list<std::unique_ptr<Enemy>> enemys1;
 	std::list<std::unique_ptr<Enemy>> enemys2;
+	std::list<std::unique_ptr<Enemy>> enemys3;
 	std::list<std::unique_ptr<EnemyBullet>> bullets1;
 	std::list<std::unique_ptr<EnemyBullet>> bullets2;
 
+	//天球
 	GameObject3D* skydome = nullptr;
+
+	//アイテム
+	std::list<std::unique_ptr<Item>>items_;
 
 	Vector3 enemyPos = {};
 	//シーン管理
@@ -161,10 +185,21 @@ private: // メンバ変数
 	std::list<std::unique_ptr<Collision>> collisionsAim;
 
 	int spawntime = 1;
-	// 敵コマンド関係
-	//------------------------------------
+
+	//UI関連
+	UIManager UIManager;
+
+// 敵コマンド関係
+//------------------------------------
 	std::stringstream enemyPopCommand;
 	bool waitFlag = false;
 	float waitTime_;
-	//------------------------------------
+//------------------------------------
+//ボスコマンド関係
+//------------------------------------
+	std::stringstream bossPopCommand;
+	bool bossWaitFlag = false;
+	float bossWaitTime_;
+//------------------------------------
+
 };

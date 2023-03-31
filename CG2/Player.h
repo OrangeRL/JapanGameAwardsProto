@@ -23,7 +23,7 @@ public:
 
 	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection);
 
-	void Update(WorldTransform wt);
+	void Update(WorldTransform wt, Vector3 vec);
 
 	void Aim(Vector3 player, Vector3 enemy);
 

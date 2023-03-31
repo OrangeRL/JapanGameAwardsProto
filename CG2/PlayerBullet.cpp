@@ -1,7 +1,7 @@
 #include "PlayerBullet.h"
 
 PlayerBullet::PlayerBullet() {
-	//‰Šú‰»ˆÈ‘O‚Ìİ’è
+	//åˆæœŸåŒ–ä»¥å‰ã®è¨­å®š
 
 	gameObject = nullptr;
 	isShot = false;
@@ -16,7 +16,7 @@ void PlayerBullet::OnCollision() {
 	isDead_ = true;
 }
 
-void PlayerBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 playerPos, Vector3 bossPos) 
+void PlayerBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 playerPos, Vector3 bossPos)
 {
 	gameObject = new GameObject3D();
 	//gameObject->PreLoadModel("Resources/star/star.obj");
@@ -32,7 +32,7 @@ void PlayerBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProje
 	gameObject->worldTransform.translation = bossPos;
 }
 
-void PlayerBullet::Update() {
+void PlayerBullet::Update(Vector3 vec) {
 	const float rotationSpeed = MathFunc::Utility::Deg2Rad(0.1f);
 
 	Vector3 rotation = { 0 , 0 , 0 };
@@ -43,31 +43,40 @@ void PlayerBullet::Update() {
 	angle = gameObject->worldTransform.rotation;
 	gameObject->worldTransform.rotation += rotation;
 
-	Attack(newPlayerPos, newEnemyPos);
+	Attack(newPlayerPos, newEnemyPos, vec);
 	if (isShot) 
 	{
 		gameObject->Update();
 	}
 	
 }
-void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos) {
+
+void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos, Vector3 vec) {
+	const float rotationSpeed = MathFunc::Utility::Deg2Rad(60.0f);
+
+	Vector3 rotation = { 0 , 0 , 0 };
+
+	//rotation.y = rotationSpeed;
+	//rotation.x = rotationSpeed;
+	//rotation.z = rotationSpeed;
 	
+	//gameObject->worldTransform.rotation += rotation;
 	if (!isShot) 
 	{
-		//‚»‚Ì”Ô†‚Ì’e‚Ì”­Ëƒtƒ‰ƒO‚ªfalse‚È‚çtrue‚É‚·‚é
+		//ãã®ç•ªå·ã®å¼¾ã®ç™ºå°„ãƒ•ãƒ©ã‚°ãŒfalseãªã‚‰trueã«ã™ã‚‹
 		isShot = true;
 		isDead_ = false;
-		//‚»‚ê‚Æ“¯‚É“¯”Ô†‚ÌƒIƒuƒWƒFƒNƒg‚ÌÀ•W‚ğƒ{ƒX‚ÌÀ•W‚É‚Á‚Ä‚¢‚­
+		//ãã‚Œã¨åŒæ™‚ã«åŒç•ªå·ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®åº§æ¨™ã‚’ãƒœã‚¹ã®åº§æ¨™ã«æŒã£ã¦ã„ã
 		newPlayerPos = playerPos;
 		newEnemyPos = bossPos;
 		//gameObject->worldTransform.translation = bossPos;
-		//ƒ{ƒX‚Æ©‹@‚Ì·•ªƒxƒNƒgƒ‹‚ğ‹‚ß‚é
+		//ãƒœã‚¹ã¨è‡ªæ©Ÿã®å·®åˆ†ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ±‚ã‚ã‚‹
 		//velocity = newPlayerPos - newEnemyPos;
-		velocity = { 0.0f,0.0f,0.0f };
+		velocity = { sin(vec.y),-vec.x,cos(vec.y)};
 
-		//ƒxƒNƒgƒ‹‚Ì³‹K‰»
-		velocity.nomalize();
-		//ƒxƒNƒgƒ‹‚Ì’·‚³‚ğ‘¬‚³‚É‡‚í‚¹‚é
+		//ãƒ™ã‚¯ãƒˆãƒ«ã®æ­£è¦åŒ–
+		//velocity.nomalize();
+		//ãƒ™ã‚¯ãƒˆãƒ«ã®é•·ã•ã‚’é€Ÿã•ã«åˆã‚ã›ã‚‹
 		velocity.x *= speed;
 		velocity.y *= speed;
 		velocity.z *= speed;
@@ -75,17 +84,17 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos) {
 
 	if (isShot) 
 	{
-		//ƒ{ƒX‚Æ©‹@‚Ì·•ªƒxƒNƒgƒ‹‚ğ‹‚ß‚é
+		//ãƒœã‚¹ã¨è‡ªæ©Ÿã®å·®åˆ†ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ±‚ã‚ã‚‹
 		//velocity = newPlayerPos - newEnemyPos;
-		velocity = { 0.0f,0.0f,5.0f };
+		//velocity = { wt.rotation.x,wt.rotation.y,wt.rotation.z };
 		
-		//ƒxƒNƒgƒ‹‚Ì³‹K‰»
-		velocity.nomalize();
-		//ƒxƒNƒgƒ‹‚Ì’·‚³‚ğ‘¬‚³‚É‡‚í‚¹‚é
-		velocity.x *= speed;
+		//ãƒ™ã‚¯ãƒˆãƒ«ã®æ­£è¦åŒ–
+		//velocity.nomalize();
+		//ãƒ™ã‚¯ãƒˆãƒ«ã®é•·ã•ã‚’é€Ÿã•ã«åˆã‚ã›ã‚‹
+		/*velocity.x *= speed;
 		velocity.y *= speed;
-		velocity.z *= speed;
-		//”­Ëƒtƒ‰ƒO‚ªtrue‚È‚ç‚»‚Ì“_‚Å‚Ì©‹@‚ÌÀ•W‚ÉŒü‚©‚Á‚ÄˆÚ“®‚·‚é
+		velocity.z *= speed;*/
+		//ç™ºå°„ãƒ•ãƒ©ã‚°ãŒtrueãªã‚‰ãã®æ™‚ç‚¹ã§ã®è‡ªæ©Ÿã®åº§æ¨™ã«å‘ã‹ã£ã¦ç§»å‹•ã™ã‚‹
 		gameObject->worldTransform.translation -= velocity;
 		if (gameObject->worldTransform.translation.x < -canMoveArea ||
 			gameObject->worldTransform.translation.x > canMoveArea ||
@@ -94,7 +103,7 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos) {
 			gameObject->worldTransform.translation.z < -canMoveArea - 00 ||
 			gameObject->worldTransform.translation.z > canMoveArea + playerPos.z + 400) 
 		{
-			//ˆê’è‚Ì”ÍˆÍŠO‚ÅÁ–Å
+			//ä¸€å®šã®ç¯„å›²å¤–ã§æ¶ˆæ»…
 			isShot = false;
 			isDead_ = true;
 

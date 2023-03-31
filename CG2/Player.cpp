@@ -36,8 +36,8 @@ void Player::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 	viewProjection_ = viewProjection;
 
 	gameObject = new GameObject3D();
-	gameObject->PreLoadModel("Resources/tofu/tofu.obj");
-	gameObject->PreLoadTexture(L"Resources/star/star.jpg");
+	gameObject->PreLoadModel("Resources/playerdemo/playerdemo.obj");
+	gameObject->PreLoadTexture(L"Resources/playerdemo/player.png");
 	gameObject->SetViewProjection(viewProjection_);
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
@@ -55,7 +55,7 @@ void Player::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 	worldTransform3DReticle_.initialize();
 }
 
-void Player::Update(WorldTransform wt) {
+void Player::Update(WorldTransform wt, Vector3 vec) {
 	playerPos = GetWorldTransform().translation;
 
 	Move();
@@ -83,7 +83,7 @@ void Player::Update(WorldTransform wt) {
 	}
 
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
-		bullet->Update();
+		bullet->Update(vec);
 	}
 
 	for (std::unique_ptr<Pattern2>& bullet : bulletsAim_) {
@@ -178,7 +178,7 @@ void Player::Rotate() {
 
 void Player::Move() {
 
-	moveSpeed = 0.5f;
+	moveSpeed = 0.2f;
 	move = { 0,0,0 };
 
 	if (input.PushKey(DIK_W) || input.PushKey(DIK_S) || input.PushKey(DIK_D) || input.PushKey(DIK_A) || input.PushKey(DIK_E) || input.PushKey(DIK_Q))
@@ -186,18 +186,39 @@ void Player::Move() {
 		// 移動後の座標を計算
 		if (input.PushKey(DIK_W)) { move = { 0,moveSpeed,0 }; }
 		else if (input.PushKey(DIK_S)) { move = { 0,-moveSpeed,0 }; }
-		if (input.PushKey(DIK_D)) { move = { moveSpeed,0,0 }; }
-		else if (input.PushKey(DIK_A)) { move = { -moveSpeed,0,0 }; }
 
-		if (input.PushKey(DIK_E)) { move = { 0,0,0.1 }; }
-		else if (input.PushKey(DIK_Q)) { move = { 0,0,-0.1 }; }
-
+		if (input.PushKey(DIK_D)) { 
+			move = { moveSpeed,0,0 };
+			if (gameObject->worldTransform.rotation.z >= -0.5f) {
+				gameObject->worldTransform.rotation.z -= 0.01f;
+			}
+		}
+	
+		if (input.PushKey(DIK_A)) { 
+			move = { -moveSpeed,0,0 };
+			if (gameObject->worldTransform.rotation.z <= 0.5f) {
+				gameObject->worldTransform.rotation.z += 0.01f;
+			}
+		}
+	
 		if (input.PushKey(DIK_D) && input.PushKey(DIK_W)) { move = { moveSpeed,moveSpeed,0 }; }
 		else if (input.PushKey(DIK_D) && input.PushKey(DIK_S)) { move = { moveSpeed,-moveSpeed,0 }; }
 
 		if (input.PushKey(DIK_A) && input.PushKey(DIK_W)) { move = { -moveSpeed,moveSpeed,0 }; }
 		if (input.PushKey(DIK_A) && input.PushKey(DIK_S)) { move = { -moveSpeed,-moveSpeed,0 }; }
 	}
+
+	if (input.TriggerKey(DIK_M)) {
+		isDead = false;
+	}
+
+	if (input.PushKey(DIK_D) == 0 && gameObject->worldTransform.rotation.z < 0) {
+		gameObject->worldTransform.rotation.z += 0.01f;
+	}
+	else if (input.PushKey(DIK_A) == 0 && gameObject->worldTransform.rotation.z > 0) {
+		gameObject->worldTransform.rotation.z -= 0.01f;
+	}
+
 
 
 	gameObject->worldTransform.translation += move;
@@ -215,14 +236,14 @@ void Player::NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 	timer--;
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
 		//bullet->AttackPress();
-		bullet->Update();
+		//bullet->Update();
 	}
 	const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = GetBullets();
 	for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
-		if (input.PushKey(DIK_P)) {
+		/*if (input.PushKey(DIK_P)) {
 			isDead = true;
 			bulletA->OnCollision();
-		}
+		}*/
 	}
 }
 

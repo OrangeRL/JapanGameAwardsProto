@@ -18,13 +18,17 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
 
-	gameObject->worldTransform.translation = { 0 , 0 , 100 };
 	gameObject->worldTransform.scale = { 2 , 2 , 2 };
-	
+	gameObject->worldTransform.rotation = { 0,0,0 };
+	gameObject->worldTransform.translation = { 0 , 0 , 100 };
+  
 	pManager.Initialize(viewProjection, matProjection, L"Resources/purple1x1.png");
 	//spManager.Initialize(viewProjection, matProjection);
+
 }
 
+//Num が 1の奴は移動のみ
+//Num が 0は固定砲台
 void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int enemyNum) {
 	pManager.Update(gameObject->worldTransform.translation);
 	if (pManager.GetIsDead() == false) {
@@ -33,30 +37,35 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 	//spManager.Update(viewProjection, matProjection,gameObject->worldTransform.translation);
 
 	attackSpeed -= 0.5f;
-	if (enemyNum == 0) {
-	}
-	else if (enemyNum == 1) {
-		phaseTimer--;
-		switch (phase)
-		{
-		case Phase::normal:
-			gameObject->worldTransform.translation += moveSpeed;
-			if (phaseTimer <= 0.0f) {
-				phase = Phase::move;
-				phaseTimer = 300.0f;
-			}
-			break;
-		case Phase::move:
-			if (phaseTimer <= 0.0f) {
-				phase = Phase::leave;
-				phaseTimer = 300.0f;
-			}
-			break;
-			break;
-		case Phase::leave:
-			Leave({ 0.3f,0,0 }, { -0.3f,0,0 });
-		}
+	phaseTimer--;
 
+	switch (phase)
+	{
+	case Phase::spown:
+		if (phaseTimer <= 0.0f) {
+			phase = Phase::normal;
+			phaseTimer = 400.0f;
+		}
+		break;
+	case Phase::normal:	//通常
+		gameObject->worldTransform.translation += moveSpeed;
+		if (phaseTimer <= 0.0f) {
+			phase = Phase::move;
+			phaseTimer = 200.0f;
+		}
+		break;
+	case Phase::move:	//行動
+		if (enemyNum == 2) {
+			gameObject->worldTransform.rotation.y += 0.1f;
+			gameObject->worldTransform.translation.z -= 0.1f;
+		}
+		if (phaseTimer <= 0.0f) {
+			phase = Phase::leave;
+			phaseTimer = 300.0f;
+		}
+		break;
+	case Phase::leave:	//離脱
+		Leave({ 0.3f,0,0 }, { -0.3f,0,0 },enemyNum);
 	}
 	gameObject->Update();
 }
@@ -77,20 +86,32 @@ void Enemy::Repetition()
 {
 }
 //離脱
-void Enemy::Leave(Vector3 leaveSpeedt,Vector3 leaveSpeedf)
+void Enemy::Leave(Vector3 leaveSpeedt,Vector3 leaveSpeedf, int enemyNum)
 {
-	if (gameObject->worldTransform.translation.x >= 1) {
-		gameObject->worldTransform.translation += leaveSpeedt;
+	if (enemyNum == 0) {	//固定砲台
+
 	}
-	if (gameObject->worldTransform.translation.x <= -1) {
-		gameObject->worldTransform.translation += leaveSpeedf;
+
+	if (enemyNum == 1) {	//ゲート
+		if (gameObject->worldTransform.translation.x >= 1) {
+			gameObject->worldTransform.translation += leaveSpeedt;
+		}
+		if (gameObject->worldTransform.translation.x <= -1) {
+			gameObject->worldTransform.translation += leaveSpeedf;
+		}
+	}
+
+	if (enemyNum == 2) {	//直線レーザータレット
+		gameObject->worldTransform.rotation.y += 0.3f;
 	}
 
 	if (--deleteTimer_ <= 0) {
 		isDelete_ = true;
 	}
 
+
 }
+
 //弾のクールタイム
 void Enemy::CoolTime()
 {
