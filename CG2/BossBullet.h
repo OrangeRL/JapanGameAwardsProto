@@ -10,6 +10,7 @@ public:
 	//WorldTransform GetWorldTransform();
 	//¶¬‚·‚éêŠ‚ğİ’è
 	Vector3 SetTransform(Vector3 transform);
+	Vector3 SetScale(Vector3 scale);
 
 	bool IsDead()const { return isDelete_; }
 private:

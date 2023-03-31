@@ -69,7 +69,7 @@ void GameScene::Initialize(WinApp* winApp)
 	skydome->SetViewProjection(&viewProjection_);
 	skydome->SetMatProjection(&matProjection_);
 	skydome->Initialize();
-	skydome->worldTransform.scale = { 1000.0f,1000.0f,1000.0f };
+	skydome->worldTransform.scale = { 2000.0f,2000.0f,2000.0f };
 
 	//レールカメラ
 	reilCamera = new ReilCamera();
@@ -196,11 +196,12 @@ void GameScene::Update()
 	for (std::unique_ptr<Enemy>& enemy : enemys3) {
 		enemy->Update(&viewProjection_, &matProjection_, 2);
 #pragma region makeEnemyBullet
-		if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::move) {
+		if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() != Phase::spown) {
 			//弾を生成
 			std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
 			//初期化
 			bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetPos(), enemy->GetWorldTransform().translation);
+			bullet->SetScale({ 0.5f,0.5f,0.5f });
 			bullet->SetTransform(enemy->GetWorldTransform().translation);
 			//使う弾の設定
 			bullet->SetBullet(1);
@@ -227,32 +228,35 @@ void GameScene::Update()
 	enemys3.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
 
 	//ボス関連
-	boss->Update();
-#pragma region made BossBullet
-	if (boss->GetIsDead()==false) {
-		if (boss->GetPhase() == BossPhase::attack2 && boss->GetAttackSpeed() <= 0.0f) {
-			//弾を生成
-			std::unique_ptr<BossBullet> bullet = std::make_unique<BossBullet>();
-			bullet->Initialize(&viewProjection_, &matProjection_, boss->Random(-0.5f, 0.1f));
-			bullet->SetTransform(boss->GetWorldTransform().translation);
-			bossBullet.push_back(std::move(bullet));
-			boss->SetAttackSpeed(200.0f);
-			if (boss->GetIsAttack() == false) {
-				boss->SetIsAttack(true);
-			}
-		}
-		if (boss->GetIsAttack() == true) {
-			for (std::unique_ptr<BossBullet>& bullet : bossBullet) {
-				bullet->Update();
-			}
-		}
-	}	
-#pragma endregion
 
-	UpdateEnemyPopCommand();
-	if (boss->GetPhase() == BossPhase::defence) {
-		UpdateBossPopCommand();
+	if (rhythm->GetSoundState().wave == 3) {
+		boss->Update();
+#pragma region made BossBullet
+		if (boss->GetIsDead() == false) {
+			if (boss->GetPhase() == BossPhase::attack2 && boss->GetAttackSpeed() <= 0.0f) {
+				//弾を生成
+				std::unique_ptr<BossBullet> bullet = std::make_unique<BossBullet>();
+				bullet->Initialize(&viewProjection_, &matProjection_, boss->Random(-0.5f, 0.1f));
+				bullet->SetTransform(boss->GetWorldTransform().translation);
+				bossBullet.push_back(std::move(bullet));
+				boss->SetAttackSpeed(200.0f);
+				if (boss->GetIsAttack() == false) {
+					boss->SetIsAttack(true);
+				}
+			}
+			if (boss->GetIsAttack() == true) {
+				for (std::unique_ptr<BossBullet>& bullet : bossBullet) {
+					bullet->Update();
+				}
+			}
+		}
+#pragma endregion
+		if (boss->GetPhase() == BossPhase::defence) {
+			UpdateBossPopCommand();
+		}
 	}
+	
+	UpdateEnemyPopCommand();
 
 
 	if (player->GetIsDead() == false) {
@@ -326,9 +330,12 @@ void GameScene::Draw() {
 		enemy->Draw();
 	}
 
-	/*boss->Draw(); for (std::unique_ptr<BossBullet>& bullet : bossBullet) {
-		bullet->Draw();
-	}*/
+	if (rhythm->GetSoundState().wave == 3) {
+		boss->Draw();
+		for (std::unique_ptr<BossBullet>& bullet : bossBullet) {
+			bullet->Draw();
+		}
+	}
 
 	for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
 		bullet->Draw();

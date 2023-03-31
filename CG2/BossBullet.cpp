@@ -33,3 +33,10 @@ Vector3 BossBullet::SetTransform(Vector3 transform)
 	this->gameObject->worldTransform.translation = transform;
 	return this->gameObject->worldTransform.translation;
 }
+
+Vector3 BossBullet::SetScale(Vector3 scale)
+{
+	this->gameObject->worldTransform.scale = scale;
+	return this->gameObject->worldTransform.scale;
+}
+

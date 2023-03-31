@@ -4,14 +4,14 @@ void Boss::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 {
 	gameObject = new GameObject3D();
 	gameObject->PreLoadModel("Resources/tree/tree.obj");
-	gameObject->PreLoadTexture(L"Resources/tree/tree.jpg");
+	gameObject->PreLoadTexture(L"Resources/tree/tree.png");
 	gameObject->SetViewProjection(viewProjection);
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
 
 	gameObject->worldTransform.scale = { 1 , 1 , 1 };
-	gameObject->worldTransform.rotation = { 0,30,0 };
-	gameObject->worldTransform.translation = { 0 , 0 , 600 };
+	gameObject->worldTransform.rotation = { 0,90,0 };
+	gameObject->worldTransform.translation = { 0 , 0 , 1500 };
 }
 
 void Boss::Update()
@@ -24,7 +24,7 @@ void Boss::Update()
 		if (phaseTimer <= 0.0f) {
 			phase = BossPhase::attack;
 			isDead = false;
-			phaseTimer = 500.0f;
+			phaseTimer = 100.0f;
 		}
 		break;
 	case BossPhase::attack:	//UŒ‚1 ƒ‰ƒCƒ“(Ž})‚ð’£‚è‚»‚ê‚ð‰ñ“]‚³‚¹‚é
@@ -32,7 +32,7 @@ void Boss::Update()
 		Attack();	//Ž©•ª‚ª‰ñ“]‚·‚é‚¾‚¯‚ÌˆÚ“®
 		if (phaseTimer <= 0.0f) {
 			phase = BossPhase::attack2;
-			phaseTimer = 500.0f;
+			phaseTimer = 100.0f;
 		}
 		break;
 	case BossPhase::attack2:	//UŒ‚2 ˆÚ“®êŠ‚ði‚ç‚¹‚é & ƒ‰ƒ“ƒ_ƒ€ƒVƒ‡ƒbƒg
@@ -41,7 +41,7 @@ void Boss::Update()
 		//-----------------------
 		if (phaseTimer <= 0.0f) {
 			phase = BossPhase::defence;
-			phaseTimer = 400.0f;
+			phaseTimer = 500.0f;
 		}
 		break;
 	case BossPhase::defence:	//‰ñ”ð,–hŒä
