@@ -10,8 +10,8 @@ void Boss::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 	gameObject->Initialize();
 
 	gameObject->worldTransform.scale = { 1 , 1 , 1 };
-	gameObject->worldTransform.rotation = { 0,30,0 };
-	gameObject->worldTransform.translation = { 0 , 0 , 0 };
+	gameObject->worldTransform.rotation = { 0,90,0 };
+	gameObject->worldTransform.translation = { 0 , 0 , 1500 };
 }
 
 void Boss::Update()

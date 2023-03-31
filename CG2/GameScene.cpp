@@ -69,7 +69,7 @@ void GameScene::Initialize(WinApp* winApp)
 	skydome->SetViewProjection(&viewProjection_);
 	skydome->SetMatProjection(&matProjection_);
 	skydome->Initialize();
-	skydome->worldTransform.scale = { 1000.0f,1000.0f,1000.0f };
+	skydome->worldTransform.scale = { 2000.0f,2000.0f,2000.0f };
 
 	//レールカメラ
 	reilCamera = new ReilCamera();
@@ -228,6 +228,7 @@ void GameScene::Update()
 	enemys3.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
 
 	//ボス関連
+
 	if (rhythm->GetSoundState().wave == 3) {
 		boss->Update();
 #pragma region made BossBullet
