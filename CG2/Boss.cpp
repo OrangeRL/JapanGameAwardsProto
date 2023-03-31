@@ -9,7 +9,7 @@ void Boss::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
 
-	gameObject->worldTransform.scale = { 1 , 1 , 1 };
+	gameObject->worldTransform.scale = { 3 , 3 , 3 };
 	gameObject->worldTransform.rotation = { 0,90,0 };
 	gameObject->worldTransform.translation = { 0 , 0 , 1500 };
 }
