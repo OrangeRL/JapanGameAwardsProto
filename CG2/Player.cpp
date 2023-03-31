@@ -66,6 +66,10 @@ void Player::Update(WorldTransform wt) {
 		return bullet->IsDead();
 		});
 
+	bulletsAim_.remove_if([](std::unique_ptr<Pattern2>& bullet) {
+		return bullet->IsDead();
+		});
+
 	//弾更新
 
 	//for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Update(); }
@@ -80,6 +84,10 @@ void Player::Update(WorldTransform wt) {
 
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
 		bullet->Update();
+	}
+
+	for (std::unique_ptr<Pattern2>& bullet : bulletsAim_) {
+		bullet->Update(enemyPos, playerPos);
 	}
 	Collision();
 
@@ -143,9 +151,10 @@ void Player::Aim(Vector3 player, Vector3 enemy) {
 void Player::Draw() {
 	if (isDead == false) {
 		gameObject->Draw();
-		aimObject->Draw();
+		//aimObject->Draw();
 		//弾描画
 		for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Draw(); }
+		for (std::unique_ptr<Pattern2>& bullet : bulletsAim_) { bullet->Draw(); }
 	}
 }
 
@@ -215,6 +224,22 @@ void Player::NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 			bulletA->OnCollision();
 		}
 	}
+}
+
+void Player::NewBulletAim(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 enemyPos, Vector3 playerPos) {
+	playerPos = GetPos();
+
+	//弾を生成し、初期化
+	std::unique_ptr<Pattern2>newBullet = std::make_unique<Pattern2>();
+	newBullet->Initialize(viewProjection, matProjection);
+
+	//弾を登録する
+	bulletsAim_.push_back(std::move(newBullet));
+
+	for (std::unique_ptr<Pattern2>& bullet : bulletsAim_) {
+		bullet->Update(enemyPos,playerPos);
+	}
+
 }
 void Player::Collision() {
 

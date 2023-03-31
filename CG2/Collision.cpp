@@ -1,6 +1,6 @@
 #include "Collision.h"
 
-void Collision::SetObject(DirectX::XMFLOAT3 cubePos, DirectX::XMFLOAT3 cubeScale)
+void Collision::SetObject(Vector3 cubePos, Vector3 cubeScale)
 {
 	//引数から受け取った値をメンバ変数に代入
 	/*this->cubePos = cubePos;
@@ -23,7 +23,7 @@ void Collision::SetObject(DirectX::XMFLOAT3 cubePos, DirectX::XMFLOAT3 cubeScale
 	cubeVertex1.max = { cubePos.x + (cubeScale.x / 2) ,cubePos.y + (cubeScale.y),cubePos.z + (cubeScale.z / 2) };
 }
 
-bool Collision::Update(DirectX::XMFLOAT3 spherePos, DirectX::XMFLOAT3 sphereScale)
+bool Collision::Update(Vector3 spherePos, Vector3 sphereScale)
 {
 	//cubeVertex1の値を設定
 	/*cubeVertex1.c = cubePos;*/
@@ -41,7 +41,7 @@ bool Collision::Update(DirectX::XMFLOAT3 spherePos, DirectX::XMFLOAT3 sphereScal
 	sphereVertex1.max = { spherePos.x + (sphereScale.x / 2) ,spherePos.y + (sphereScale.y / 2),spherePos.z + (sphereScale.z / 2) };
 
 	//円の中心座標が直方体の範囲内にある場合のベクトル
-	DirectX::XMFLOAT3 v{};
+	Vector3 v{};
 	//フラグを用意
 	bool xFlag = false;
 	bool yFlag = false;

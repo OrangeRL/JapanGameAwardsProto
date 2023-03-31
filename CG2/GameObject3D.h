@@ -9,6 +9,8 @@
 #include "Vector3.h"
 #include "Vector4.h"
 
+#include <map> 
+#include <array>
 
 //前方宣言
 //class DX12base;
@@ -85,6 +87,7 @@ private:
 	DX12base& dx12base = DX12base::GetInstance();
 	//ビュープロジェクション
 	ViewProjection* viewProjection;
+
 
 };
 

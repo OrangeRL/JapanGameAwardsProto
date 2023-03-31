@@ -10,7 +10,7 @@ public:
 
 	~Particle2();
 
-	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection);
+	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName);
 	
 	void Update(Vector3 initPos);
 

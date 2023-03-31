@@ -51,15 +51,7 @@ void PlayerBullet::Update() {
 	
 }
 void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos) {
-	const float rotationSpeed = MathFunc::Utility::Deg2Rad(60.0f);
-
-	Vector3 rotation = { 0 , 0 , 0 };
-
-	rotation.y = rotationSpeed;
-	rotation.x = rotationSpeed;
-	rotation.z = rotationSpeed;
-
-	gameObject->worldTransform.rotation += rotation;
+	
 	if (!isShot) 
 	{
 		//‚»‚Ì”Ô†‚Ì’e‚Ì”­Ëƒtƒ‰ƒO‚ªfalse‚È‚çtrue‚É‚·‚é

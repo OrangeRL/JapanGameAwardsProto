@@ -1,5 +1,10 @@
 #include "GameObject3D.h"
 
+using namespace std;
+
+static map<wstring, Texture> textureMap;
+static map<string, Model> modelMap;
+
 class ViewProjection {
 public:
 	Matrix4 matView;
@@ -8,6 +13,9 @@ public:
 //メンバ関数
 void GameObject3D::PreLoadModel(const char* modelFileName) {
 	this->modelFileName = modelFileName;
+	//std::map<Model, const char> mapOfWords;
+	//mapOfWords.insert(std::("earth"));
+	//mapOfWords.insert(std::make_pair("moon", 2));
 }
 
 //メンバ関数
@@ -15,14 +23,14 @@ void GameObject3D::PreLoadTexture(const wchar_t* textureFileName) {
 	this->textureFileName = textureFileName;
 }
 
-void GameObject3D::Initialize() {
-
+void GameObject3D::Initialize() 
+{
 	InitializeConstMapTransform();
 	InitializeConstMapMaterial();
 
 	//ワールド変換の初期化
 	worldTransform.initialize();
-
+	
 	//モデルの初期化
 	model.LoadModel(modelFileName);
 	model.Initialize();
@@ -32,7 +40,8 @@ void GameObject3D::Initialize() {
 	textrue.CreateSRV();
 }
 
-void GameObject3D::Update() {
+void GameObject3D::Update() 
+{
 
 	worldTransform.UpdateMatWorld();
 	
@@ -41,15 +50,10 @@ void GameObject3D::Update() {
 	constMapTransform->mat *= viewProjection->matView;
 	constMapTransform->mat *= MathFunc::Utility::ConvertXMMATRIXtoMatrix4(*matProjection);
 
-	//MathFunc::Affine::SetMatRotation(worldTransform.matWorld, worldTransform.rotation);
-
-	////定数バッファへデータ転送
-	//constMapTransform->mat = worldTransform.matWorld;
-	//constMapTransform->mat *= viewProjection->matView;
-	//constMapTransform->mat *= MathFunc::Utility::ConvertXMMATRIXtoMatrix4(*matProjection);
 }
 
-void GameObject3D::Draw() {
+void GameObject3D::Draw() 
+{
 
 	//頂点バッファ―ビューをセットするコマンド
 	dx12base.GetCmdList()->SetGraphicsRootConstantBufferView(0 , constBuffMaterial->GetGPUVirtualAddress());

@@ -4,7 +4,7 @@ using namespace std;
 void ParticleManager::CreateParticle(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 beginPos, Vector3 scale)
 {
 	particles.emplace_back(new Particle2);
-	particles.back()->Initialize(viewProjection, matProjection);
+	particles.back()->Initialize(viewProjection, matProjection, L"Resources/red1x1.png");
 	//particles.back()->SetScale(scale);
 }
 

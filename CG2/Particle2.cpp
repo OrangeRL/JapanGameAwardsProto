@@ -18,7 +18,7 @@ Particle2::~Particle2() {
 	}
 }
 
-void Particle2::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection) {
+void Particle2::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName) {
 	soundManager_.Initialize();
 	for (int i = 0; i < particleValue; i++) {
 
@@ -26,7 +26,7 @@ void Particle2::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjecti
 		/*if (i > 20) {
 			gameObject[i]->PreLoadTexture(L"Resources/red1x1.png");
 		}*/
-		gameObject[i]->PreLoadTexture(L"Resources/red1x1.png");
+		gameObject[i]->PreLoadTexture(textureFileName);
 		gameObject[i]->SetViewProjection(viewProjection);
 		gameObject[i]->SetMatProjection(matProjection);
 		gameObject[i]->Initialize();
