@@ -9,7 +9,7 @@ class ReilCamera
 public:
 	void Initialize(Vector3 pos, Vector3 rot);
 
-	void Update(Input* input);
+	void Update(Input* input,float wave);
 
 	ViewProjection GetViewProjection() { return viewProjection_; }
 

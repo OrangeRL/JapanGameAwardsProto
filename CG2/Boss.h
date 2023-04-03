@@ -44,7 +44,7 @@ private:
 	BossPhase phase = BossPhase::spown;
 
 	bool isDead = true;
-	int HP = 10;
+	int HP = 100;
 
 	float attackSpeed = 200.0f;
 	bool isAttack = false;

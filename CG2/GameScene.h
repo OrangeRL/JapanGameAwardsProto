@@ -123,7 +123,8 @@ private: // メンバ変数
 	Pattern2* pattern2 = nullptr;
 
 	Boss* boss = nullptr;
-	std::list<std::unique_ptr<BossBullet>> bossBullet;
+	std::list<std::unique_ptr<BossBullet>> bossBullet1;
+	std::list<std::unique_ptr<BossBullet>> bossBullet2;
 
 	Particle* particle = nullptr;
 	Particle* particle2 = nullptr;
