@@ -248,7 +248,6 @@ void GameScene::Update()
 				//弾を生成
 				std::unique_ptr<BossBullet> bullet = std::make_unique<BossBullet>();
 				bullet->Initialize(&viewProjection_, &matProjection_, player->GetPos(), boss->GetWorldTransform().translation);
-				bullet->SetBullet(2);
 				bullet->SetTransform(boss->GetWorldTransform().translation);
 				bossBullet1.push_back(std::move(bullet));
 				boss->SetAttackSpeed(100.0f);
@@ -260,7 +259,6 @@ void GameScene::Update()
 				//弾を生成
 				std::unique_ptr<BossBullet> bullet = std::make_unique<BossBullet>();
 				bullet->Initialize(&viewProjection_, &matProjection_, player->GetPos(), boss->GetWorldTransform().translation);
-				bullet->SetBullet(2);
 				bullet->SetTransform(boss->GetWorldTransform().translation);
 				bossBullet2.push_back(std::move(bullet));
 				boss->SetAttackSpeed(100.0f);
@@ -271,10 +269,10 @@ void GameScene::Update()
 			
 			if (boss->GetIsAttack() == true) {
 				for (std::unique_ptr<BossBullet>& bullet : bossBullet1) {
-					bullet->Update();
+					bullet->Update(boss->GetPhase());
 				}
 				for (std::unique_ptr<BossBullet>& bullet : bossBullet2) {
-					bullet->Update();
+					bullet->Update(boss->GetPhase());
 				}
 			}
 			//弾&敵を削除する
@@ -641,8 +639,8 @@ void GameScene::UpdateBossPopCommand()
 			//待ち時間
 			int32_t waitTime = atoi(world.c_str());
 			//待ち時間
-			waitFlag = true;
-			waitTime_ = waitTime;
+			bossWaitFlag = true;
+			bossWaitTime_ = waitTime;
 			//コマンドループを抜ける
 			break;
 		}

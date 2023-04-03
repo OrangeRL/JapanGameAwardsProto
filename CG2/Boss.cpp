@@ -40,7 +40,7 @@ void Boss::Update()
 		Attack2();
 		//-----------------------
 		if (phaseTimer <= 0.0f) {
-			phaseTimer = 300.0f;
+			phaseTimer = 100.0f;
 			phase = BossPhase::defence;
 		}
 		break;
@@ -128,4 +128,10 @@ bool Boss::SetIsAttack(bool isAttack)
 bool Boss::GetIsDead()
 {
 	return isDead;
+}
+
+void Boss::OnCollision()
+{
+	trueDead = true;
+	isDead = true;
 }

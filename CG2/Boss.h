@@ -34,6 +34,9 @@ public:
 	bool GetIsAttack();
 	bool SetIsAttack(bool isAttack);
 	bool GetIsDead();
+
+	//Ž€–S—p
+	void OnCollision();
 private:
 	GameObject3D* gameObject = nullptr;
 
@@ -43,6 +46,7 @@ private:
 	float phaseTimer = 3.0f;
 	BossPhase phase = BossPhase::spown;
 
+	bool trueDead = false;
 	bool isDead = true;
 	int HP = 100;
 

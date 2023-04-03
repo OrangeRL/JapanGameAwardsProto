@@ -11,9 +11,15 @@ void BossBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProject
 	Aim(player, enemy);
 }
 
-void BossBullet::Update()
+void BossBullet::Update(BossPhase phase)
 {
-	gameObject->worldTransform.translation -= posC;
+	if (phase == attack) {
+		gameObject->worldTransform.translation -= posC;
+	}
+	else if (phase == attack2) {
+		gameObject->worldTransform.translation -= {0.0f,0.0f,1.0f};
+	}
+	
 
 	if (--deleteTimer_ <= 0) {
 		isDelete_ = true;
@@ -49,18 +55,11 @@ Vector3 BossBullet::SetScale(Vector3 scale)
 	return this->gameObject->worldTransform.scale;
 }
 
-int BossBullet::SetBullet(int bulletNum)
-{
-	this->bulletNum = bulletNum;
-
-	return this->bulletNum;
-}
-
 void BossBullet::Aim(Vector3 player, Vector3 enemy)
 {
 	posA = player;
 	posB = enemy;
 	posC = posA - posB;
 	posC.nomalize();
-	posC *= -0.5f;
+	posC *= -1.5f;
 }
