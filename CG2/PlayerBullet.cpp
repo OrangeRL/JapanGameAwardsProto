@@ -16,7 +16,7 @@ void PlayerBullet::OnCollision() {
 	isDead_ = true;
 }
 
-void PlayerBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 playerPos, Vector3 bossPos)
+void PlayerBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 playerPos, Vector3 bossPos, Weapons weapon)
 {
 	gameObject = new GameObject3D();
 	//gameObject->PreLoadModel("Resources/star/star.obj");
@@ -30,10 +30,43 @@ void PlayerBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProje
 	newPlayerPos = playerPos;
 	newEnemyPos = bossPos;
 	gameObject->worldTransform.translation = bossPos;
+	this->weapon = weapon;
+
+	if (weapon == Weapons::ThreeWay) {
+		for (int i = 0; i < 2; i++) {
+			gameObjectSub[i] = new GameObject3D();
+			//gameObject->PreLoadModel("Resources/star/star.obj");
+			gameObjectSub[i]->PreLoadTexture(L"Resources/red.png");
+			gameObjectSub[i]->SetViewProjection(viewProjection);
+			gameObjectSub[i]->SetMatProjection(matProjection);
+			gameObjectSub[i]->Initialize();
+			gameObjectSub[i]->worldTransform.translation = bossPos;
+		}
+	}
+
 }
 
 void PlayerBullet::Update(Vector3 vec) {
 	const float rotationSpeed = MathFunc::Utility::Deg2Rad(0.1f);
+
+	if (weapon == Weapons::Normal) {
+		gameObject->worldTransform.scale = { 2.0f,2.0f,2.0f };
+		speed = -5.0f;
+	}
+	else if (weapon == Weapons::Rapid) {
+		gameObject->worldTransform.scale = { 1.0f,1.0f,1.0f };
+		speed = -10.0f;
+	}
+	else if(weapon == Weapons::ThreeWay) {
+		gameObject->worldTransform.scale = { 1.0f,1.0f,1.0f };
+		speed = -5.0f;
+		for (int i = 0; i < 2; i++) {
+			gameObjectSub[i]->worldTransform.scale = {1.0f,1.0f,1.0f};
+		}
+	}
+	else {
+
+	}
 
 	Vector3 rotation = { 0 , 0 , 0 };
 	//newPlayerPos = playerPos;*/
@@ -47,6 +80,16 @@ void PlayerBullet::Update(Vector3 vec) {
 	if (isShot) 
 	{
 		gameObject->Update();
+		if (weapon == Weapons::ThreeWay) {
+			for (int i = 0; i < 2; i++) {
+				gameObjectSub[i]->Update();
+			}
+		}
+	}
+
+	deathTimer_--;
+	if (deathTimer_ <= 0) {
+		isDead_ = true;
 	}
 	
 }
@@ -73,7 +116,8 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos, Vector3 vec) {
 		//ボスと自機の差分ベクトルを求める
 		//velocity = newPlayerPos - newEnemyPos;
 		velocity = { sin(vec.y),-vec.x,cos(vec.y)};
-
+		vec1 = { sin(vec.y + 0.1f) * speed,-vec.x * speed,cos(vec.y + 0.1f) * speed };
+		vec2 = { sin(vec.y - 0.1f) * speed,-vec.x * speed,cos(vec.y - 0.1f) * speed };
 		//ベクトルの正規化
 		//velocity.nomalize();
 		//ベクトルの長さを速さに合わせる
@@ -96,6 +140,13 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos, Vector3 vec) {
 		velocity.z *= speed;*/
 		//発射フラグがtrueならその時点での自機の座標に向かって移動する
 		gameObject->worldTransform.translation -= velocity;
+		if (weapon == Weapons::ThreeWay) {
+
+			gameObjectSub[0]->worldTransform.translation -= vec1;
+			gameObjectSub[1]->worldTransform.translation -= vec2;
+			
+		}
+
 		if (gameObject->worldTransform.translation.x < -canMoveArea ||
 			gameObject->worldTransform.translation.x > canMoveArea ||
 			gameObject->worldTransform.translation.y < -canMoveArea ||
@@ -116,6 +167,11 @@ void PlayerBullet::Draw()
 	if (isShot) 
 	{
 		gameObject->Draw();
+		for (int i = 0; i < 2; i++) {
+			if (weapon == Weapons::ThreeWay) {
+				gameObjectSub[i]->Draw();
+			}
+		}
 	}
 }
 

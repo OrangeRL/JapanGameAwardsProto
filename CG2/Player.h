@@ -16,9 +16,9 @@ class GameScene;
 
 class Player {
 public:
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	Player();
-	//ƒfƒXƒgƒ‰ƒNƒ^
+	//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	~Player();
 
 	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection);
@@ -33,12 +33,12 @@ public:
 
 	void OnCollision();
 
-	//ƒAƒNƒZƒbƒT
+	//ã‚¢ã‚¯ã‚»ãƒƒã‚µ
 	void SetMap(Map* map);
 	void SetGoal(Goal* goal);
 	void SetEnemy(Enemy* enemy);
-	void NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 enemyPos,Vector3 playerPos);
-	void NewBulletAim(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 enemyPos,Vector3 playerPos);
+	void NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 enemyPos,Vector3 playerPos, Weapons weapon);
+
 	int GetIsGoal();
 	void SetIsGoal(int flag);
 	void SetPos(Vector3 pos) { gameObject->worldTransform.translation = pos; }
@@ -61,22 +61,22 @@ public:
 	Vector3 angle = {};
 
 
-	//’eƒŠƒXƒg‚ğæ“¾
+	//å¼¾ãƒªã‚¹ãƒˆã‚’å–å¾—
 	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
 	const std::list<std::unique_ptr<Pattern2>>& GetAim() { return bulletsAim_; }
-	//ƒƒ“ƒoŠÖ”
+	//ãƒ¡ãƒ³ãƒé–¢æ•°
 private:
 	void Rotate();
 	void Move();
 	void Collision();
 
 
-	//ƒƒ“ƒo•Ï”
+	//ãƒ¡ãƒ³ãƒå¤‰æ•°
 private:
-	//ƒL[“ü—Í
+	//ã‚­ãƒ¼å…¥åŠ›
 	Input& input = Input::GetInstance();
 
-	//ƒQ[ƒ€ƒIƒuƒWƒFƒNƒg
+	//ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 	GameObject3D* gameObject = nullptr;
 	GameObject3D* aimObject = nullptr;
 
@@ -119,14 +119,14 @@ private:
 
 	ViewProjection* viewProjection_;
 	XMMATRIX* matProjection_;
-	//’e
+	//å¼¾
 	std::list<std::unique_ptr<PlayerBullet>>bullets_;
 	PlayerBullet* playerBullet = nullptr;
 
 	std::list<std::unique_ptr<Pattern2>>bulletsAim_;
 	Pattern2* playerBulletAim = nullptr;
 
-	//3DƒŒƒeƒBƒNƒ‹—pƒ[ƒ‹ƒhƒgƒ‰ƒ“ƒXƒtƒH[ƒ€
+	//3Dãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ç”¨ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ 
 	WorldTransform worldTransform3DReticle_;
 	
 	Vector3 posA;
