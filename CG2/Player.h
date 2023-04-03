@@ -34,7 +34,7 @@ public:
 	void SetMap(Map* map);
 	void SetGoal(Goal* goal);
 	void SetEnemy(Enemy* enemy);
-	void NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 enemyPos,Vector3 playerPos);
+	void NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 enemyPos,Vector3 playerPos, Weapons weapon);
 	int GetIsGoal();
 	void SetIsGoal(int flag);
 	void SetPos(Vector3 pos) { gameObject->worldTransform.translation = pos; }

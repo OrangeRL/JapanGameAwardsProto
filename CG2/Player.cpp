@@ -147,12 +147,12 @@ void Player::Move() {
 
 	gameObject->worldTransform.translation += move;
 }
-void Player::NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 enemyPos, Vector3 playerPos) {
+void Player::NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 enemyPos, Vector3 playerPos, Weapons weapon) {
 		playerPos = GetPos();
 		//enemyPos = enemy->GetWorldTransform().translation;
 		//弾を生成し、初期化
 		std::unique_ptr<PlayerBullet>newBullet = std::make_unique<PlayerBullet>();
-		newBullet->Initialize(viewProjection, matProjection, enemyPos, playerPos);
+		newBullet->Initialize(viewProjection, matProjection, enemyPos, playerPos,weapon);
 
 		//弾を登録する
 		bullets_.push_back(std::move(newBullet));
