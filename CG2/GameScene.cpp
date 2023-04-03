@@ -33,18 +33,8 @@ void GameScene::Initialize(WinApp* winApp)
 	);
 
 	// UI用テクスチャ読み込み
-	Sprite::LoadTexture(1, L"Resources/gamefont2.png");
+	Sprite::LoadTexture(1, L"Resources/gamefont.png");
 	Sprite::LoadTexture(2, L"Resources/text.png");
-	num_[0]->LoadTexture(0, L"Resources/0.png");
-	num_[1]->LoadTexture(1, L"Resources/1.png");
-	num_[2]->LoadTexture(2, L"Resources/2.png");
-	num_[3]->LoadTexture(3, L"Resources/3.png");
-	num_[4]->LoadTexture(4, L"Resources/4.png");
-	num_[5]->LoadTexture(5, L"Resources/5.png");
-	num_[6]->LoadTexture(6, L"Resources/6.png");
-	num_[7]->LoadTexture(7, L"Resources/7.png");
-	num_[8]->LoadTexture(8, L"Resources/8.png");
-	num_[9]->LoadTexture(9, L"Resources/9.png");
 
 	crosshair->LoadTexture(11, L"Resources/crosshair.png");
 	crosshair = Sprite::Create(11, { 0,0 });
@@ -288,8 +278,10 @@ void GameScene::Update()
 			UpdateBossPopCommand();
 		}
 	}
+	if (player->GetIsDead() == false) {
+		UpdateEnemyPopCommand();
+	}
 	
-	UpdateEnemyPopCommand();
 
 
 	if (player->GetIsDead() == false) {
@@ -821,7 +813,21 @@ void GameScene::Collisions() {
 				}
 			}
 		}
+		for (const std::unique_ptr<BossBullet>& bulletC : bossBullet2) {
+			if (player->GetPos().x - bulletC->GetWorldTransform().translation.x < 2 &&
+				-2 < player->GetPos().x - bulletC->GetWorldTransform().translation.x) {
+				if (player->GetPos().y - bulletC->GetWorldTransform().translation.y < 2 &&
+					-2 < player->GetPos().y - bulletC->GetWorldTransform().translation.y) {
+					if (player->GetPos().z - bulletC->GetWorldTransform().translation.z < 2 &&
+						-2 < player->GetPos().z - bulletC->GetWorldTransform().translation.z) {
 
+						//bulletB->OnCollision();
+						//enemy->Reset();
+						player->OnCollision();
+					}
+				}
+			}
+		}
 #pragma endregion
 
 		for (std::unique_ptr<Enemy>& enemy : enemys1) {

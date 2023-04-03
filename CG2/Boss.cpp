@@ -66,17 +66,26 @@ void Boss::Draw()
 
 void Boss::Attack()	//ƒ‰ƒCƒ“ó‚É’e‚ð“WŠJ‰ñ“]‚³‚¹‚é : Ž©‹@‚ð‰ñ“]‚³‚¹‚é
 {
-	
+	if (gameObject->worldTransform.translation.x != 0.0f) {
+		gameObject->worldTransform.translation.x = 0.0f;
+	}
 }
 
 void Boss::Attack2()	//ˆÚ“®êŠ‚ð§ŒÀ‚·‚é&ƒ‰ƒ“ƒ_ƒ€ƒVƒ‡ƒbƒg : 
 {
 	
+	gameObject->worldTransform.translation += moveSpeed;
+
+	if (gameObject->worldTransform.translation.x >= 5.0f|| gameObject->worldTransform.translation.x <= -5.0f) {
+		moveSpeed = -moveSpeed;
+	}
 }
 
 void Boss::Defence()	//ƒ_ƒ[ƒW‚ðŒyŒ¸‚³‚¹‚é : 
 {
-	
+	if (gameObject->worldTransform.translation.x != 0.0f) {
+		gameObject->worldTransform.translation.x = 0.0f;
+	}
 }
 
 float Boss::Random(float minValue, float maxValue)

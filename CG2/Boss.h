@@ -40,7 +40,7 @@ public:
 private:
 	GameObject3D* gameObject = nullptr;
 
-	Vector3 moveSpeed = { 0,0,0 };
+	Vector3 moveSpeed = { 0.1f,0,0 };
 
 	//s“®•Ï‰»
 	float phaseTimer = 3.0f;

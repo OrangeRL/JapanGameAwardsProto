@@ -17,7 +17,15 @@ void BossBullet::Update(BossPhase phase)
 		gameObject->worldTransform.translation -= posC;
 	}
 	else if (phase == attack2) {
+		if (gameObject->worldTransform.scale.x <= 2 && gameObject->worldTransform.scale.y <= 2 && gameObject->worldTransform.scale.z <= 2) {
+			gameObject->worldTransform.scale += {0.1f, 0.1f, 0.1f};
+		}
 		gameObject->worldTransform.translation -= {0.0f,0.0f,1.0f};
+	}
+	else
+	{
+		gameObject->worldTransform.translation -= posC;
+		gameObject->worldTransform.translation -= {0.0f, 0.0f, 1.0f};
 	}
 	
 
