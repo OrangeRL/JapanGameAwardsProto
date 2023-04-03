@@ -34,17 +34,21 @@ public:
 	bool GetIsAttack();
 	bool SetIsAttack(bool isAttack);
 	bool GetIsDead();
+
+	//éÄñSóp
+	void OnCollision();
 private:
 	GameObject3D* gameObject = nullptr;
 
-	Vector3 moveSpeed = { 0,0,0 };
+	Vector3 moveSpeed = { 0.1f,0,0 };
 
 	//çsìÆïœâª
-	float phaseTimer = 100.0f;
+	float phaseTimer = 3.0f;
 	BossPhase phase = BossPhase::spown;
 
+	bool trueDead = false;
 	bool isDead = true;
-	int HP = 10;
+	int HP = 100;
 
 	float attackSpeed = 200.0f;
 	bool isAttack = false;

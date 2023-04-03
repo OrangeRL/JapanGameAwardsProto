@@ -29,10 +29,10 @@ void EnemyBullet::Update()
 	}
 
 	if (bulletNum == 1) {
-		if (gameObject->worldTransform.translation.y < 1.0f) {
+		if (gameObject->worldTransform.translation.y < 6.0f) {
 			gameObject->worldTransform.translation.y += 0.1f;
 		}
-		else if (gameObject->worldTransform.translation.y >= 1.0f) {
+		else if (gameObject->worldTransform.translation.y >= 6.0f) {
 			gameObject->worldTransform.translation.z -= 0.2f;
 		}
 	}
@@ -63,6 +63,13 @@ Vector3 EnemyBullet::SetTransform(Vector3 transform)
 	return gameObject->worldTransform.translation;
 }
 
+Vector3 EnemyBullet::SetScale(Vector3 scale)
+{
+	gameObject->worldTransform.scale = scale;
+
+	return this->gameObject->worldTransform.scale;
+}
+
 int EnemyBullet::SetBullet(int bulletNum)
 {
 	this->bulletNum = bulletNum;
@@ -78,5 +85,10 @@ void EnemyBullet::Aim(Vector3 player, Vector3 enemy)
 	posC = posA - posB;
 	posC.nomalize();
 	posC *= speed;
+}
+
+void EnemyBullet::OnCollision()
+{
+	isDelete_ = true;
 }
 

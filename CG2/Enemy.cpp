@@ -12,8 +12,8 @@ Enemy::~Enemy() {
 void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName) {
 
 	gameObject = new GameObject3D();
+	gameObject->PreLoadTexture(textureFileName);
 	gameObject->PreLoadModel("Resources/star/star.obj");
-	gameObject->PreLoadTexture(textureFileName/*L"Resources/monster/monster.png"*/);
 	gameObject->SetViewProjection(viewProjection);
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
@@ -21,13 +21,21 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 	gameObject->worldTransform.scale = { 2 , 2 , 2 };
 	gameObject->worldTransform.rotation = { 0,0,0 };
 	gameObject->worldTransform.translation = { 0 , 0 , 100 };
-
+  
+	//pManager.Initialize(viewProjection, matProjection, L"Resources/purple1x1.png");
+	//spManager.Initialize(viewProjection, matProjection);
 
 }
 
 //Num が 1の奴は移動のみ
 //Num が 0は固定砲台
 void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int enemyNum) {
+	/*pManager.Update(gameObject->worldTransform.translation);
+	if (pManager.GetIsDead() == false) {
+		pManager.Update(gameObject->worldTransform.translation);
+	}*/
+	//spManager.Update(viewProjection, matProjection,gameObject->worldTransform.translation);
+
 	attackSpeed -= 0.5f;
 	phaseTimer--;
 
@@ -43,7 +51,7 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 		gameObject->worldTransform.translation += moveSpeed;
 		if (phaseTimer <= 0.0f) {
 			phase = Phase::move;
-			phaseTimer = 300.0f;
+			phaseTimer = 200.0f;
 		}
 		break;
 	case Phase::move:	//行動
@@ -63,6 +71,11 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 }
 
 void Enemy::Draw() {
+	/*if (pManager.GetIsDead() == true) {
+		gameObject->Draw();
+	}
+	pManager.Draw();*/
+	//spManager.Draw();
 	gameObject->Draw();
 }
 
@@ -168,3 +181,6 @@ Phase Enemy::GetPhase()
 	return phase;
 }
 
+void Enemy::OnCollision() {
+	isDelete_ = true;
+}

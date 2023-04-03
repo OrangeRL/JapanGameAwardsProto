@@ -1,5 +1,8 @@
 #pragma once
 #include "GameObject3D.h"
+#include "EnemyBullet.h"
+#include "SpawnParticleManager.h"
+#include "Particle2.h"
 #include <memory>
 #include <list>
 enum class Phase {
@@ -33,6 +36,10 @@ public:
 	void Leave(Vector3 leaveSpeedt, Vector3 leaveSpeedf,int enemyNum);
 
 	void CoolTime();
+
+	void OnCollision();
+
+	/*const std::list<std::unique_ptr<EnemyBullet>>& GetBullets() { return bullets; }*/
 
 	//座標取得用
 	WorldTransform GetWorldTransform();
@@ -72,6 +79,10 @@ private:
 	int32_t deleteTimer_ = deleteTime;
 	//フラグ
 	bool isDelete_ = false;
+
+
+	SpawnParticleManager spManager;
+	Particle2 pManager;
 
 };
 

@@ -81,11 +81,44 @@
     <ClCompile Include="Sprite.cpp">
       <Filter>Source\Sprite</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy.cpp" />
-    <ClCompile Include="Rhythm.cpp" />
     <ClCompile Include="DebugText.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+
+    <ClCompile Include="SpawnParticle.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyBullet.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle2.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleManager.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Pattern2.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerBullet.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="ReilCamera.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Rhythm.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="SpawnParticleManager.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+
     <ClCompile Include="EnemyBullet.cpp" />
     <ClCompile Include="PlayerBullet.cpp" />
     <ClCompile Include="ReilCamera.cpp" />
@@ -93,6 +126,7 @@
     <ClCompile Include="UIManager.cpp" />
     <ClCompile Include="Boss.cpp" />
     <ClCompile Include="BossBullet.cpp" />
+
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FPS.h">
@@ -164,11 +198,44 @@
     <ClInclude Include="WorldTransform.h">
       <Filter>Header\3D</Filter>
     </ClInclude>
-    <ClInclude Include="Enemy.h" />
-    <ClInclude Include="Rhythm.h" />
     <ClInclude Include="DebugText.h">
       <Filter>Header</Filter>
     </ClInclude>
+
+    <ClInclude Include="SpawnParticle.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle2.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyBullet.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleManager.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Pattern2.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerBullet.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="ReilCamera.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Rhythm.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnParticleManager.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+
     <ClInclude Include="EnemyBullet.h" />
     <ClInclude Include="PlayerBullet.h" />
     <ClInclude Include="ReilCamera.h" />
@@ -176,6 +243,7 @@
     <ClInclude Include="UIManager.h" />
     <ClInclude Include="Boss.h" />
     <ClInclude Include="BossBullet.h" />
+
   </ItemGroup>
   <ItemGroup>
     <None Include="Basic.hlsli">
@@ -236,6 +304,9 @@
     </Filter>
     <Filter Include="Source\Scene">
       <UniqueIdentifier>{30f0b0f7-d55f-422b-8066-f248ec2ac040}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FBX">
+      <UniqueIdentifier>{9299d398-2bf6-4cbe-89c7-e65ed75e1ab1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

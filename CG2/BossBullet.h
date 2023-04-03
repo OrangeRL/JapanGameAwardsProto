@@ -1,17 +1,22 @@
 #pragma once
 #include "GameObject3D.h"
+#include "Boss.h"
+
 class BossBullet
 {
 public:
-	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, float Random);
-	void Update();
+	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 player, Vector3 enemy);
+	void Update(BossPhase phase);
 	void Draw();
 
-	//WorldTransform GetWorldTransform();
+	WorldTransform GetWorldTransform();
 	//ê∂ê¨Ç∑ÇÈèÍèäÇê›íË
 	Vector3 SetTransform(Vector3 transform);
+	Vector3 SetScale(Vector3 scale);
 
 	bool IsDead()const { return isDelete_; }
+
+	void Aim(Vector3 player, Vector3 enemy);
 private:
 	GameObject3D* gameObject = nullptr;
 
@@ -23,5 +28,10 @@ private:
 	int32_t deleteTimer_ = deleteTime;
 	//ÉtÉâÉO
 	bool isDelete_ = false;
+
+	Vector3 posA;
+	Vector3 posB;
+	Vector3 posC;
+
 };
 

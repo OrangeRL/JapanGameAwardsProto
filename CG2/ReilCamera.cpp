@@ -8,10 +8,12 @@ void ReilCamera::Initialize(Vector3 pos, Vector3 rot) {
 	viewProjection_.Initialize();
 }
 
-void ReilCamera::Update(Input* input) {
-	worldTransform_.translation.x += cosf(3.14f * rotation.y) * 0.1f;
-	worldTransform_.translation.y += sinf(3.14f * rotation.x) * 0.1f;
-	worldTransform_.translation.z += sinf(3.14f * rotation.y) * 0.1f;
+void ReilCamera::Update(Input* input,float wave) {
+	if (wave != 3) {
+		worldTransform_.translation.x += cosf(3.14f * rotation.y) * 0.1f;
+		worldTransform_.translation.y += sinf(3.14f * rotation.x) * 0.1f;
+		worldTransform_.translation.z += sinf(3.14f * rotation.y) * 0.1f;
+	}
 	
 	viewProjection_.eye = worldTransform_.translation;
 	viewProjection_.target.y = worldTransform_.translation.y - a;
