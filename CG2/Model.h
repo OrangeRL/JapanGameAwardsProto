@@ -17,6 +17,8 @@
 
 #include <string.h>
 
+
+
 using namespace Microsoft::WRL;
 using namespace DirectX;
 
@@ -24,6 +26,7 @@ using namespace DirectX;
 
 class Model{
 public:
+
 	//ƒƒ“ƒoŠÖ”
 	void LoadModel();
 	void LoadModel(const char* fileName);

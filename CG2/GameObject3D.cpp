@@ -1,29 +1,37 @@
 #include "GameObject3D.h"
 
+using namespace std;
+
+static map<wstring, Texture> textureMap;
+static map<string, Model> modelMap;
+
 class ViewProjection {
 public:
 	Matrix4 matView;
 };
 
-//ƒƒ“ƒoŠÖ”
+//ãƒ¡ãƒ³ãƒé–¢æ•°
 void GameObject3D::PreLoadModel(const char* modelFileName) {
 	this->modelFileName = modelFileName;
+	//std::map<Model, const char> mapOfWords;
+	//mapOfWords.insert(std::("earth"));
+	//mapOfWords.insert(std::make_pair("moon", 2));
 }
 
-//ƒƒ“ƒoŠÖ”
+//ãƒ¡ãƒ³ãƒé–¢æ•°
 void GameObject3D::PreLoadTexture(const wchar_t* textureFileName) {
 	this->textureFileName = textureFileName;
 }
 
-void GameObject3D::Initialize() {
-
+void GameObject3D::Initialize() 
+{
 	InitializeConstMapTransform();
 	InitializeConstMapMaterial();
 
-	//ƒ[ƒ‹ƒh•ÏŠ·‚Ì‰Šú‰»
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›ã®åˆæœŸåŒ–
 	worldTransform.initialize();
-
-	//ƒ‚ƒfƒ‹‚Ì‰Šú‰»
+	
+	//ãƒ¢ãƒ‡ãƒ«ã®åˆæœŸåŒ–
 	model.LoadModel(modelFileName);
 	model.Initialize();
 
@@ -32,30 +40,27 @@ void GameObject3D::Initialize() {
 	textrue.CreateSRV();
 }
 
-void GameObject3D::Update() {
+void GameObject3D::Update() 
+{
 
 	worldTransform.UpdateMatWorld();
 	
-	//’è”ƒoƒbƒtƒ@‚Öƒf[ƒ^“]‘—
+	//å®šæ•°ãƒãƒƒãƒ•ã‚¡ã¸ãƒ‡ãƒ¼ã‚¿è»¢é€
 	constMapTransform->mat = worldTransform.matWorld;
 	constMapTransform->mat *= viewProjection->matView;
 	constMapTransform->mat *= MathFunc::Utility::ConvertXMMATRIXtoMatrix4(*matProjection);
 
-	//’è”ƒoƒbƒtƒ@‚Öƒf[ƒ^“]‘—
-	constMapTransform->mat = worldTransform.matWorld;
-	constMapTransform->mat *= viewProjection->matView;
-	constMapTransform->mat *= MathFunc::Utility::ConvertXMMATRIXtoMatrix4(*matProjection);
-
-	//’l‚ð‘‚«ž‚Þ‚ÆŽ©“®“I‚É“]‘—‚³‚ê‚é
+	//å€¤ã‚’æ›¸ãè¾¼ã‚€ã¨è‡ªå‹•çš„ã«è»¢é€ã•ã‚Œã‚‹
 	constMapMaterial->color = color;
 }
 
-void GameObject3D::Draw() {
+void GameObject3D::Draw() 
+{
 
-	//’¸“_ƒoƒbƒtƒ@\ƒrƒ…[‚ðƒZƒbƒg‚·‚éƒRƒ}ƒ“ƒh
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡â€•ãƒ“ãƒ¥ãƒ¼ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã‚³ãƒžãƒ³ãƒ‰
 	dx12base.GetCmdList()->SetGraphicsRootConstantBufferView(0 , constBuffMaterial->GetGPUVirtualAddress());
 
-	//’è”ƒoƒbƒtƒ@ƒrƒ…[(CBV)‚ÌÝ’èƒRƒ}ƒ“ƒh
+	//å®šæ•°ãƒãƒƒãƒ•ã‚¡ãƒ“ãƒ¥ãƒ¼(CBV)ã®è¨­å®šã‚³ãƒžãƒ³ãƒ‰
 	dx12base.GetCmdList()->SetGraphicsRootConstantBufferView(2 , constBuffTransform->GetGPUVirtualAddress());
 
 	textrue.Draw();
@@ -67,32 +72,32 @@ void GameObject3D::Draw() {
 void GameObject3D::InitializeConstMapTransform() {
 	HRESULT result;
 
-	//’è”ƒoƒbƒtƒ@‚Ì¶¬
-	//ƒq[ƒvÝ’è
-	cbTransformHeapProp.Type = D3D12_HEAP_TYPE_UPLOAD;	//GPU‚Ö‚Ì“]‘——p
+	//å®šæ•°ãƒãƒƒãƒ•ã‚¡ã®ç”Ÿæˆ
+	//ãƒ’ãƒ¼ãƒ—è¨­å®š
+	cbTransformHeapProp.Type = D3D12_HEAP_TYPE_UPLOAD;	//GPUã¸ã®è»¢é€ç”¨
 
-	//ƒŠƒ\[ƒXÝ’è
+	//ãƒªã‚½ãƒ¼ã‚¹è¨­å®š
 	cbTransformResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	cbTransformResourceDesc.Width = (sizeof(ConstBufferDataMaterial) + 0xff) & ~0xff;	//256ƒoƒCƒgƒAƒ‰ƒCƒ“ƒƒ“ƒg
+	cbTransformResourceDesc.Width = (sizeof(ConstBufferDataMaterial) + 0xff) & ~0xff;	//256ãƒã‚¤ãƒˆã‚¢ãƒ©ã‚¤ãƒ³ãƒ¡ãƒ³ãƒˆ
 	cbTransformResourceDesc.Height = 1;
 	cbTransformResourceDesc.DepthOrArraySize = 1;
 	cbTransformResourceDesc.MipLevels = 1;
 	cbTransformResourceDesc.SampleDesc.Count = 1;
 	cbTransformResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 
-	//’è”ƒoƒbƒtƒ@‚Ì¶¬
+	//å®šæ•°ãƒãƒƒãƒ•ã‚¡ã®ç”Ÿæˆ
 	result = dx12base.GetDevice()->CreateCommittedResource(
-		&cbTransformHeapProp ,	//ƒq[ƒvÝ’è
+		&cbTransformHeapProp ,	//ãƒ’ãƒ¼ãƒ—è¨­å®š
 		D3D12_HEAP_FLAG_NONE ,
-		&cbTransformResourceDesc ,	//ƒŠƒ\[ƒXÝ’è
+		&cbTransformResourceDesc ,	//ãƒªã‚½ãƒ¼ã‚¹è¨­å®š
 		D3D12_RESOURCE_STATE_GENERIC_READ ,
 		nullptr ,
 		IID_PPV_ARGS(&constBuffTransform)
 	);
 	assert(SUCCEEDED(result));
 
-	//’è”ƒoƒbƒtƒ@‚Ìƒ}ƒbƒsƒ“ƒO
-	result = constBuffTransform->Map(0 , nullptr , (void**)&constMapTransform); // ƒ}ƒbƒsƒ“ƒO
+	//å®šæ•°ãƒãƒƒãƒ•ã‚¡ã®ãƒžãƒƒãƒ”ãƒ³ã‚°
+	result = constBuffTransform->Map(0 , nullptr , (void**)&constMapTransform); // ãƒžãƒƒãƒ”ãƒ³ã‚°
 	assert(SUCCEEDED(result));
 
 }
@@ -101,44 +106,44 @@ void GameObject3D::InitializeConstMapMaterial() {
 
 	HRESULT result;
 
-	//’è”ƒoƒbƒtƒ@‚Ì¶¬
-//ƒq[ƒvÝ’è
-	cbMaterialHeapProp.Type = D3D12_HEAP_TYPE_UPLOAD;	//GPU‚Ö‚Ì“]‘——p
+	//å®šæ•°ãƒãƒƒãƒ•ã‚¡ã®ç”Ÿæˆ
+//ãƒ’ãƒ¼ãƒ—è¨­å®š
+	cbMaterialHeapProp.Type = D3D12_HEAP_TYPE_UPLOAD;	//GPUã¸ã®è»¢é€ç”¨
 
-	//ƒŠƒ\[ƒXÝ’è
+	//ãƒªã‚½ãƒ¼ã‚¹è¨­å®š
 	D3D12_RESOURCE_DESC cbMaterialResourceDesc{};
 	cbMaterialResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	cbMaterialResourceDesc.Width = (sizeof(ConstBufferDataMaterial) + 0xff) & ~0xff;	//256ƒoƒCƒgƒAƒ‰ƒCƒ“ƒƒ“ƒg
+	cbMaterialResourceDesc.Width = (sizeof(ConstBufferDataMaterial) + 0xff) & ~0xff;	//256ãƒã‚¤ãƒˆã‚¢ãƒ©ã‚¤ãƒ³ãƒ¡ãƒ³ãƒˆ
 	cbMaterialResourceDesc.Height = 1;
 	cbMaterialResourceDesc.DepthOrArraySize = 1;
 	cbMaterialResourceDesc.MipLevels = 1;
 	cbMaterialResourceDesc.SampleDesc.Count = 1;
 	cbMaterialResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 
-	//’è”ƒoƒbƒtƒ@‚Ì¶¬
+	//å®šæ•°ãƒãƒƒãƒ•ã‚¡ã®ç”Ÿæˆ
 	result = dx12base.GetDevice()->CreateCommittedResource(
-		&cbMaterialHeapProp ,	//ƒq[ƒvÝ’è
+		&cbMaterialHeapProp ,	//ãƒ’ãƒ¼ãƒ—è¨­å®š
 		D3D12_HEAP_FLAG_NONE ,
-		&cbMaterialResourceDesc ,	//ƒŠƒ\[ƒXÝ’è
+		&cbMaterialResourceDesc ,	//ãƒªã‚½ãƒ¼ã‚¹è¨­å®š
 		D3D12_RESOURCE_STATE_GENERIC_READ ,
 		nullptr ,
 		IID_PPV_ARGS(&constBuffMaterial)
 	);
 	assert(SUCCEEDED(result));
 
-	//’è”ƒoƒbƒtƒ@‚Ìƒ}ƒbƒsƒ“ƒO
+	//å®šæ•°ãƒãƒƒãƒ•ã‚¡ã®ãƒžãƒƒãƒ”ãƒ³ã‚°
 	//ConstBufferDataMaterial* constMapMaterial = nullptr;
-	result = constBuffMaterial->Map(0 , nullptr , (void**)&constMapMaterial); // ƒ}ƒbƒsƒ“ƒO
+	result = constBuffMaterial->Map(0 , nullptr , (void**)&constMapMaterial); // ãƒžãƒƒãƒ”ãƒ³ã‚°
 	assert(SUCCEEDED(result));
 
-	//’è”ƒoƒbƒtƒ@‚Ö‚Ìƒf[ƒ^“]‘—
-	//’l‚ð‘‚«ž‚Þ‚ÆŽ©“®“I‚É“]‘—‚³‚ê‚é
+	//å®šæ•°ãƒãƒƒãƒ•ã‚¡ã¸ã®ãƒ‡ãƒ¼ã‚¿è»¢é€
+	//å€¤ã‚’æ›¸ãè¾¼ã‚€ã¨è‡ªå‹•çš„ã«è»¢é€ã•ã‚Œã‚‹
 	constMapMaterial->color = color;
 
 }
 
 
-//ƒAƒNƒZƒbƒT
+//ã‚¢ã‚¯ã‚»ãƒƒã‚µ
 void GameObject3D::SetViewProjection(ViewProjection* viewProjection) {
 	this->viewProjection = viewProjection;
 }
