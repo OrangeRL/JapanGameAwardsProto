@@ -225,14 +225,14 @@ void Player::Move() {
 }
 
 void Player::NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 enemyPos, Vector3 playerPos, Weapons weapon) {
-		playerPos = GetPos();
-		//enemyPos = enemy->GetWorldTransform().translation;
-		//弾を生成し、初期化
-		std::unique_ptr<PlayerBullet>newBullet = std::make_unique<PlayerBullet>();
-		newBullet->Initialize(viewProjection, matProjection, enemyPos, playerPos,weapon);
+	playerPos = GetPos();
+	//enemyPos = enemy->GetWorldTransform().translation;
+	//弾を生成し、初期化
+	std::unique_ptr<PlayerBullet>newBullet = std::make_unique<PlayerBullet>();
+	newBullet->Initialize(viewProjection, matProjection, enemyPos, playerPos,weapon);
 
-		//弾を登録する
-		bullets_.push_back(std::move(newBullet));
+	//弾を登録する
+	bullets_.push_back(std::move(newBullet));
 	
 	timer--;
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
@@ -248,21 +248,21 @@ void Player::NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 	}
 }
 
-void Player::NewBulletAim(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 enemyPos, Vector3 playerPos) {
-	playerPos = GetPos();
-
-	//弾を生成し、初期化
-	std::unique_ptr<Pattern2>newBullet = std::make_unique<Pattern2>();
-	newBullet->Initialize(viewProjection, matProjection);
-
-	//弾を登録する
-	bulletsAim_.push_back(std::move(newBullet));
-
-	for (std::unique_ptr<Pattern2>& bullet : bulletsAim_) {
-		bullet->Update(enemyPos,playerPos);
-	}
-
-}
+//void Player::NewBulletAim(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 enemyPos, Vector3 playerPos) {
+//	playerPos = GetPos();
+//
+//	//弾を生成し、初期化
+//	std::unique_ptr<Pattern2>newBullet = std::make_unique<Pattern2>();
+//	newBullet->Initialize(viewProjection, matProjection);
+//
+//	//弾を登録する
+//	bulletsAim_.push_back(std::move(newBullet));
+//
+//	for (std::unique_ptr<Pattern2>& bullet : bulletsAim_) {
+//		bullet->Update(enemyPos,playerPos);
+//	}
+//
+//}
 void Player::Collision() {
 
 	//const std::list < std::unique_ptr<Enemy>>& enemyLoads = GetEnemyBullets();

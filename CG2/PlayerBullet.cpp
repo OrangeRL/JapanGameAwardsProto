@@ -155,8 +155,8 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos, Vector3 vec) {
 			gameObject->worldTransform.translation.z > canMoveArea + playerPos.z + 400) 
 		{
 			//一定の範囲外で消滅
-			isShot = false;
-			isDead_ = true;
+			/*isShot = false;
+			isDead_ = true;*/
 
 		}
 	}

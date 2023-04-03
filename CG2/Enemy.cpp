@@ -13,7 +13,7 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 
 	gameObject = new GameObject3D();
 	gameObject->PreLoadTexture(textureFileName);
-	gameObject->PreLoadModel("Resources/star/star.obj");
+	gameObject->PreLoadModel("Resources/enemy/enemy.obj");
 	gameObject->SetViewProjection(viewProjection);
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
@@ -22,7 +22,7 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 	gameObject->worldTransform.rotation = { 0,0,0 };
 	gameObject->worldTransform.translation = { 0 , 0 , 100 };
   
-	//pManager.Initialize(viewProjection, matProjection, L"Resources/purple1x1.png");
+	pManager.Initialize(viewProjection, matProjection, L"Resources/purple1x1.png");
 	//spManager.Initialize(viewProjection, matProjection);
 
 }
@@ -30,10 +30,10 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 //Num が 1の奴は移動のみ
 //Num が 0は固定砲台
 void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int enemyNum) {
-	/*pManager.Update(gameObject->worldTransform.translation);
+	pManager.Update(gameObject->worldTransform.translation);
 	if (pManager.GetIsDead() == false) {
 		pManager.Update(gameObject->worldTransform.translation);
-	}*/
+	}
 	//spManager.Update(viewProjection, matProjection,gameObject->worldTransform.translation);
 
 	attackSpeed -= 0.5f;
@@ -71,10 +71,10 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 }
 
 void Enemy::Draw() {
-	/*if (pManager.GetIsDead() == true) {
+	if (pManager.GetIsDead() == true) {
 		gameObject->Draw();
 	}
-	pManager.Draw();*/
+	pManager.Draw();
 	//spManager.Draw();
 	gameObject->Draw();
 }
