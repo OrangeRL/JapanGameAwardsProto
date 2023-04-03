@@ -159,6 +159,7 @@ private: // メンバ変数
 
 	ReilCamera* reilCamera = nullptr;
 
+
 	Sprite* num_[10];
 	Sprite* crosshair = nullptr;
 

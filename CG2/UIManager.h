@@ -7,27 +7,28 @@
 class UIManager
 {
 public:
-	static const int fontSize = 80;
+	static const int fontSize = 64;
 	static const int maxDegree = 360;
 	const float maxSpeed = 30.0f;
 	static const int maxCharCount = 256;	// 最大文字数
 	static const int kBufferSize = 512;   // 書式付き文字列展開用バッファサイズ
+	static const int fontLineCount = 10;
 
 	~UIManager();
 
-	void Initialize();
+	void Initialize(UINT texnumber);
 
-	void Update(Rhythm* rhythm);
+	void Update(Rhythm* rhythm, int isDead);
 
 	void Draw(Rhythm* rhythm);
 
-	void InitializeScore(UINT texnumber);
-
-	void ScorePrint(float x, float y, float scale, int size, const char* fmt, ...);
+	void UIPrintf(XMFLOAT2 pos,XMFLOAT2 scale, XMFLOAT4 color, int size, const char* fmt, ...);
 
 private:
+	int score = 5000;
+	int countDown = 3;
 
-	XMFLOAT4 color = {1.0f,1.0f,1.0f,1.0f};
+	XMFLOAT4 color = {0.0f,1.0f,1.0f,1.0f};
 	XMFLOAT4 flashColor = { 10.0f,10.0f,10.0f,1.0f };
 	float lectPoint = 0.0f;
 
@@ -36,7 +37,7 @@ private:
 
 	float moveSpeed = 0.1f;
 
-	Sprite* textSprite[3];
+	Sprite* clearSprite;
 	Sprite* numbersSprite = nullptr;
 
 	// スプライトデータの配列

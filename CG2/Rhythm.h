@@ -46,9 +46,9 @@ public:
 
 	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection);
 
-	void Update(Input* input, Vector3 pos, Vector3 rot);
+	void Update(Input* input, Vector3 pos, Vector3 rot, int isDead,int stage);
 
-	void Draw();
+	void Draw(int isDead);
 
 	void SoundUnload(SoundData soundData);
 
@@ -92,6 +92,8 @@ private:
 
 	Vector3 shrinkSpeed = { 0.1f,0.1f,0.0f };
 
+	float pitch;
+
 	//サウンドマネージャー
 	SoundManager* soundManager_ = nullptr;
 
@@ -104,7 +106,9 @@ private:
 	SoundData laserSound = soundManager_->SoundLoadWave("Resources/shot4.wav");
 	SoundData explosionSound = soundManager_->SoundLoadWave("Resources/shot3.wav");
 	SoundData demoBGM = soundManager_->SoundLoadWave("Resources/demo.wav");
-	SoundData stage1BGM = soundManager_->SoundLoadWave("Resources/stage1.wav");
+	SoundData stage1_1BGM = soundManager_->SoundLoadWave("Resources/stage1-1.wav");
+	SoundData stage1_2BGM = soundManager_->SoundLoadWave("Resources/stage1-2.wav");
+	SoundData stage1_bossBGM = soundManager_->SoundLoadWave("Resources/stage1-boss.wav");
 	SoundData itemSound = soundManager_->SoundLoadWave("Resources/item.wav");
 
 };
