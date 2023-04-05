@@ -231,8 +231,19 @@ void Rhythm::Update(Input* input, Vector3 pos, Vector3 rot, int isDead, int stag
 		//demoBGM.pSourceVoice->SetVolume(BGMVolume);
 		//stage1BGM.pSourceVoice->SetVolume(soundState.BGMVolume);
 
-		//UIの更新
-		circle[0]->color = { 1.0f,1.0f,0.5f,0.0f };
+		//UI(円)の更新
+		if (input->TriggerKey(DIK_SPACE)) {
+			colorChange = 0.0f;	
+		}
+
+		colorChange += 0.05f;
+
+		if (soundState.judge == Judge::Good) {
+			circle[0]->color = { 1.0f,1.0f,colorChange,0.0f };
+		}
+		else if (soundState.judge == Judge::Miss) {
+			circle[0]->color = { 1.0f,colorChange,colorChange,0.0f };
+		}
 
 		for (int i = 0; i < circleNum; i++) {
 			circle[i]->worldTransform.translation = pos;
@@ -241,6 +252,7 @@ void Rhythm::Update(Input* input, Vector3 pos, Vector3 rot, int isDead, int stag
 		}
 	}
 	else {
+	//死亡時、ピッチを段々下げる
 		pitch -= 0.01;
 	}
 
@@ -301,11 +313,11 @@ void Rhythm::NormalShot(SoundState s, Input* input) {
 	}
 	//一定のタイミングで弾を装填する
 	if (s.timer == reloadTiming || s.timer == shotTiming1 + reloadTiming) {
-		isFireActive = 1;
+		soundState.isFireActive = 1;
 	}
 
 	//弾が発射可能なとき
-	if (isFireActive == 1) {
+	if (soundState.isFireActive == 1) {
 		if (input->TriggerKey(DIK_SPACE)) {
 			//丁度いいタイミングでキーを押すと発射
 			if (((s.timer <= judgeBreadth + s.offset) ||
@@ -313,15 +325,16 @@ void Rhythm::NormalShot(SoundState s, Input* input) {
 				(s.timer >= maxTimer - judgeBreadth + s.offset))) {
 
 				soundState.isFireSucces = 1;
-
+				soundState.judge = Judge::Good;
 				SoundPlayWave(shotSound, s.normalSEVolume);
 			}
 			//それ以外のタイミングは失敗
 			else {
+				soundState.judge = Judge::Miss;
 				SoundPlayWave(missSound, s.normalSEVolume);
 			}
 
-			isFireActive = 0;
+			soundState.isFireActive = 0;
 		}
 	}
 }
@@ -342,11 +355,11 @@ void Rhythm::RapidShot(SoundState s, Input* input) {
 	//一定のタイミングで弾を装填する
 	if (s.timer == reloadTiming || s.timer == shotTiming1 + reloadTiming ||
 		s.timer == shotTiming2 + reloadTiming || s.timer == shotTiming3 + reloadTiming) {
-		isFireActive = 1;
+		soundState.isFireActive = 1;
 	}
 
 	//弾が発射可能なとき
-	if (isFireActive == 1) {
+	if (soundState.isFireActive == 1) {
 		if (input->TriggerKey(DIK_SPACE)) {
 			//丁度いいタイミングでキーを押すと発射
 			if (((s.timer <= judgeBreadth + s.offset) ||
@@ -356,15 +369,16 @@ void Rhythm::RapidShot(SoundState s, Input* input) {
 				(s.timer >= maxTimer - judgeBreadth + s.offset))) {
 
 				soundState.isFireSucces = 1;
-
+				soundState.judge = Judge::Good;
 				SoundPlayWave(shotSound, s.normalSEVolume);
 			}
 			//それ以外のタイミングは失敗
 			else {
+				soundState.judge = Judge::Miss;
 				SoundPlayWave(missSound, s.normalSEVolume);
 			}
 
-			isFireActive = 0;
+			soundState.isFireActive = 0;
 		}
 	}
 }
@@ -384,11 +398,11 @@ void Rhythm::ThreeWayShot(SoundState s, Input* input) {
 	}
 	//一定のタイミングで弾を装填する
 	if (s.timer == reloadTiming || s.timer == shotTiming1 + reloadTiming || s.timer == shotTiming2 + reloadTiming) {
-		isFireActive = 1;
+		soundState.isFireActive = 1;
 	}
 
 	//弾が発射可能なとき
-	if (isFireActive == 1) {
+	if (soundState.isFireActive == 1) {
 		if (input->TriggerKey(DIK_SPACE)) {
 			//丁度いいタイミングでキーを押すと発射
 			if (((s.timer <= judgeBreadth + s.offset) ||
@@ -397,15 +411,16 @@ void Rhythm::ThreeWayShot(SoundState s, Input* input) {
 				(s.timer >= maxTimer - judgeBreadth + s.offset))) {
 
 				soundState.isFireSucces = 1;
-
+				soundState.judge = Judge::Good;
 				SoundPlayWave(shotSound, s.normalSEVolume);
 			}
 			//それ以外のタイミングは失敗
 			else {
+				soundState.judge = Judge::Miss;
 				SoundPlayWave(missSound, s.normalSEVolume);
 			}
 
-			isFireActive = 0;
+			soundState.isFireActive = 0;
 
 		}
 	}
@@ -425,11 +440,11 @@ void Rhythm::ExplosionShot(SoundState s, Input* input) {
 	//一定のタイミングで弾を装填する
 	if (s.timer == reloadTiming) {
 		isSuccess = 0;
-		isFireActive = 1;
+		soundState.isFireActive = 1;
 	}
 
 	//弾が発射可能なとき
-	if (isFireActive == 1) {
+	if (soundState.isFireActive == 1) {
 		if (input->TriggerKey(DIK_SPACE)) {
 			//丁度いいタイミングでキーを押すと発射
 			if (((s.timer <= judgeBreadth + s.offset) ||
@@ -437,16 +452,17 @@ void Rhythm::ExplosionShot(SoundState s, Input* input) {
 
 				soundState.isFireSucces = 1;
 				isSuccess = 1;
-
+				soundState.judge = Judge::Good;
 				SoundPlayWave(shotSound, s.normalSEVolume);
 			}
 			//それ以外のタイミングは失敗
 			else {
+				soundState.judge = Judge::Miss;
 				SoundPlayWave(missSound, s.normalSEVolume);
 				isSuccess = 0;
 			}
 
-			isFireActive = 0;
+			soundState.isFireActive = 0;
 		}
 	}
 	//成功したら爆破音を鳴らす
@@ -467,27 +483,28 @@ void Rhythm::LaserShot(SoundState s, Input* input) {
 	if (s.timer == reloadTiming && s.isLaserActive == 0) {
 		circle[1]->worldTransform.scale = { 5.0f,5.0f,0.0f };
 		circle[1]->color.z = 1.0f;
-		isFireActive = 1;
+		soundState.isFireActive = 1;
 	}
 
 	//弾が発射可能なとき
-	if (isFireActive == 1) {
+	if (soundState.isFireActive == 1) {
 		if (input->TriggerKey(DIK_SPACE)) {
 			//丁度いいタイミングでキーを押すと発射
 			if (((s.timer <= judgeBreadth + s.offset && s.isLaserActive == 1) ||
 				(s.timer >= maxTimer - judgeBreadth + s.offset && s.isLaserActive == 1))) {
 
 				soundState.isFireSucces = 1;
-
+				soundState.judge = Judge::Good;
 				soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), laserSound, false, s.normalSEVolume);
 
 			}
 			//それ以外のタイミングは失敗
 			else {
+				soundState.judge = Judge::Miss;
 				SoundPlayWave(missSound, s.normalSEVolume);
 			}
 
-			isFireActive = 0;
+			soundState.isFireActive = 0;
 		}
 		shrinkSpeed = { 0.05f,0.05f,0.0f };
 

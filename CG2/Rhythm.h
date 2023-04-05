@@ -3,12 +3,20 @@
 #include "Audio.h"
 #include "GameObject3D.h"
 
+//武器の種類
 enum class Weapons {
 	Normal,		//通常弾
 	Rapid,		//速射弾
 	ThreeWay,	//3way弾
 	Explosion,	//爆裂弾
 	Laser,		//レーザー弾
+};
+
+//判定
+enum class Judge {
+	None,
+	Miss,
+	Good,
 };
 
 struct SoundState {
@@ -23,8 +31,12 @@ struct SoundState {
 	Weapons weapon = Weapons::Normal;
 	//発射成功したか
 	bool isFireSucces;
+	//次の弾が撃てるまでのクールタイムのフラグ
+	bool isFireActive = 1;
 	//レーザー弾の発射可能フラグ
 	bool isLaserActive = 0;
+	//判定
+	Judge judge = Judge::None;
 
 	//判定のずれ(オフセット)
 	float offset = 0.0f;
@@ -85,12 +97,13 @@ private:
 	float shotTiming3;
 	//弾が装填されるタイミング
 	float reloadTiming;
-	//次の弾が撃てるまでのクールタイムのフラグ
-	bool isFireActive = 1;
+	
 	//爆裂弾の発射が成功したかどうか(仮)
 	int isSuccess = 0;
 
 	Vector3 shrinkSpeed = { 0.1f,0.1f,0.0f };
+
+	float colorChange = 0.0f;
 
 	float pitch;
 

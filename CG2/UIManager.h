@@ -18,7 +18,7 @@ public:
 
 	void Initialize(UINT texnumber);
 
-	void Update(Rhythm* rhythm, int isDead);
+	void Update(Rhythm* rhythm,Input* input, int isDead);
 
 	void Draw(Rhythm* rhythm);
 
@@ -36,6 +36,9 @@ private:
 	float rotation = 0.0f;
 
 	float moveSpeed = 0.1f;
+
+	//”»’è•\Ž¦‚Ì“§–¾“x
+	float judgeAlpha = 0.0f;
 
 	Sprite* clearSprite;
 	Sprite* numbersSprite = nullptr;

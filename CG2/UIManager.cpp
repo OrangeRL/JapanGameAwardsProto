@@ -25,7 +25,7 @@ void UIManager::Initialize(UINT texnumber) {
 
 }
 
-void UIManager::Update(Rhythm* rhythm, int isDead) {
+void UIManager::Update(Rhythm* rhythm, Input* input, int isDead) {
 
 	//Å‰‚ÌuREADY?v‚Ìˆ—
 	if (rhythm->GetSoundState().measureCount < 4) {	
@@ -131,6 +131,21 @@ void UIManager::Update(Rhythm* rhythm, int isDead) {
 	if (rhythm->GetSoundState().isPause == true) {
 		UIPrintf({ window_width / 2 - 100, window_height / 2 - 50}, { 1.0f,1.0f }, { 0.0f,0.5f,1.0f,1.0f }, 6, " PAUSE");
 	}
+
+	//
+	if (input->TriggerKey(DIK_SPACE)) {
+		if (rhythm->GetSoundState().isFireActive) {
+			judgeAlpha = 1.0f;
+		}
+	}
+
+	if (rhythm->GetSoundState().judge == Judge::Good) {
+		UIPrintf({ window_width / 2 - 200, 100 }, { 2.0f,2.0f }, { 1.0f,1.0f,0.0f,judgeAlpha }, 5, " Good");
+	}
+	else if (rhythm->GetSoundState().judge == Judge::Miss) {
+		UIPrintf({ window_width / 2 - 200, 100 }, { 2.0f,2.0f }, { 0.3f,0.3f,0.3f,judgeAlpha }, 5, " Miss");
+	}
+	judgeAlpha -= 0.05f;
 }
 
 void UIManager::Draw(Rhythm* rhythm) {

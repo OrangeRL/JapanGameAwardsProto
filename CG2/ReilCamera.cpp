@@ -113,11 +113,11 @@ void ReilCamera::Update(Input* input,float wave) {
 	rotation.x -= easeInOutSine(flameUp / MAX_FLAME) * 0.01f;
 	worldTransform_.rotation.x += easeInOutSine(flameUp / MAX_FLAME) * 0.01f * 3.14f;
 
-	if (rotation.x >= 0.3f) {
+	if (rotation.x >= 0.2f) {
 		flameDown = 0.0f;
 	}
 
-	if (rotation.x <= -0.3f) {
+	if (rotation.x <= -0.2f) {
 		flameUp = 0.0f;
 	}
 	

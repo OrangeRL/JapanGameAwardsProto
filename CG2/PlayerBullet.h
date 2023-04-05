@@ -14,7 +14,7 @@ public:
 	//初期化
 	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 playerPos, Vector3 bossPos, Weapons weapon);
 	//更新
-	void Update(Vector3 vec);
+	void Update(Vector3 vec, float shotAngle);
 	//描画
 	void Draw();
 
@@ -29,7 +29,7 @@ public:
 	//攻撃
 	void AttackPress();
 
-	void Attack(Vector3 playerPos, Vector3 bossPos, Vector3 vec);
+	void Attack(Vector3 playerPos, Vector3 bossPos, Vector3 vec, float shotAngle);
 private:	//メンバ関数
 	
 private:	//メンバ変数
@@ -52,7 +52,7 @@ private:	//メンバ変数
 	float canMoveArea = 120;
 
 	//寿命
-	static const int32_t kLifeTime = 60 * 5;
+	static const int32_t kLifeTime = 60 * 2;
 	//デスタイマー
 	int deathTimer_ = kLifeTime;
 	//デスフラグ
