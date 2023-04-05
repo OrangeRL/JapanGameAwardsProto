@@ -19,7 +19,6 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 	gameObject->Initialize();
 
 	gameObject->worldTransform.scale = { 2 , 2 , 2 };
-	gameObject->worldTransform.rotation = { 0,0,0 };
 	gameObject->worldTransform.translation = { 0 , 0 , 100 };
   
 	pManager.Initialize(viewProjection, matProjection, L"Resources/purple1x1.png");
@@ -55,10 +54,6 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 		}
 		break;
 	case Phase::move:	//行動
-		if (enemyNum == 2) {
-			gameObject->worldTransform.rotation.y += 0.1f;
-			gameObject->worldTransform.translation.z -= 0.1f;
-		}
 		if (phaseTimer <= 0.0f) {
 			phase = Phase::leave;
 			phaseTimer = 300.0f;

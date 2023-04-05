@@ -1,6 +1,5 @@
 #include "Particle.h"
 #include <random>
-#include <random>
 
 //—”ƒV[ƒh¶¬Ší
 std::random_device seed_gen;

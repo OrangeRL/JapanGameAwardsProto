@@ -92,7 +92,7 @@ void GameScene::Initialize(WinApp* winApp)
 	particle3 = new Particle;
 	particle3->Initialize(&viewProjection_, &matProjection_, player);
 
-	loadEnemyPopData(1);
+	loadEnemyPopData(2);
 	//ボスの雑魚敵の配置
 	loadBossPopData(1);
 
