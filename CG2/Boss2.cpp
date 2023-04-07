@@ -21,30 +21,37 @@ void Boss2::Update()
 	{
 		//1回のみ
 	case Boss2Phase::spown:	// 誕生
+
+
 		if (phaseTimer <= 0.0f) {
 			isDead = false;
-			phaseTimer = 300.0f;
+			phaseTimer = 500.0f;
 			phase = Boss2Phase::attack;
 		}
 		break;
-	case Boss2Phase::attack:
+	case Boss2Phase::attack:	//何もしない
 
 		if (phaseTimer <= 0.0f) {
-			phaseTimer = 300.0f;
+			isDead = false;
+			phaseTimer = 500.0f;
 			phase = Boss2Phase::attack2;
 		}
 		break;
-	case Boss2Phase::attack2:
+	case Boss2Phase::attack2:	//前方から突進
+
 
 		if (phaseTimer <= 0.0f) {
-			phaseTimer = 100.0f;
+			isDead = false;
+			phaseTimer = 500.0f;
 			phase = Boss2Phase::defence;
 		}
+
 		break;
-	case Boss2Phase::defence:
+	case Boss2Phase::defence:	//制限
 
 		if (phaseTimer <= 0.0f) {
-			phaseTimer = 300.0f;
+			isDead = false;
+			phaseTimer = 500.0f;
 			phase = Boss2Phase::attack;
 		}
 		break;
@@ -54,14 +61,29 @@ void Boss2::Update()
 
 void Boss2::Draw()
 {
-	gameObject->Draw();
+	if (isDead == false) {
+		gameObject->Draw();
+	}
 }
 
 WorldTransform Boss2::GetWorldTransform()
 {
-    return WorldTransform();
+	return gameObject->worldTransform;
 }
 
 void Boss2::OnCollision()
 {
+	isDead = true;
+}
+
+int Boss2::Random(float minValue, float maxValue)
+{
+	//シード値乱数生成器
+	std::random_device rnd;
+	//メルセンヌ・ツイスタ方を使って乱数を作る
+	std::mt19937_64 mt64(rnd());
+	//範囲内の離散分布を作る
+	std::uniform_real_distribution<float> genRandFloat(minValue, maxValue);
+	//分布の中から生成した乱数を使って1つだけ値を取り出す
+	return genRandFloat(mt64);
 }

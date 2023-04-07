@@ -98,7 +98,7 @@ void Enemy::Leave(Vector3 leaveSpeedt,Vector3 leaveSpeedf, int enemyNum)
 	}
 
 	if (enemyNum == 2) {	//直線レーザータレット
-		gameObject->worldTransform.rotation.y += 0.3f;
+		/*gameObject->worldTransform.rotation.y += 0.3f;*/
 	}
 
 	if (--deleteTimer_ <= 0) {
