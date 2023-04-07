@@ -15,6 +15,7 @@
 #include <random>
 #include "Player.h"
 #include "Boss.h"
+#include "Boss2.h"
 #include "Map.h"
 #include "Goal.h"
 #include "Particle.h"
@@ -123,6 +124,7 @@ private: // メンバ変数
 	Pattern2* pattern2 = nullptr;
 
 	Boss* boss = nullptr;
+	Boss2* boss2 = nullptr;
 	std::list<std::unique_ptr<BossBullet>> bossBullet1;
 	std::list<std::unique_ptr<BossBullet>> bossBullet2;
 

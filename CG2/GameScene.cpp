@@ -77,6 +77,8 @@ void GameScene::Initialize(WinApp* winApp)
 
 	boss = new Boss();
 	boss->Initialize(&viewProjection_, &matProjection_);
+	boss2 = new Boss2();
+	boss2->Initialize(&viewProjection_, &matProjection_);
 
 	viewProjection_ = reilCamera->GetViewProjection();
 
@@ -234,49 +236,50 @@ void GameScene::Update()
 	//ボス関連
 
 	if (rhythm->GetSoundState().wave == 3) {
-		boss->Update();
-#pragma region made BossBullet
-		if (boss->GetIsDead() == false) {
-			if (boss->GetPhase() == BossPhase::attack && boss->GetAttackSpeed() <= 0.0f) {
-				//弾を生成
-				std::unique_ptr<BossBullet> bullet = std::make_unique<BossBullet>();
-				bullet->Initialize(&viewProjection_, &matProjection_, player->GetPos(), boss->GetWorldTransform().translation);
-				bullet->SetTransform(boss->GetWorldTransform().translation);
-				bossBullet1.push_back(std::move(bullet));
-				boss->SetAttackSpeed(50.0f);
-				if (boss->GetIsAttack() == false) {
-					boss->SetIsAttack(true);
-				}
-			}
-			if (boss->GetPhase() == BossPhase::attack2 && boss->GetAttackSpeed() <= 0.0f) {
-				//弾を生成
-				std::unique_ptr<BossBullet> bullet = std::make_unique<BossBullet>();
-				bullet->Initialize(&viewProjection_, &matProjection_, player->GetPos(), boss->GetWorldTransform().translation);
-				bullet->SetTransform(boss->GetWorldTransform().translation);
-				bossBullet2.push_back(std::move(bullet));
-				boss->SetAttackSpeed(150.0f);
-				if (boss->GetIsAttack() == false) {
-					boss->SetIsAttack(true);
-				}
-			}
-			
-			if (boss->GetIsAttack() == true) {
-				for (std::unique_ptr<BossBullet>& bullet : bossBullet1) {
-					bullet->Update(boss->GetPhase());
-				}
-				for (std::unique_ptr<BossBullet>& bullet : bossBullet2) {
-					bullet->Update(boss->GetPhase());
-				}
-			}
-			//弾&敵を削除する
-			bossBullet1.remove_if([](std::unique_ptr<BossBullet>& bullet) { return bullet->IsDead(); });
-			bossBullet2.remove_if([](std::unique_ptr<BossBullet>& bullet) { return bullet->IsDead(); });
-			
-		}
-#pragma endregion
-		if(boss->GetPhase() == BossPhase::defence) {
-			UpdateBossPopCommand();
-		}
+		boss2->Update(player->GetPos());
+//		boss->Update();
+//#pragma region made BossBullet
+//		if (boss->GetIsDead() == false) {
+//			if (boss->GetPhase() == BossPhase::attack && boss->GetAttackSpeed() <= 0.0f) {
+//				//弾を生成
+//				std::unique_ptr<BossBullet> bullet = std::make_unique<BossBullet>();
+//				bullet->Initialize(&viewProjection_, &matProjection_, player->GetPos(), boss->GetWorldTransform().translation);
+//				bullet->SetTransform(boss->GetWorldTransform().translation);
+//				bossBullet1.push_back(std::move(bullet));
+//				boss->SetAttackSpeed(50.0f);
+//				if (boss->GetIsAttack() == false) {
+//					boss->SetIsAttack(true);
+//				}
+//			}
+//			if (boss->GetPhase() == BossPhase::attack2 && boss->GetAttackSpeed() <= 0.0f) {
+//				//弾を生成
+//				std::unique_ptr<BossBullet> bullet = std::make_unique<BossBullet>();
+//				bullet->Initialize(&viewProjection_, &matProjection_, player->GetPos(), boss->GetWorldTransform().translation);
+//				bullet->SetTransform(boss->GetWorldTransform().translation);
+//				bossBullet2.push_back(std::move(bullet));
+//				boss->SetAttackSpeed(150.0f);
+//				if (boss->GetIsAttack() == false) {
+//					boss->SetIsAttack(true);
+//				}
+//			}
+//			
+//			if (boss->GetIsAttack() == true) {
+//				for (std::unique_ptr<BossBullet>& bullet : bossBullet1) {
+//					bullet->Update(boss->GetPhase());
+//				}
+//				for (std::unique_ptr<BossBullet>& bullet : bossBullet2) {
+//					bullet->Update(boss->GetPhase());
+//				}
+//			}
+//			//弾&敵を削除する
+//			bossBullet1.remove_if([](std::unique_ptr<BossBullet>& bullet) { return bullet->IsDead(); });
+//			bossBullet2.remove_if([](std::unique_ptr<BossBullet>& bullet) { return bullet->IsDead(); });
+//			
+//		}
+//#pragma endregion
+//		if(boss->GetPhase() == BossPhase::defence) {
+//			UpdateBossPopCommand();
+//		}
 	}
 	if (player->GetIsDead() == false) {
 		UpdateEnemyPopCommand();
@@ -369,14 +372,15 @@ void GameScene::Draw() {
 	}
 
 	if (rhythm->GetSoundState().wave == 3) {
-		boss->Draw();
+		boss2->Draw();
+		/*boss->Draw();
 		for (std::unique_ptr<BossBullet>& bullet : bossBullet1) {
 			bullet->Draw();
 		}
 
 		for (std::unique_ptr<BossBullet>& bullet : bossBullet2) {
 			bullet->Draw();
-		}
+		}*/
 	}
 
 	for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {

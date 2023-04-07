@@ -6,10 +6,10 @@
 #include <random>
 
 enum Boss2Phase {
-	spown,
-	attack,
-	attack2,
-	defence,
+	respown,
+	move,
+	rush,
+	limit,
 };
 
 class Boss2
@@ -34,11 +34,12 @@ private:
 
 	//s“®•Ï‰»
 	float phaseTimer = 3.0f;
-	Boss2Phase phase = Boss2Phase::spown;
+	Boss2Phase phase = Boss2Phase::respown;
 
 	bool isDead = true;
 
-	float rushTimer = 10.0f;
+	float moveCoolDown = 100.0f;
+	float rushTimer = 30.0f;
 	float shakeSpeed = 0;
 	int speed = 5;
 };

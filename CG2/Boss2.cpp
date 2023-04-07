@@ -9,7 +9,7 @@ void Boss2::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
 
-	gameObject->worldTransform.scale = { 3 , 3 , 3 };
+	gameObject->worldTransform.scale = { 2 , 2 , 2 };
 	gameObject->worldTransform.rotation = { 0,90,0 };
 	gameObject->worldTransform.translation = { 0 + shakeSpeed , 0 , 1500 };
 	for (int i = 0; i < defenceValue; i++) {
@@ -29,29 +29,33 @@ void Boss2::Update(Vector3 player)
 	switch (phase)
 	{
 		//1âÒÇÃÇ›
-	case Boss2Phase::spown:	// íaê∂
+	case Boss2Phase::respown:	// íaê∂
 		if (phaseTimer <= 0.0f) {
 			isDead = false;
 			phaseTimer = 500.0f;
-			phase = Boss2Phase::attack;
+			phase = Boss2Phase::move;
 		}
 		break;
-	case Boss2Phase::attack:	//
-		gameObject->worldTransform.translation.x += speed;
-		if (gameObject->worldTransform.translation.x >= 10.0f|| gameObject->worldTransform.translation.x <= -10.0f) {
-			speed = -speed;
+	case Boss2Phase::move:	//
+		moveCoolDown--;
+		if (moveCoolDown <= 0.0f) {
+			gameObject->worldTransform.translation.x += speed;
+			if (gameObject->worldTransform.translation.x >= 10.0f || gameObject->worldTransform.translation.x <= -10.0f) {
+				speed = -speed;
+			}
+			moveCoolDown = 30.0f;
 		}
 
 		if (phaseTimer <= 0.0f) {
 			isDead = false;
 			phaseTimer = 500.0f;
 			gameObject->worldTransform.translation.x = 0.0f;
-			phase = Boss2Phase::attack2;
+			phase = Boss2Phase::rush;
 		}
 		break;
-	case Boss2Phase::attack2:	//ëOï˚Ç©ÇÁìÀêi
+	case Boss2Phase::rush:	//ëOï˚Ç©ÇÁìÀêi
 		if (rushTimer > 0.0f) {
-			rushTimer--;
+			rushTimer-=0.1f;
 			shakeSpeed = Random(-2, 2);
 		}
 		else if (rushTimer <= 0.0f && gameObject->worldTransform.translation.z != player.z - 5) {
@@ -59,7 +63,7 @@ void Boss2::Update(Vector3 player)
 			if (gameObject->worldTransform.translation.z <= player.z - 5)
 			{
 				gameObject->worldTransform.translation.z = 1500;
-				rushTimer = 10.0f;
+				rushTimer = 30.0f;
 			}
 		}
 
@@ -68,11 +72,11 @@ void Boss2::Update(Vector3 player)
 			phaseTimer = 500.0f;
 			rushTimer = 10.0f;
 			gameObject->worldTransform.translation.z = 1500;
-			phase = Boss2Phase::defence;
+			phase = Boss2Phase::limit;
 		}
 
 		break;
-	case Boss2Phase::defence:	//êßå¿
+	case Boss2Phase::limit:	//êßå¿
 		for (int i = 0; i < defenceValue; i++) {
 			defenceObject[i]->worldTransform.scale.x += 0.3f;
 			defenceObject[0]->worldTransform.translation.y = 5.5f;
@@ -83,7 +87,7 @@ void Boss2::Update(Vector3 player)
 		if (phaseTimer <= 0.0f) {
 			isDead = false;
 			phaseTimer = 500.0f;
-			phase = Boss2Phase::attack;
+			phase = Boss2Phase::move;
 		}
 		break;
 	}
@@ -94,6 +98,9 @@ void Boss2::Draw()
 {
 	if (isDead == false) {
 		gameObject->Draw();
+	}
+	for (int i = 0; i < defenceValue; i++) {
+		defenceObject[i]->Draw();
 	}
 }
 
