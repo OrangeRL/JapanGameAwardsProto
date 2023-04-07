@@ -11,7 +11,7 @@ void Boss2::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 
 	gameObject->worldTransform.scale = { 2 , 2 , 2 };
 	gameObject->worldTransform.rotation = { 0,90,0 };
-	gameObject->worldTransform.translation = { 0 + shakeSpeed , 0 , 1500 };
+	gameObject->worldTransform.translation = { 0 , 0 , 1500 };
 	for (int i = 0; i < defenceValue; i++) {
 		defenceObject[i] = new GameObject3D();
 		//defenceObject[i]->PreLoadModel();
@@ -19,6 +19,9 @@ void Boss2::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 		defenceObject[i]->SetViewProjection(viewProjection);
 		defenceObject[i]->SetMatProjection(matProjection);
 		defenceObject[i]->Initialize();
+
+		defenceObject[i]->worldTransform.scale = { 2,2,2 };
+		defenceObject[i]->worldTransform.translation = gameObject->worldTransform.translation;
 	}
 	
 }
@@ -56,7 +59,10 @@ void Boss2::Update(Vector3 player)
 	case Boss2Phase::rush:	//‘O•û‚©‚ç“Ëi
 		if (rushTimer > 0.0f) {
 			rushTimer-=0.1f;
-			shakeSpeed = Random(-2, 2);
+			for (int i = 0; i < 30; i++) {
+				shakeSpeed = Random(-2, 2);
+			}
+			gameObject->worldTransform.translation += {shakeSpeed, shakeSpeed, shakeSpeed};
 		}
 		else if (rushTimer <= 0.0f && gameObject->worldTransform.translation.z != player.z - 5) {
 			gameObject->worldTransform.translation.z -= 5.0f;
@@ -98,10 +104,11 @@ void Boss2::Draw()
 {
 	if (isDead == false) {
 		gameObject->Draw();
+		for (int i = 0; i < defenceValue; i++) {
+			defenceObject[i]->Draw();
+		}
 	}
-	for (int i = 0; i < defenceValue; i++) {
-		defenceObject[i]->Draw();
-	}
+	
 }
 
 WorldTransform Boss2::GetWorldTransform()
