@@ -145,6 +145,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Audio.cpp" />
+    <ClCompile Include="Boss2.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Boss.cpp" />
     <ClCompile Include="BossBullet.cpp" />
@@ -223,6 +224,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Audio.h" />
+    <ClInclude Include="Boss2.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="Boss.h" />
     <ClInclude Include="BossBullet.h" />
