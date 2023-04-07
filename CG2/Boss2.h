@@ -16,7 +16,7 @@ class Boss2
 {
 public:
 	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection);
-	void Update();
+	void Update(Vector3 player);
 	void Draw();
 
 	//À•Wæ“¾—p
@@ -29,14 +29,18 @@ private:
 	int Random(float minValue, float maxValue);
 private:
 	GameObject3D* gameObject = nullptr;
+	static const int defenceValue = 2;
+	GameObject3D* defenceObject[defenceValue] = {};
 
 	//s“®•Ï‰»
 	float phaseTimer = 3.0f;
 	Boss2Phase phase = Boss2Phase::spown;
 
 	bool isDead = true;
-	int HP = 100;
 
+	float rushTimer = 10.0f;
+	float shakeSpeed = 0;
+	int speed = 5;
 };
 
 
