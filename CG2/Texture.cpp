@@ -5,6 +5,76 @@ public:
 	D3D12_RESOURCE_DESC GetResDesc();
 };
 
+void Texture::LoadTexture() {
+	HRESULT result;
+
+	//WICテクスチャのロード
+	result = LoadFromWICFile(
+		L"Resources/red1x1.png",
+		WIC_FLAGS_NONE,
+		&metadata,
+		scratchImg
+	);
+
+
+	//ミップマップ生成
+	result = GenerateMipMaps(
+		scratchImg.GetImages(),
+		scratchImg.GetImageCount(),
+		scratchImg.GetMetadata(),
+		TEX_FILTER_DEFAULT,
+		0,
+		mipChain
+	);
+	if (SUCCEEDED(result)) {
+		scratchImg = std::move(mipChain);
+		metadata = scratchImg.GetMetadata();
+	}
+	//読み込んだディフューズテクスチャをSRGBとして扱う
+	metadata.format = MakeSRGB(metadata.format);
+
+	//ヒープ設定
+	textureHeapProp.Type = D3D12_HEAP_TYPE_CUSTOM;
+	textureHeapProp.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;
+	textureHeapProp.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;
+
+	//リソース設定
+	textureResouceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	textureResouceDesc.Format = metadata.format;
+	textureResouceDesc.Width = metadata.width;	//幅
+	textureResouceDesc.Height = (UINT)metadata.height;	//高さ
+	textureResouceDesc.DepthOrArraySize = (UINT16)metadata.arraySize;
+	textureResouceDesc.MipLevels = (UINT16)metadata.mipLevels;
+	textureResouceDesc.SampleDesc.Count = 1;
+
+	//テクスチャバッファの生成
+	result = dx12base.GetDevice()->CreateCommittedResource(
+		&textureHeapProp,	//ヒープ設定
+		D3D12_HEAP_FLAG_NONE,
+		&textureResouceDesc,	//リソース設定
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&texBuff)
+	);
+	assert(SUCCEEDED(result));
+
+	//テクスチャバッファにデータ転送
+	//全ミップマップについて
+	for (size_t i = 0; i < metadata.mipLevels; i++) {
+		//ミップマップレベルを指定してイメージを取得
+		const Image* img = scratchImg.GetImage(i, 0, 0);
+		//テクスチャバッファにデータ転送
+		result = texBuff->WriteToSubresource(
+			(UINT)i,
+			nullptr,				//全領域へコピー
+			img->pixels,			//元データアドレス
+			(UINT)img->rowPitch,	//1ラインサイズ
+			(UINT)img->slicePitch	//1枚サイズ
+		);
+		assert(SUCCEEDED(result));
+	}
+}
+
 void Texture::LoadTexture(const wchar_t* fileName) {
 
 	HRESULT result;

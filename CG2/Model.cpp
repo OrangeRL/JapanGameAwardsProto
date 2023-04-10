@@ -1,8 +1,14 @@
 #include "Model.h"
 #include <map>
+#include <vector>
 #include <string>
 
-
+struct Vertex
+{
+	XMFLOAT3 pos;
+	XMFLOAT3 normal;
+	XMFLOAT2 uv;
+};
 
 //メンバ関数
 void Model::LoadModel() {
@@ -65,19 +71,18 @@ void Model::LoadModel() {
 
 }
 
-void Model::LoadModel(const char* fileName) {
+void Model::LoadModel(const char* fileName, bool smoothing) {
 
 	if (fileName) {
 
 		//開きたいファイルの拡張子を取得
 		size_t fileNameLen = strlen(fileName);
-		strcpy_s(fileType , fileName + fileNameLen - 4);
+		strcpy_s(fileType, fileName + fileNameLen - 4);
 
 
 #pragma region//.objファイルの場合
-		if (strcmp(fileType , ".obj") == 0) {
-
-			//ファイルストリーム
+		if (strcmp(fileType, ".obj") == 0) {
+		//ファイルストリーム
 			std::fstream file;
 			//.objファイルを開く
 			file.open(fileName);
@@ -91,14 +96,14 @@ void Model::LoadModel(const char* fileName) {
 			std::vector<XMFLOAT2>texcoords;	//テクスチャUV
 			//1行ずつ読み込む
 			std::string line;
-			while (getline(file , line)) {
+			while (getline(file, line)) {
 
 				//1行分の文字列をストリームに変換して解析しやすくする
 				std::istringstream line_stream(line);
 
 				//半角スペース区切りで行の先頭文字を取得
 				std::string key;
-				getline(line_stream , key , ' ');
+				getline(line_stream, key, ' ');
 
 				//先頭文字列がvなら頂点座標
 				if (key == "v") {
@@ -111,6 +116,7 @@ void Model::LoadModel(const char* fileName) {
 
 					//座標データに追加
 					positions.emplace_back(position);
+
 				}
 
 				//先頭文字列がvtならテクスチャ
@@ -145,15 +151,15 @@ void Model::LoadModel(const char* fileName) {
 
 					//半角スペース区切りで行の続きを読み込む
 					std::string index_string;
-					while (getline(line_stream , index_string , ' ')) {
+					while (getline(line_stream, index_string, ' ')) {
 
 						//頂点インデックス1個分の文字列をストリームに変換して解析しやすくする
 						std::istringstream index_stream(index_string);
-						unsigned short indexPosition , indexNormal , indexTexcoord;
+						unsigned short indexPosition, indexNormal, indexTexcoord;
 						index_stream >> indexPosition;
-						index_stream.seekg(1 , std::ios_base::cur);
+						index_stream.seekg(1, std::ios_base::cur);
 						index_stream >> indexTexcoord;
-						index_stream.seekg(1 , std::ios_base::cur);
+						index_stream.seekg(1, std::ios_base::cur);
 						index_stream >> indexNormal;
 
 						Vertex vertex{};
@@ -164,20 +170,75 @@ void Model::LoadModel(const char* fileName) {
 
 						//インデックスデータの追加
 						indices.emplace_back((unsigned short)indices.size());
+						//ここでデータを保持
+						if (smoothing)
+						{
+							smoothData[indexPosition].emplace_back(vertices.size() - 1);
+						}
 					}
 				}
 			}
 			file.close();
+			for (int i = 0; i < indices.size() / 3; i++)
+			{	//三角形1つごとに計算していく
+				//三角形のインデックスを取り出して、一時的な変数にいれる
+				unsigned short indices0 = indices[i * 3 + 0];
+				unsigned short indices1 = indices[i * 3 + 1];
+				unsigned short indices2 = indices[i * 3 + 2];
+				//三角形を構成する頂点座標をベクトルに代入
+				XMVECTOR p0 = XMLoadFloat3(&vertices[indices0].pos);
+				XMVECTOR p1 = XMLoadFloat3(&vertices[indices1].pos);
+				XMVECTOR p2 = XMLoadFloat3(&vertices[indices2].pos);
+
+				//p0→p1ベクトル、p0→p2ベクトルを計算(ベクトルの減算)
+				XMVECTOR v1 = XMVectorSubtract(p1, p0);
+				XMVECTOR v2 = XMVectorSubtract(p2, p0);
+				//外積は両方から垂直なベクトル
+				XMVECTOR normal = XMVector3Cross(v1, v2);
+				//正規化(長さを1にする)
+				normal = XMVector3Normalize(normal);
+				//求めた法線を頂点データに代入
+				XMStoreFloat3(&vertices[indices0].normal, normal);
+				XMStoreFloat3(&vertices[indices1].normal, normal);
+				XMStoreFloat3(&vertices[indices2].normal, normal);
+			}
+
+			if (smoothing)
+			{
+				//ここで保持したデータを使ってスムージングを計算
+				for (auto itr = smoothData.begin(); itr != smoothData.end(); ++itr)
+				{
+					std::vector<unsigned short>& v = itr->second;
+
+					XMVECTOR normal = {};
+					for (unsigned short index : v)
+					{
+						normal += XMVectorSet(vertices[index].normal.x, vertices[index].normal.y, vertices[index].normal.z, 0);
+					}
+
+					normal = XMVector3Normalize(normal / (float)v.size());
+
+					for (unsigned short index : v)
+					{
+						vertices[index].normal = { normal.m128_f32[0],normal.m128_f32[1] ,normal.m128_f32[2] };
+					}
+				}
+			}
 		}
 #pragma endregion
-		else {
-			//対応していないモデルはエラーを吐く
-			assert(nullptr);
-		}
+		//else {
+		//	//対応していないモデルはエラーを吐く
+		//	assert(nullptr);
+		//}
 	}
 	else {
 		LoadModel();
 	}
+}
+void ModelManager::PreLoad()
+{
+	tofu.LoadModel("Resources/tofu/tofu.obj", true);
+	star.LoadModel("Resources/star/star.obj",true);
 }
 
 void Model::Initialize() {
@@ -241,7 +302,7 @@ void Model::Initialize() {
 		nullptr ,
 		IID_PPV_ARGS(&vertBuff)
 	);
-	assert(SUCCEEDED(result));
+	//assert(SUCCEEDED(result));
 
 	//インデックスバッファの生成
 	result = dx12base.GetDevice()->CreateCommittedResource(
@@ -252,7 +313,7 @@ void Model::Initialize() {
 		nullptr ,
 		IID_PPV_ARGS(&indexBuff)
 	);
-	assert(SUCCEEDED(result));
+	//assert(SUCCEEDED(result));
 
 	//GPU上のバッファに対応した仮想メモリ(メインメモリ上)を取得
 	result = vertBuff->Map(0 , nullptr , (void**)&vertMap);

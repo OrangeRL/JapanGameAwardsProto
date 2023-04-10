@@ -3,7 +3,7 @@
 #include "Model.h"
 #include "Texture.h"
 #include "DX12base.h"
-
+#include <vector>
 #include "MathFunc.h"
 #include "Vector2.h"
 #include "Vector3.h"
@@ -53,6 +53,8 @@ private:
 public:
 	//ワールド変換
 	WorldTransform worldTransform;
+  
+	std::map<std::string, const char*> modelMap;
 	Vector4 color = {1.0f,1.0f,1.0f,1.0f};
 
 private:
@@ -60,7 +62,9 @@ private:
 	Model model;
 	//モデルのファイル名
 	const char* modelFileName = nullptr;
-
+	ModelManager* modelManager = ModelManager::GetInstance();
+	Model tofuModel = modelManager->tofu;
+	Model starModel = modelManager->star;
 	//テクスチャ
 	Texture textrue;
 	//モデルのファイル名
@@ -88,6 +92,13 @@ private:
 	//ビュープロジェクション
 	ViewProjection* viewProjection;
 
+	struct Vertex {
+		XMFLOAT3 pos;	//xyz��W
+		XMFLOAT3 normal;	//�@��x�N�g��
+		XMFLOAT2 uv;	//uv��W
+	};
+
+	std::map<std::string, Model> models;
 	//定数バッファのマッピング
 	ConstBufferDataMaterial* constMapMaterial = nullptr;
 };

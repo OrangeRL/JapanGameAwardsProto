@@ -22,10 +22,10 @@ public:
 	bool IsDead() const { return isDead[particleValue]; }
 private:
 
-	static const int particleValue = 13;
+	static const int particleValue = 20;
 
 	GameObject3D* gameObject[particleValue];
-
+	Model* model;
 	Vector3 velocity[particleValue] = {};
 	Vector3 angle[particleValue] = {};
 
@@ -40,7 +40,7 @@ private:
 	Player* player = nullptr;
 	PlayerBullet* playerBullet = nullptr;
 	SoundManager soundManager_;
-	//‰¹º“Ç‚İ‚İ
+	//â€°Â¹ÂÂºâ€œÃ‡â€šÃÂÅ¾â€šÃ
 	SoundData soundData1 = soundManager_.SoundLoadWave("Resources/death.wav");
 	bool isPlayingBGM = false;
 

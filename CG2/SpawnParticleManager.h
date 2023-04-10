@@ -19,7 +19,7 @@ public:
 		return particles;
 	};
 
-	static const int LIMIT = 10;
+	static const int LIMIT = 5;
 
 private:
 	std::list<std::unique_ptr<SpawnParticle>> particles;

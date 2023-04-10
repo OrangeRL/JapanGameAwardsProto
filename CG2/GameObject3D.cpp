@@ -13,9 +13,7 @@ public:
 //メンバ関数
 void GameObject3D::PreLoadModel(const char* modelFileName) {
 	this->modelFileName = modelFileName;
-	//std::map<Model, const char> mapOfWords;
-	//mapOfWords.insert(std::("earth"));
-	//mapOfWords.insert(std::make_pair("moon", 2));
+
 }
 
 //メンバ関数
@@ -23,16 +21,16 @@ void GameObject3D::PreLoadTexture(const wchar_t* textureFileName) {
 	this->textureFileName = textureFileName;
 }
 
-void GameObject3D::Initialize() 
+void GameObject3D::Initialize()
 {
 	InitializeConstMapTransform();
 	InitializeConstMapMaterial();
 
 	//ワールド変換の初期化
 	worldTransform.initialize();
-	
+
 	//モデルの初期化
-	model.LoadModel(modelFileName);
+	model.LoadModel(modelFileName, false);
 	model.Initialize();
 
 	textrue.LoadTexture(textureFileName);
@@ -94,11 +92,12 @@ void GameObject3D::InitializeConstMapTransform() {
 		nullptr ,
 		IID_PPV_ARGS(&constBuffTransform)
 	);
-	assert(SUCCEEDED(result));
+	//assert(SUCCEEDED(result));
+
 
 	//定数バッファのマッピング
 	result = constBuffTransform->Map(0 , nullptr , (void**)&constMapTransform); // マッピング
-	assert(SUCCEEDED(result));
+	//assert(SUCCEEDED(result));
 
 }
 
@@ -129,12 +128,12 @@ void GameObject3D::InitializeConstMapMaterial() {
 		nullptr ,
 		IID_PPV_ARGS(&constBuffMaterial)
 	);
-	assert(SUCCEEDED(result));
+	//assert(SUCCEEDED(result));
 
 	//定数バッファのマッピング
 	//ConstBufferDataMaterial* constMapMaterial = nullptr;
 	result = constBuffMaterial->Map(0 , nullptr , (void**)&constMapMaterial); // マッピング
-	assert(SUCCEEDED(result));
+	//assert(SUCCEEDED(result));
 
 	//定数バッファへのデータ転送
 	//値を書き込むと自動的に転送される

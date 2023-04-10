@@ -25,6 +25,7 @@ class Texture {
 
 	//ƒƒ“ƒoŠÖ”
 public:
+	void LoadTexture();
 	void LoadTexture(const wchar_t* fileName);
 
 	void CreateSRV();

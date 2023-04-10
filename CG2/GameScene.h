@@ -25,6 +25,8 @@
 #include "BossBullet.h"
 #include "ReilCamera.h"
 #include "Pattern2.h"
+#include "Particle2.h"
+#include "DirectXMath.h"
 #include "Item.h"
 #include "UIManager.h"
 
@@ -58,6 +60,7 @@ public: // メンバ関数
 	/// 敵発生コマンドの更新
 	/// </summary>
 	void UpdateEnemyPopCommand();
+	void LoadCsv(const wchar_t* fileName, int obstacleVal);
 	const std::list<std::unique_ptr<Enemy>>& GetEnemies() { return enemys1; }
 
 	//セッター
@@ -129,7 +132,6 @@ private: // メンバ変数
 	Particle* particle = nullptr;
 	Particle* particle2 = nullptr;
 	Particle* particle3 = nullptr;
-
 	//敵
 	std::list<std::unique_ptr<Enemy>> enemys1;
 	std::list<std::unique_ptr<Enemy>> enemys2;
@@ -163,6 +165,7 @@ private: // メンバ変数
 	Sprite* num_[10];
 	Sprite* crosshair = nullptr;
 
+	Particle2 pManager[40];
 	//変形行列
 	Vector3 position0 = { 0.0f,0.0f,0.0f };
 	Vector3 rotation0 = { 0.0f,0.0f,0.0f };
@@ -186,7 +189,7 @@ private: // メンバ変数
 	std::list<std::unique_ptr<Collision>> collisionsEnemyBullet;
 	std::list<std::unique_ptr<Collision>> collisionsAim;
 
-	int spawntime = 1;
+		int32_t spawntime = 0;
 
 	//UI関連
 	UIManager UIManager;
@@ -194,8 +197,9 @@ private: // メンバ変数
 // 敵コマンド関係
 //------------------------------------
 	std::stringstream enemyPopCommand;
-	bool waitFlag = false;
-	float waitTime_;
+	bool waitFlag = true;
+	float waitTime_=10;
+	size_t enemyVal = 50;
 //------------------------------------
 //ボスコマンド関係
 //------------------------------------
