@@ -1,7 +1,7 @@
 #include "PlayerBullet.h"
 
 PlayerBullet::PlayerBullet() {
-	//‰Šú‰»ˆÈ‘O‚ÌÝ’è
+	//åˆæœŸåŒ–ä»¥å‰ã®è¨­å®š
 
 	gameObject = nullptr;
 	isShot = false;
@@ -16,11 +16,11 @@ void PlayerBullet::OnCollision() {
 	isDead_ = true;
 }
 
-void PlayerBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 playerPos, Vector3 bossPos) 
+void PlayerBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 playerPos, Vector3 bossPos, Weapons weapon)
 {
 	gameObject = new GameObject3D();
 	//gameObject->PreLoadModel("Resources/star/star.obj");
-	gameObject->PreLoadTexture(L"Resources/red.png");
+	//gameObject->PreLoadTexture(L"Resources/red.png");
 	gameObject->SetViewProjection(viewProjection);
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
@@ -30,10 +30,43 @@ void PlayerBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProje
 	newPlayerPos = playerPos;
 	newEnemyPos = bossPos;
 	gameObject->worldTransform.translation = bossPos;
+	this->weapon = weapon;
+
+	if (weapon == Weapons::ThreeWay) {
+		for (int i = 0; i < 2; i++) {
+			gameObjectSub[i] = new GameObject3D();
+			//gameObject->PreLoadModel("Resources/star/star.obj");
+			gameObjectSub[i]->PreLoadTexture(L"Resources/red.png");
+			gameObjectSub[i]->SetViewProjection(viewProjection);
+			gameObjectSub[i]->SetMatProjection(matProjection);
+			gameObjectSub[i]->Initialize();
+			gameObjectSub[i]->worldTransform.translation = bossPos;
+		}
+	}
+
 }
 
-void PlayerBullet::Update() {
+void PlayerBullet::Update(Vector3 vec, float shotAngle) {
 	const float rotationSpeed = MathFunc::Utility::Deg2Rad(0.1f);
+
+	if (weapon == Weapons::Normal) {
+		gameObject->worldTransform.scale = { 2.0f,2.0f,2.0f };
+		speed = -5.0f;
+	}
+	else if (weapon == Weapons::Rapid) {
+		gameObject->worldTransform.scale = { 1.0f,1.0f,1.0f };
+		speed = -10.0f;
+	}
+	else if(weapon == Weapons::ThreeWay) {
+		gameObject->worldTransform.scale = { 1.0f,1.0f,1.0f };
+		speed = -5.0f;
+		for (int i = 0; i < 2; i++) {
+			gameObjectSub[i]->worldTransform.scale = {1.0f,1.0f,1.0f};
+		}
+	}
+	else {
+
+	}
 
 	Vector3 rotation = { 0 , 0 , 0 };
 	//newPlayerPos = playerPos;*/
@@ -43,31 +76,51 @@ void PlayerBullet::Update() {
 	angle = gameObject->worldTransform.rotation;
 	gameObject->worldTransform.rotation += rotation;
 
-	Attack(newPlayerPos, newEnemyPos);
+	Attack(newPlayerPos, newEnemyPos, vec,shotAngle);
 	if (isShot) 
 	{
 		gameObject->Update();
+		if (weapon == Weapons::ThreeWay) {
+			for (int i = 0; i < 2; i++) {
+				gameObjectSub[i]->Update();
+			}
+		}
+	}
+
+	deathTimer_--;
+	if (deathTimer_ <= 0) {
+		isDead_ = true;
 	}
 	
 }
-void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos) {
+
+void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos, Vector3 vec, float shotAngle) {
+	const float rotationSpeed = MathFunc::Utility::Deg2Rad(60.0f);
+
+	Vector3 rotation = { 0 , 0 , 0 };
+
+	//rotation.y = rotationSpeed;
+	//rotation.x = rotationSpeed;
+	//rotation.z = rotationSpeed;
 	
+	//gameObject->worldTransform.rotation += rotation;
 	if (!isShot) 
 	{
-		//‚»‚Ì”Ô†‚Ì’e‚Ì”­ŽËƒtƒ‰ƒO‚ªfalse‚È‚çtrue‚É‚·‚é
+		//ãã®ç•ªå·ã®å¼¾ã®ç™ºå°„ãƒ•ãƒ©ã‚°ãŒfalseãªã‚‰trueã«ã™ã‚‹
 		isShot = true;
 		isDead_ = false;
-		//‚»‚ê‚Æ“¯Žž‚É“¯”Ô†‚ÌƒIƒuƒWƒFƒNƒg‚ÌÀ•W‚ðƒ{ƒX‚ÌÀ•W‚ÉŽ‚Á‚Ä‚¢‚­
+		//ãã‚Œã¨åŒæ™‚ã«åŒç•ªå·ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®åº§æ¨™ã‚’ãƒœã‚¹ã®åº§æ¨™ã«æŒã£ã¦ã„ã
 		newPlayerPos = playerPos;
 		newEnemyPos = bossPos;
 		//gameObject->worldTransform.translation = bossPos;
-		//ƒ{ƒX‚ÆŽ©‹@‚Ì·•ªƒxƒNƒgƒ‹‚ð‹‚ß‚é
+		//ãƒœã‚¹ã¨è‡ªæ©Ÿã®å·®åˆ†ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ±‚ã‚ã‚‹
 		//velocity = newPlayerPos - newEnemyPos;
-		velocity = { 0.0f,0.0f,0.0f };
-
-		//ƒxƒNƒgƒ‹‚Ì³‹K‰»
-		velocity.nomalize();
-		//ƒxƒNƒgƒ‹‚Ì’·‚³‚ð‘¬‚³‚É‡‚í‚¹‚é
+		velocity = { sin(vec.y + shotAngle),-vec.x,cos(vec.y + shotAngle)};
+		//vec1 = { sin(vec.y + shotAngle) * speed,-vec.x * speed,cos(vec.y + shotAngle) * speed };
+		//vec2 = { sin(vec.y - shotAngle) * speed,-vec.x * speed,cos(vec.y - shotAngle) * speed };
+		//ãƒ™ã‚¯ãƒˆãƒ«ã®æ­£è¦åŒ–
+		//velocity.nomalize();
+		//ãƒ™ã‚¯ãƒˆãƒ«ã®é•·ã•ã‚’é€Ÿã•ã«åˆã‚ã›ã‚‹
 		velocity.x *= speed;
 		velocity.y *= speed;
 		velocity.z *= speed;
@@ -75,18 +128,25 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos) {
 
 	if (isShot) 
 	{
-		//ƒ{ƒX‚ÆŽ©‹@‚Ì·•ªƒxƒNƒgƒ‹‚ð‹‚ß‚é
+		//ãƒœã‚¹ã¨è‡ªæ©Ÿã®å·®åˆ†ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ±‚ã‚ã‚‹
 		//velocity = newPlayerPos - newEnemyPos;
-		velocity = { 0.0f,0.0f,5.0f };
+		//velocity = { wt.rotation.x,wt.rotation.y,wt.rotation.z };
 		
-		//ƒxƒNƒgƒ‹‚Ì³‹K‰»
-		velocity.nomalize();
-		//ƒxƒNƒgƒ‹‚Ì’·‚³‚ð‘¬‚³‚É‡‚í‚¹‚é
-		velocity.x *= speed;
+		//ãƒ™ã‚¯ãƒˆãƒ«ã®æ­£è¦åŒ–
+		//velocity.nomalize();
+		//ãƒ™ã‚¯ãƒˆãƒ«ã®é•·ã•ã‚’é€Ÿã•ã«åˆã‚ã›ã‚‹
+		/*velocity.x *= speed;
 		velocity.y *= speed;
-		velocity.z *= speed;
-		//”­ŽËƒtƒ‰ƒO‚ªtrue‚È‚ç‚»‚ÌŽž“_‚Å‚ÌŽ©‹@‚ÌÀ•W‚ÉŒü‚©‚Á‚ÄˆÚ“®‚·‚é
+		velocity.z *= speed;*/
+		//ç™ºå°„ãƒ•ãƒ©ã‚°ãŒtrueãªã‚‰ãã®æ™‚ç‚¹ã§ã®è‡ªæ©Ÿã®åº§æ¨™ã«å‘ã‹ã£ã¦ç§»å‹•ã™ã‚‹
 		gameObject->worldTransform.translation -= velocity;
+		if (weapon == Weapons::ThreeWay) {
+
+			gameObjectSub[0]->worldTransform.translation -= vec1;
+			gameObjectSub[1]->worldTransform.translation -= vec2;
+			
+		}
+
 		if (gameObject->worldTransform.translation.x < -canMoveArea ||
 			gameObject->worldTransform.translation.x > canMoveArea ||
 			gameObject->worldTransform.translation.y < -canMoveArea ||
@@ -94,10 +154,10 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos) {
 			gameObject->worldTransform.translation.z < -canMoveArea - 00 ||
 			gameObject->worldTransform.translation.z > canMoveArea + playerPos.z + 400) 
 		{
-			//ˆê’è‚Ì”ÍˆÍŠO‚ÅÁ–Å
-			isShot = false;
-			isDead_ = true;
-
+			//ä¸€å®šã®ç¯„å›²å¤–ã§æ¶ˆæ»…
+			//isShot = false;
+			//isDead_ = true;
+      
 		}
 	}
 }
@@ -107,6 +167,11 @@ void PlayerBullet::Draw()
 	if (isShot) 
 	{
 		gameObject->Draw();
+		for (int i = 0; i < 2; i++) {
+			if (weapon == Weapons::ThreeWay) {
+				//gameObjectSub[i]->Draw();
+			}
+		}
 	}
 }
 

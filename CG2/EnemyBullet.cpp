@@ -18,7 +18,7 @@ void EnemyBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjec
 	gameObject->SetViewProjection(viewProjection);
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
-
+	
 }
 
 void EnemyBullet::Update()
@@ -27,9 +27,9 @@ void EnemyBullet::Update()
 	if (bulletNum == 0){
 		gameObject->worldTransform.translation -= posC;
 	}
-	//正面にカーテン形成
-	else if (bulletNum == 1) {
-		gameObject->worldTransform.translation.z -= 0.1f;
+
+	if (bulletNum == 1) {
+
 	}
 
 	if (--deleteTimer_ <= 0) {
@@ -37,7 +37,7 @@ void EnemyBullet::Update()
 	}
 
 	gameObject->Update();
-	
+
 }
 
 
@@ -56,6 +56,13 @@ Vector3 EnemyBullet::SetTransform(Vector3 transform)
 	this->gameObject->worldTransform.translation = transform;
 
 	return gameObject->worldTransform.translation;
+}
+
+Vector3 EnemyBullet::SetScale(Vector3 scale)
+{
+	gameObject->worldTransform.scale = scale;
+
+	return this->gameObject->worldTransform.scale;
 }
 
 int EnemyBullet::SetBullet(int bulletNum)

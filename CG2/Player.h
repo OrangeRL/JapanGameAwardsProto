@@ -3,6 +3,7 @@
 #include "Input.h"
 #include "MathFunc.h"
 #include "PlayerBullet.h"
+#include "Rhythm.h"
 #include "Pattern2.h"
 #include "EnemyBullet.h"
 #include <memory>
@@ -16,14 +17,14 @@ class GameScene;
 
 class Player {
 public:
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	Player();
-	//ƒfƒXƒgƒ‰ƒNƒ^
+	//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	~Player();
 
 	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection);
 
-	void Update(WorldTransform wt);
+	void Update(WorldTransform wt, Vector3 vec);
 
 	void Aim(Vector3 player, Vector3 enemy);
 
@@ -31,14 +32,14 @@ public:
 
 	void Reset();
 
-	void OnCollision();
+	void OnCollision(Rhythm* rhythm);
 
-	//ƒAƒNƒZƒbƒT
+	//ã‚¢ã‚¯ã‚»ãƒƒã‚µ
 	void SetMap(Map* map);
 	void SetGoal(Goal* goal);
 	void SetEnemy(Enemy* enemy);
-	void NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 enemyPos,Vector3 playerPos);
-	void NewBulletAim(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 enemyPos,Vector3 playerPos);
+	void NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 enemyPos,Vector3 playerPos, Weapons weapon);
+
 	int GetIsGoal();
 	void SetIsGoal(int flag);
 	void SetPos(Vector3 pos) { gameObject->worldTransform.translation = pos; }
@@ -61,22 +62,22 @@ public:
 	Vector3 angle = {};
 
 
-	//’eƒŠƒXƒg‚ğæ“¾
+	//å¼¾ãƒªã‚¹ãƒˆã‚’å–å¾—
 	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
 	const std::list<std::unique_ptr<Pattern2>>& GetAim() { return bulletsAim_; }
-	//ƒƒ“ƒoŠÖ”
+	//ãƒ¡ãƒ³ãƒé–¢æ•°
 private:
 	void Rotate();
 	void Move();
 	void Collision();
 
 
-	//ƒƒ“ƒo•Ï”
+	//ãƒ¡ãƒ³ãƒå¤‰æ•°
 private:
-	//ƒL[“ü—Í
+	//ã‚­ãƒ¼å…¥åŠ›
 	Input& input = Input::GetInstance();
 
-	//ƒQ[ƒ€ƒIƒuƒWƒFƒNƒg
+	//ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 	GameObject3D* gameObject = nullptr;
 	GameObject3D* aimObject = nullptr;
 
@@ -84,7 +85,9 @@ private:
 
 	Vector3 velocity = {};
 	
-	int life = 100;
+	int life = 3;
+	bool isInvincible = 0;
+	int invincibleTimer = 120;
 
 	const float accelaration = 0.0025f;
 
@@ -116,17 +119,19 @@ private:
 	Vector3 playerPos = {};
 
 	Vector3 move = {};
+	const Vector2 moveLimit = { 15.0f,10.0f };
 
 	ViewProjection* viewProjection_;
 	XMMATRIX* matProjection_;
-	//’e
+	//å¼¾
 	std::list<std::unique_ptr<PlayerBullet>>bullets_;
+	std::list<std::unique_ptr<PlayerBullet>>bulletsSub_[2];
 	PlayerBullet* playerBullet = nullptr;
 
 	std::list<std::unique_ptr<Pattern2>>bulletsAim_;
 	Pattern2* playerBulletAim = nullptr;
 
-	//3DƒŒƒeƒBƒNƒ‹—pƒ[ƒ‹ƒhƒgƒ‰ƒ“ƒXƒtƒH[ƒ€
+	//3Dãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ç”¨ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ 
 	WorldTransform worldTransform3DReticle_;
 	
 	Vector3 posA;

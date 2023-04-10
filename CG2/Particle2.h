@@ -40,7 +40,7 @@ private:
 	Player* player = nullptr;
 	PlayerBullet* playerBullet = nullptr;
 	SoundManager soundManager_;
-	//‰¹º“Ç‚İ‚İ
+	//â€°Â¹ÂÂºâ€œÃ‡â€šÃÂÅ¾â€šÃ
 	SoundData soundData1 = soundManager_.SoundLoadWave("Resources/death.wav");
 	bool isPlayingBGM = false;
 

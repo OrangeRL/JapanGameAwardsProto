@@ -12,14 +12,14 @@
 #include <map> 
 #include <array>
 
-//‘O•ûéŒ¾
+//å‰æ–¹å®£è¨€
 //class DX12base;
 class ViewProjection;
 
 class GameObject3D {
 
 public:
-	//ƒƒ“ƒo•Ï”
+	//ãƒ¡ãƒ³ãƒå¤‰æ•°
 	void PreLoadModel(const char* modelFileName);
 	void PreLoadTexture(const wchar_t* textureFileName);
 
@@ -29,7 +29,7 @@ public:
 
 	void Draw();
 
-	//ƒAƒNƒZƒbƒT
+	//ã‚¢ã‚¯ã‚»ãƒƒã‚µ
 	void SetViewProjection(ViewProjection* viewProjection);
 	void SetMatProjection(XMMATRIX* matProjection);
 
@@ -37,49 +37,49 @@ private:
 	void InitializeConstMapTransform();
 	void InitializeConstMapMaterial();
 
-	//\‘¢‘Ì
+	//æ§‹é€ ä½“
 private:
-	//’è”ƒoƒbƒtƒ@—pƒf[ƒ^\‘¢‘Ì(ƒ}ƒeƒŠƒAƒ‹)
+	//å®šæ•°ãƒãƒƒãƒ•ã‚¡ç”¨ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“(ãƒãƒ†ãƒªã‚¢ãƒ«)
 	struct ConstBufferDataMaterial {
-		Vector4 color; //F(RGBA)
+		Vector4 color; //è‰²(RGBA)
 	};
 
-	//’è”ƒoƒbƒtƒ@—pƒf[ƒ^\‘¢‘Ì(3D•ÏŠ·s—ñ)
+	//å®šæ•°ãƒãƒƒãƒ•ã‚¡ç”¨ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“(3Då¤‰æ›è¡Œåˆ—)
 	struct ConstBufferDataTransform {
-		Matrix4 mat; //3D•ÏŠ·s—ñ
+		Matrix4 mat; //3Då¤‰æ›è¡Œåˆ—
 	};
 
-	//ƒƒ“ƒo•Ï”
+	//ãƒ¡ãƒ³ãƒå¤‰æ•°
 public:
-	//ƒ[ƒ‹ƒh•ÏŠ·
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›
 	WorldTransform worldTransform;
-
+  
 	std::map<std::string, const char*> modelMap;
-
+	Vector4 color = {1.0f,1.0f,1.0f,1.0f};
 
 private:
-	//ƒ‚ƒfƒ‹
+	//ãƒ¢ãƒ‡ãƒ«
 	Model model;
-	//ƒ‚ƒfƒ‹‚Ìƒtƒ@ƒCƒ‹–¼
+	//ãƒ¢ãƒ‡ãƒ«ã®ãƒ•ã‚¡ã‚¤ãƒ«å
 	const char* modelFileName = nullptr;
 	ModelManager* modelManager = ModelManager::GetInstance();
 	Model tofuModel = modelManager->tofu;
 	Model starModel = modelManager->star;
-	//ƒeƒNƒXƒ`ƒƒ
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£
 	Texture textrue;
-	//ƒ‚ƒfƒ‹‚Ìƒtƒ@ƒCƒ‹–¼
+	//ãƒ¢ãƒ‡ãƒ«ã®ãƒ•ã‚¡ã‚¤ãƒ«å
 	const wchar_t* textureFileName = nullptr;
 
-	//’è”ƒoƒbƒtƒ@(s—ñ—p)
+	//å®šæ•°ãƒãƒƒãƒ•ã‚¡(è¡Œåˆ—ç”¨)
 	ComPtr<ID3D12Resource> constBuffTransform = nullptr;
-	//’è”ƒoƒbƒtƒ@ƒ}ƒbƒsƒ“ƒO(s—ñ—p)
+	//å®šæ•°ãƒãƒƒãƒ•ã‚¡ãƒãƒƒãƒ”ãƒ³ã‚°(è¡Œåˆ—ç”¨)
 	ConstBufferDataTransform* constMapTransform = nullptr;
 
-	//ƒq[ƒvİ’è
+	//ãƒ’ãƒ¼ãƒ—è¨­å®š
 	D3D12_HEAP_PROPERTIES cbTransformHeapProp;
 	D3D12_HEAP_PROPERTIES cbMaterialHeapProp{};
 
-	//ƒŠƒ\[ƒXİ’è
+	//ãƒªã‚½ãƒ¼ã‚¹è¨­å®š
 	D3D12_RESOURCE_DESC cbTransformResourceDesc;
 	D3D12_RESOURCE_DESC cbMaterialResourceDesc{};
 
@@ -87,17 +87,19 @@ private:
 
 	XMMATRIX* matProjection;
 
-	//DirectXŠî‘b•”•ª
+	//DirectXåŸºç¤éƒ¨åˆ†
 	DX12base& dx12base = DX12base::GetInstance();
-	//ƒrƒ…[ƒvƒƒWƒFƒNƒVƒ‡ƒ“
+	//ãƒ“ãƒ¥ãƒ¼ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³
 	ViewProjection* viewProjection;
 
 	struct Vertex {
-		XMFLOAT3 pos;	//xyzÀ•W
-		XMFLOAT3 normal;	//–@üƒxƒNƒgƒ‹
-		XMFLOAT2 uv;	//uvÀ•W
+		XMFLOAT3 pos;	//xyzï¿½ï¿½W
+		XMFLOAT3 normal;	//ï¿½@ï¿½ï¿½xï¿½Nï¿½gï¿½ï¿½
+		XMFLOAT2 uv;	//uvï¿½ï¿½W
 	};
 
 	std::map<std::string, Model> models;
+	//å®šæ•°ãƒãƒƒãƒ•ã‚¡ã®ãƒãƒƒãƒ”ãƒ³ã‚°
+	ConstBufferDataMaterial* constMapMaterial = nullptr;
 };
 
