@@ -104,6 +104,7 @@ void GameScene::Initialize(WinApp* winApp)
 		//敵を登録
 		enemys1.push_back(std::move(newEnemy));
 	}
+	//loadEnemyPopData(1);
 	//ボスの雑魚敵の配置
 	loadBossPopData(1);
 }
@@ -139,15 +140,33 @@ void GameScene::Update()
 		crosshair->SetPosition({ player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y });
 		crosshair->Sprite::SetSize({ 1,1 });
 
+		//アイテムの更新処理
+		for (std::unique_ptr<Item>& item : items_) {
+					item->Update();
+		}
+
+		//デスフラグの立ったアイテムを削除
+		items_.remove_if([](std::unique_ptr<Item>& item) {
+			return item->GetIsDead();
+		});
+
+		//アイテム生成
+		if (input_.TriggerKey(DIK_T)) {
+			std::uniform_int_distribution<> dist(0, 4);
+			int value = dist(engine);
+			//アイテムを生成し、初期化
+			std::unique_ptr<Item>item = std::make_unique<Item>();
+			item->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", { player->GetPos().x,player->GetPos().y,player->GetPos().z + 20.0f }, value);
+
+			//アイテムを登録する
+			items_.push_back(std::move(item));
+		}
+
 		//敵の更新処理
 		for (std::unique_ptr<Enemy>& enemy : enemys1) {
-			/*	if (input_.TriggerKey(DIK_SPACE)){
-					enemy->Settransform({1,1,1});
-				}*/
-			//SetCollisionEnemy(enemy->GetWorldTransform().translation, enemy->GetWorldTransform().scale);
 			enemy->Update(&viewProjection_, &matProjection_, 0);
 #pragma region makeEnemyBullet
-			if (enemy->GetAttackSpeed() <= 0.0f && player->GetPos().z <= enemy->GetWorldTransform().translation.z) {
+			if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::move) {
 				//弾を生成
 				std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
 				//初期化
@@ -157,218 +176,171 @@ void GameScene::Update()
 				bullet->SetBullet(0);
 				bullets1.push_back(std::move(bullet));
 				//攻撃頻度の設定 1(速い)~ >1(遅い)
-				enemy->SetAttackSpeed(150.0f);
+				enemy->SetAttackSpeed(100.0f);
 
-				//アイテムの更新処理
-				for (std::unique_ptr<Item>& item : items_) {
-					item->Update();
+				if (enemy->GetIsAttack() == false) {
+					enemy->SetIsAttack(true);
 				}
+			}
+			if (enemy->GetIsAttack() == true) {
 
-				//デスフラグの立ったアイテムを削除
-				items_.remove_if([](std::unique_ptr<Item>& item) {
-					return item->GetIsDead();
-					});
-
-				//アイテム生成
-				if (input_.TriggerKey(DIK_T)) {
-					std::uniform_int_distribution<> dist(0, 4);
-					int value = dist(engine);
-					//アイテムを生成し、初期化
-					std::unique_ptr<Item>item = std::make_unique<Item>();
-					item->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", { player->GetPos().x,player->GetPos().y,player->GetPos().z + 20.0f }, value);
-
-					//アイテムを登録する
-					items_.push_back(std::move(item));
+				for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
+					bullet->Update();
 				}
+			}
 
-				//敵の更新処理
-				for (std::unique_ptr<Enemy>& enemy : enemys1) {
-					enemy->Update(&viewProjection_, &matProjection_, 0);
+			//弾&敵を削除する
+			bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
+#pragma endregion
+			enemyPos = enemy->GetWorldTransform().translation;
+		}
+		//敵1の削除
+		enemys1.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
+
+		for (std::unique_ptr<Enemy>& enemy : enemys2) {
+			enemy->Update(&viewProjection_, &matProjection_, 1);
+		}
+		//敵の削除
+		enemys2.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
+
+		for (std::unique_ptr<Enemy>& enemy : enemys3) {
+			enemy->Update(&viewProjection_, &matProjection_, 2);
 #pragma region makeEnemyBullet
-					if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::move) {
-						//弾を生成
-						std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
-						//初期化
-						bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetPos(), enemy->GetWorldTransform().translation);
-						bullet->SetTransform(enemy->GetWorldTransform().translation);
-						//使う弾の設定
-						bullet->SetBullet(0);
-						bullets1.push_back(std::move(bullet));
-						//攻撃頻度の設定 1(速い)~ >1(遅い)
-						enemy->SetAttackSpeed(100.0f);
+			if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() != Phase::spown) {
+				//弾を生成
+				std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
+				//初期化
+				bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetPos(), enemy->GetWorldTransform().translation);
+				bullet->SetScale({ 0.5f,0.5f,0.5f });
+				bullet->SetTransform(enemy->GetWorldTransform().translation);
+				//使う弾の設定
+				bullet->SetBullet(1);
+				bullets2.push_back(std::move(bullet));
+				//攻撃頻度の設定 1(速い)~ >1(遅い)
+				enemy->SetAttackSpeed(5.0f);
 
-						if (enemy->GetIsAttack() == false) {
-							enemy->SetIsAttack(true);
-						}
-					}
-					if (enemy->GetIsAttack() == true) {
-
-						for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
-							bullet->Update();
-						}
-					}
-
-					//弾&敵を削除する
-					bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
-#pragma endregion
-					enemyPos = enemy->GetWorldTransform().translation;
-#pragma endregion
+				if (enemy->GetIsAttack() == false) {
+					enemy->SetIsAttack(true);
 				}
-				//敵1の削除
-				enemys1.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
+			}
+			if (enemy->GetIsAttack() == true) {
 
-				for (std::unique_ptr<Enemy>& enemy : enemys2) {
-					enemy->Update(&viewProjection_, &matProjection_, 1);
+				for (std::unique_ptr<EnemyBullet>& bullet : bullets2) {
+					bullet->Update();
 				}
-				//敵の削除
-				enemys2.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
+			}
 
-				for (std::unique_ptr<Enemy>& enemy : enemys3) {
-					enemy->Update(&viewProjection_, &matProjection_, 2);
-#pragma region makeEnemyBullet
-					if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() != Phase::spown) {
-						//弾を生成
-						std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
-						//初期化
-						bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetPos(), enemy->GetWorldTransform().translation);
-						bullet->SetScale({ 0.5f,0.5f,0.5f });
-						bullet->SetTransform(enemy->GetWorldTransform().translation);
-						//使う弾の設定
-						bullet->SetBullet(1);
-						bullets2.push_back(std::move(bullet));
-						//攻撃頻度の設定 1(速い)~ >1(遅い)
-						enemy->SetAttackSpeed(5.0f);
-
-						if (enemy->GetIsAttack() == false) {
-							enemy->SetIsAttack(true);
-						}
-					}
-					if (enemy->GetIsAttack() == true) {
-
-						for (std::unique_ptr<EnemyBullet>& bullet : bullets2) {
-							bullet->Update();
-						}
-					}
-
-					//弾&敵を削除する
-					bullets2.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
+			//弾&敵を削除する
+			bullets2.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
 #pragma endregion
-				}
-				//敵の削除
-				enemys3.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
+		}
+		//敵の削除
+		enemys3.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
 
-				//ボス関連
+		//ボス関連
 
-				if (rhythm->GetSoundState().wave == 3) {
-					boss->Update();
+		if (rhythm->GetSoundState().wave == 3) {
+			boss->Update();
 #pragma region made BossBullet
-					if (boss->GetIsDead() == false) {
-						if (boss->GetPhase() == BossPhase::attack && boss->GetAttackSpeed() <= 0.0f) {
-							//弾を生成
-							std::unique_ptr<BossBullet> bullet = std::make_unique<BossBullet>();
-							bullet->Initialize(&viewProjection_, &matProjection_, player->GetPos(), boss->GetWorldTransform().translation);
-							bullet->SetTransform(boss->GetWorldTransform().translation);
-							bossBullet1.push_back(std::move(bullet));
-							boss->SetAttackSpeed(50.0f);
-							if (boss->GetIsAttack() == false) {
-								boss->SetIsAttack(true);
-							}
-						}
-						if (boss->GetPhase() == BossPhase::attack2 && boss->GetAttackSpeed() <= 0.0f) {
-							//弾を生成
-							std::unique_ptr<BossBullet> bullet = std::make_unique<BossBullet>();
-							bullet->Initialize(&viewProjection_, &matProjection_, player->GetPos(), boss->GetWorldTransform().translation);
-							bullet->SetTransform(boss->GetWorldTransform().translation);
-							bossBullet2.push_back(std::move(bullet));
-							boss->SetAttackSpeed(150.0f);
-							if (boss->GetIsAttack() == false) {
-								boss->SetIsAttack(true);
-							}
-						}
-
-						if (boss->GetIsAttack() == true) {
-							for (std::unique_ptr<BossBullet>& bullet : bossBullet1) {
-								bullet->Update(boss->GetPhase());
-							}
-							for (std::unique_ptr<BossBullet>& bullet : bossBullet2) {
-								bullet->Update(boss->GetPhase());
-							}
-						}
-						//弾&敵を削除する
-						bossBullet1.remove_if([](std::unique_ptr<BossBullet>& bullet) { return bullet->IsDead(); });
-						bossBullet2.remove_if([](std::unique_ptr<BossBullet>& bullet) { return bullet->IsDead(); });
-
+			if (boss->GetIsDead() == false) {
+				if (boss->GetPhase() == BossPhase::attack && boss->GetAttackSpeed() <= 0.0f) {
+					//弾を生成
+					std::unique_ptr<BossBullet> bullet = std::make_unique<BossBullet>();
+					bullet->Initialize(&viewProjection_, &matProjection_, player->GetPos(), boss->GetWorldTransform().translation);
+					bullet->SetTransform(boss->GetWorldTransform().translation);
+					bossBullet1.push_back(std::move(bullet));
+					boss->SetAttackSpeed(50.0f);
+					if (boss->GetIsAttack() == false) {
+						boss->SetIsAttack(true);
 					}
+				}
+				if (boss->GetPhase() == BossPhase::attack2 && boss->GetAttackSpeed() <= 0.0f) {
+					//弾を生成
+					std::unique_ptr<BossBullet> bullet = std::make_unique<BossBullet>();
+					bullet->Initialize(&viewProjection_, &matProjection_, player->GetPos(), boss->GetWorldTransform().translation);
+					bullet->SetTransform(boss->GetWorldTransform().translation);
+					bossBullet2.push_back(std::move(bullet));
+					boss->SetAttackSpeed(150.0f);
+					if (boss->GetIsAttack() == false) {
+						boss->SetIsAttack(true);
+					}
+				}
+
+				if (boss->GetIsAttack() == true) {
+					for (std::unique_ptr<BossBullet>& bullet : bossBullet1) {
+						bullet->Update(boss->GetPhase());
+					}
+					for (std::unique_ptr<BossBullet>& bullet : bossBullet2) {
+						bullet->Update(boss->GetPhase());
+					}
+				}
+				//弾&敵を削除する
+				bossBullet1.remove_if([](std::unique_ptr<BossBullet>& bullet) { return bullet->IsDead(); });
+				bossBullet2.remove_if([](std::unique_ptr<BossBullet>& bullet) { return bullet->IsDead(); });
+
+			}
 #pragma endregion
-					if (boss->GetPhase() == BossPhase::defence) {
-						UpdateBossPopCommand();
-					}
-				}
-				if (player->GetIsDead() == false) {
-					UpdateEnemyPopCommand();
-				}
+			if (boss->GetPhase() == BossPhase::defence) {
+				UpdateBossPopCommand();
+			}
+		}
+		if (player->GetIsDead() == false) {
+			//UpdateEnemyPopCommand();
+		}
 
-				//UpdateEnemyPopCommand();
-				if (player->GetIsDead() == false) {
-					//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
+			//UpdateEnemyPopCommand();
+			if (player->GetIsDead() == false) {
+				//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
+			}
+
+			if (player->GetIsDead() == false) {
+				//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
+			}
+
+			if (input_.PushKey(DIK_R)) {
+				Reset();
+
+			}
+
+			/*if (player->GetIsDead() == true && particle->GetIsDead() == true) {
+				if (gameoverTimer <= 0) {
+					gameoverTimer = 5;
 				}
-
-				if (player->GetIsDead() == false) {
-					//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
-				}
-
-				if (input_.PushKey(DIK_R)) {
-					Reset();
-
-				}
-
-				/*if (player->GetIsDead() == true && particle->GetIsDead() == true) {
+				else {
+					gameoverTimer--;
 					if (gameoverTimer <= 0) {
-						gameoverTimer = 5;
+						stage = 1;
+						Reset();
+						scene_ = Scene::Title;
 					}
-					else {
-						gameoverTimer--;
-						if (gameoverTimer <= 0) {
-							stage = 1;
-							Reset();
-							scene_ = Scene::Title;
-						}
-					}
-				}*/
-
-			}
-			else {
-				//debugText.Printf(window_width/2, window_height/2, 1.0f, 6, " PAUSE");
-			}
-
+				}
+			}*/
 			rhythm->Update(&input_, player->GetPos(), reilCamera->GetWorldTransform().rotation, player->GetIsDead(), stage);
-
 			//プレイヤーの弾発射処理
 			if (input_.TriggerKey(DIK_SPACE) && rhythm->GetSoundState().isFireSucces) {
 				player->NewBullet(&viewProjection_, &matProjection_, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,0.0f }, rhythm->GetSoundState().weapon);
+				//player->NewBulletAim(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
+				Collisions();
 			}
+	}	
 
-			//player->NewBulletAim(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
-			Collisions();
 #pragma region DebugText
-			debugText.Printf(0, 100, 1.0f, 18, " Q,E...offset:%f", rhythm->GetSoundState().offset);
-			debugText.Printf(0, 140, 1.0f, 25, " Up,Dawn...BGMVolume:%f", rhythm->GetSoundState().BGMVolume);
-			debugText.Printf(0, 160, 1.0f, 32, " Left,Right...guideSEVolume:%f", rhythm->GetSoundState().guideSEVolume);
-			debugText.Printf(0, 120, 1.0f, 10, " Timer:%f", rhythm->GetSoundState().timer);
-			debugText.Printf(0, 180, 1.0f, 17, " measureCount:%d", rhythm->GetSoundState().measureCount);
-			debugText.Printf(0, 200, 1.0f, 9, " weapon:%d", rhythm->GetSoundState().weapon);
-			debugText.Printf(0, 280, 1.0f, 9, " spawn:%d", spawntime);
-			debugText.Printf(0, 220, 1.0f, 7, " wave:%f", rhythm->GetSoundState().wave);
-			debugText.Printf(0, 240, 1.0f, 11, " rotY:%f", reilCamera->GetRotation().x);
-			debugText.Printf(0, 260, 1.0f, 27, " %f,%f,%f",
-				player->GetWorldTransform().matWorld.m[3][0],
-				player->GetWorldTransform().matWorld.m[3][1],
-				player->GetWorldTransform().matWorld.m[3][2]);
+	debugText.Printf(0, 100, 1.0f, 18, " Q,E...offset:%f", rhythm->GetSoundState().offset);
+	debugText.Printf(0, 140, 1.0f, 25, " Up,Dawn...BGMVolume:%f", rhythm->GetSoundState().BGMVolume);
+	debugText.Printf(0, 160, 1.0f, 32, " Left,Right...guideSEVolume:%f", rhythm->GetSoundState().guideSEVolume);
+	debugText.Printf(0, 120, 1.0f, 10, " Timer:%f", rhythm->GetSoundState().timer);
+	debugText.Printf(0, 180, 1.0f, 17, " measureCount:%d", rhythm->GetSoundState().measureCount);
+	debugText.Printf(0, 200, 1.0f, 9, " weapon:%d", rhythm->GetSoundState().weapon);
+	debugText.Printf(0, 280, 1.0f, 9, " spawn:%d", spawntime);
+	debugText.Printf(0, 220, 1.0f, 7, " wave:%f", rhythm->GetSoundState().wave);
+	debugText.Printf(0, 240, 1.0f, 11, " rotY:%f", reilCamera->GetRotation().x);
+	debugText.Printf(0, 260, 1.0f, 27, " %f,%f,%f",
+		player->GetWorldTransform().matWorld.m[3][0],
+		player->GetWorldTransform().matWorld.m[3][1],
+		player->GetWorldTransform().matWorld.m[3][2]);
 
-			debugText.Printf(0, 280, 1.0f, 11, " Phase : %d", boss->GetPhase());
+	debugText.Printf(0, 280, 1.0f, 11, " Phase : %d", boss->GetPhase());
 #pragma endregion
-		}
-	}
 }
 
 void GameScene::Draw() {
@@ -454,6 +426,129 @@ void GameScene::loadEnemyPopData(int stageNum)
 		enemyPopCommand << file.rdbuf();
 		//ファイルを閉じる
 		file.close();
+	}
+
+	if (waitFlag) {
+		waitTime_--;
+		if (waitTime_ <= 0.0f) {
+			//待機完了
+			waitFlag = false;
+		}
+		return;
+	}
+	//1行分の文字列を入れる
+	std::string line;
+	//コマンド実行
+	while (std::getline(enemyPopCommand, line)) {
+		//1行分の文字列をストリームに変換
+		std::istringstream line_stream(line);
+		std::string world;
+		// ,区切りで行の先頭文字列を取得
+		std::getline(line_stream, world, ',');
+		//"//"から始まる行はコメント
+		if (world.find("//") == 0) {
+			continue;
+		}
+		//POPコマンド
+		if (world.find("Enemy1") == 0) {	//固定砲台
+			//CSVに書いてある値を変数に入れる
+			//x座標
+			std::getline(line_stream, world, ',');
+			float x = (float)std::atof(world.c_str());
+			//y座標
+			std::getline(line_stream, world, ',');
+			float y = (float)std::atof(world.c_str());
+			//z座標
+			std::getline(line_stream, world, ',');
+			float z = (float)std::atof(world.c_str());
+			//移動速度
+			std::getline(line_stream, world, ',');
+			float speedX = (float)std::atof(world.c_str());
+			std::getline(line_stream, world, ',');
+			float speedY = (float)std::atof(world.c_str());
+			std::getline(line_stream, world, ',');
+			float speedZ = (float)std::atof(world.c_str());
+			//敵を発生させる
+			//-------ここにEnemy発生関数---------//
+			//複数化するためにuniq_ptrに変更
+			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
+			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/enemy/enemy1.png");
+			//上で書いてある物をEnemyの座標としてセットする
+			newEnemy->Settransform(x, y, z);
+			newEnemy->SetSpeed(speedX, speedY, speedZ);
+			//敵を登録
+			enemys1.push_back(std::move(newEnemy));
+		}
+		if (world.find("Enemy2") == 0) {	//移動のみ
+			//CSVに書いてある値を変数に入れる
+			//x座標
+			std::getline(line_stream, world, ',');
+			float x = (float)std::atof(world.c_str());
+			//y座標
+			std::getline(line_stream, world, ',');
+			float y = (float)std::atof(world.c_str());
+			//z座標
+			std::getline(line_stream, world, ',');
+			float z = (float)std::atof(world.c_str());
+			//移動速度
+			std::getline(line_stream, world, ',');
+			float speedX = (float)std::atof(world.c_str());
+			std::getline(line_stream, world, ',');
+			float speedY = (float)std::atof(world.c_str());
+			std::getline(line_stream, world, ',');
+			float speedZ = (float)std::atof(world.c_str());
+			//敵を発生させる
+			//-------ここにEnemy発生関数---------//
+			//複数化するためにuniq_ptrに変更
+			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
+			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/enemy/enemy2.png");
+			//上で書いてある物をEnemyの座標としてセットする
+			newEnemy->Settransform(x, y, z);
+			newEnemy->SetSpeed(speedX, speedY, speedZ);
+			//敵を登録
+			enemys2.push_back(std::move(newEnemy));
+		}
+		if (world.find("Enemy3") == 0) {	//移動も攻撃もしない
+			//CSVに書いてある値を変数に入れる
+			//x座標
+			std::getline(line_stream, world, ',');
+			float x = (float)std::atof(world.c_str());
+			//y座標
+			std::getline(line_stream, world, ',');
+			float y = (float)std::atof(world.c_str());
+			//z座標
+			std::getline(line_stream, world, ',');
+			float z = (float)std::atof(world.c_str());
+			//移動速度
+			std::getline(line_stream, world, ',');
+			float speedX = (float)std::atof(world.c_str());
+			std::getline(line_stream, world, ',');
+			float speedY = (float)std::atof(world.c_str());
+			std::getline(line_stream, world, ',');
+			float speedZ = (float)std::atof(world.c_str());
+			//敵を発生させる
+			//-------ここにEnemy発生関数---------//
+			//複数化するためにuniq_ptrに変更
+			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
+			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/red1x1.png");
+			//上で書いてある物をEnemyの座標としてセットする
+			newEnemy->Settransform(x, y, z);
+			newEnemy->SetSpeed(speedX, speedY, speedZ);
+			//敵を登録
+			enemys3.push_back(std::move(newEnemy));
+		}
+		//WAITコマンド
+		else if (world.find("WAIT") == 0)
+		{
+			std::getline(line_stream, world, ',');
+			//待ち時間
+			int32_t waitTime = atoi(world.c_str());
+			//待ち時間
+			waitFlag = true;
+			waitTime_ = waitTime;
+			//コマンドループを抜ける
+			break;
+		}
 	}
 }
 
@@ -885,6 +980,7 @@ void GameScene::Collisions() {
 
 void GameScene::LoadCsv(const wchar_t* fileName, int obstacleVal)
 {
+	//読み込み
 	// open file
 	std::ifstream file;
 	file.open(fileName);
@@ -892,24 +988,36 @@ void GameScene::LoadCsv(const wchar_t* fileName, int obstacleVal)
 	obstaclePosList << file.rdbuf();
 	file.close();
 
+	//1行分の文字列
 	std::string line;
-
 	std::vector<Vector3> obstaclePos;
 	std::vector<int32_t> spawntimer;
-	while (std::getline(obstaclePosList, line, '{')) {
+	//コマンド実行
+	while (std::getline(obstaclePosList, line)) {
+		//1行分の文字列をストリームに変換
 		std::istringstream line_stream(line);
-		std::string first_value;
-		std::string word1, word2, word3, word4;
-		std::getline(line_stream, word1, ',');
-		std::getline(line_stream, word2, ',');
-		std::getline(line_stream, word3, ',');
-		std::getline(line_stream, word4, ',');
-		//座標
-		Vector3 pos(atoi(word1.c_str()), atoi(word2.c_str()), atoi(word3.c_str()));
-		//待ち時間
-		int32_t waitTime = atoi(word4.c_str());
-		obstaclePos.push_back(pos);
-		spawntimer.push_back(waitTime);
+		//std::string first_value;
+		std::string word;
+		std::getline(line_stream, word, ',');
+		if (word.find("//") == 0) {
+			continue;
+		}
+		if (word.find("{") == 0) {
+			std::getline(line_stream, word, ',');
+			int x = (int)std::atof(word.c_str());
+			std::getline(line_stream, word, ',');
+			int y = (int)std::atof(word.c_str());
+			std::getline(line_stream, word, ',');
+			int z = (int)std::atof(word.c_str());
+			std::getline(line_stream, word, ',');
+			int32_t timer = (int)std::atof(word.c_str());
+			//座標
+			Vector3 pos(x, y, z);
+			//待ち時間
+			int32_t waitTime = timer;
+			obstaclePos.push_back(pos);
+			spawntimer.push_back(waitTime);
+		}
 	}
 	int i = 1;
 	spawntime += 1;

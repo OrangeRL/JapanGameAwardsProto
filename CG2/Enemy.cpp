@@ -35,7 +35,7 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 	if (spawnFlag == true) 
 	{
 	pManager.Update(gameObject->worldTransform.translation);
-	}
+
 	attackSpeed -= 0.5f;
 	phaseTimer--;
 
@@ -61,10 +61,12 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 		}
 		break;
 	case Phase::leave:	//離脱
-		Leave({ 0.3f,0,0 }, { -0.3f,0,0 },enemyNum);
+		Leave({ 0.3f,0,0 }, { -0.3f,0,0 }, enemyNum);
+	}
+
+	gameObject->Update();
 	}
 	
-	gameObject->Update();
 }
 
 void Enemy::Draw() {
