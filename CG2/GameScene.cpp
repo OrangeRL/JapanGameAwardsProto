@@ -87,7 +87,7 @@ void GameScene::Initialize(WinApp* winApp)
 	particle3 = new Particle;
 	particle3->Initialize(&viewProjection_, &matProjection_, player);
 
-	loadEnemyPopData(1);
+	loadEnemyPopData(2);
 	//ボスの雑魚敵の配置
 	loadBossPopData(1);
 
@@ -237,7 +237,7 @@ void GameScene::Update()
 				bullet->Initialize(&viewProjection_, &matProjection_, player->GetPos(), boss->GetWorldTransform().translation);
 				bullet->SetTransform(boss->GetWorldTransform().translation);
 				bossBullet1.push_back(std::move(bullet));
-				boss->SetAttackSpeed(100.0f);
+				boss->SetAttackSpeed(50.0f);
 				if (boss->GetIsAttack() == false) {
 					boss->SetIsAttack(true);
 				}
@@ -248,7 +248,7 @@ void GameScene::Update()
 				bullet->Initialize(&viewProjection_, &matProjection_, player->GetPos(), boss->GetWorldTransform().translation);
 				bullet->SetTransform(boss->GetWorldTransform().translation);
 				bossBullet2.push_back(std::move(bullet));
-				boss->SetAttackSpeed(100.0f);
+				boss->SetAttackSpeed(150.0f);
 				if (boss->GetIsAttack() == false) {
 					boss->SetIsAttack(true);
 				}
@@ -471,7 +471,7 @@ void GameScene::UpdateEnemyPopCommand()
 			//-------ここにEnemy発生関数---------//
 			//複数化するためにuniq_ptrに変更
 			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
-			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/red1x1.png");
+			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/enemy/enemy1.png");
 			//上で書いてある物をEnemyの座標としてセットする
 			newEnemy->Settransform(x, y, z);
 			newEnemy->SetSpeed(speedX, speedY, speedZ);
@@ -500,7 +500,7 @@ void GameScene::UpdateEnemyPopCommand()
 			//-------ここにEnemy発生関数---------//
 			//複数化するためにuniq_ptrに変更
 			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
-			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/red1x1.png");
+			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/enemy/enemy2.png");
 			//上で書いてある物をEnemyの座標としてセットする
 			newEnemy->Settransform(x, y, z);
 			newEnemy->SetSpeed(speedX, speedY, speedZ);

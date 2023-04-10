@@ -1,6 +1,8 @@
 #pragma once
 #include "GameObject3D.h"
 #include "Input.h"
+#include <random>
+
 class EnemyBullet
 {
 public:

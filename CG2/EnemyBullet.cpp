@@ -18,7 +18,7 @@ void EnemyBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjec
 	gameObject->SetViewProjection(viewProjection);
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
-
+	
 }
 
 void EnemyBullet::Update()
@@ -29,12 +29,7 @@ void EnemyBullet::Update()
 	}
 
 	if (bulletNum == 1) {
-		if (gameObject->worldTransform.translation.y < 6.0f) {
-			gameObject->worldTransform.translation.y += 0.1f;
-		}
-		else if (gameObject->worldTransform.translation.y >= 6.0f) {
-			gameObject->worldTransform.translation.z -= 0.2f;
-		}
+
 	}
 
 	if (--deleteTimer_ <= 0) {

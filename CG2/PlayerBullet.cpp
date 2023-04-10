@@ -157,7 +157,7 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos, Vector3 vec, float
 			//一定の範囲外で消滅
 			//isShot = false;
 			//isDead_ = true;
-
+      
 		}
 	}
 }
