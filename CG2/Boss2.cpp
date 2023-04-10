@@ -64,7 +64,7 @@ void Boss2::Update(Vector3 player)
 			}
 			gameObject->worldTransform.translation += {shakeSpeed, shakeSpeed, shakeSpeed};
 		}
-		else if (rushTimer <= 0.0f && gameObject->worldTransform.translation.z != player.z - 5) {
+		else if (rushTimer <= 0.0f) {
 			gameObject->worldTransform.translation.z -= 5.0f;
 			if (gameObject->worldTransform.translation.z <= player.z - 5)
 			{
