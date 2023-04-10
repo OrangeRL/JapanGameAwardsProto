@@ -2,6 +2,7 @@
 #include "WinApp.h"
 #include "Sprite.h"
 #include "Rhythm.h"
+#include "MathFunc.h"
 #include <string>
 
 class UIManager
@@ -18,24 +19,32 @@ public:
 
 	void Initialize(UINT texnumber);
 
-	void Update(Rhythm* rhythm, int isDead);
+	void Update(Rhythm* rhythm,Input* input, int isDead);
 
 	void Draw(Rhythm* rhythm);
 
 	void UIPrintf(XMFLOAT2 pos,XMFLOAT2 scale, XMFLOAT4 color, int size, const char* fmt, ...);
 
 private:
+	const float maxFlame = 50.0f;
+
 	int score = 5000;
 	int countDown = 3;
 
-	XMFLOAT4 color = {0.0f,1.0f,1.0f,1.0f};
+	XMFLOAT4 color = {1.0f,1.0f,0.0f,1.0f};
 	XMFLOAT4 flashColor = { 10.0f,10.0f,10.0f,1.0f };
 	float lectPoint = 0.0f;
 
 	XMFLOAT2 position = { 0.0f,0.0f };
 	float rotation = 0.0f;
-
 	float moveSpeed = 0.1f;
+
+	XMFLOAT2 clearPos = { 0.0f,0.0f };
+	float flame = 0.0f;
+	//îªíËï\é¶ÇÃìßñæìx
+	float judgeAlpha = 0.0f;
+	//ï\é¶Ç∑ÇÈï∂éöêî
+	float size = 2;
 
 	Sprite* clearSprite;
 	Sprite* numbersSprite = nullptr;

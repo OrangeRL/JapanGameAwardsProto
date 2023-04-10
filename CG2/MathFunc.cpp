@@ -1,6 +1,14 @@
 #include "MathFunc.h"
 #include <stdlib.h>
 
+//イージング
+float MathFunc::easeOutQuint(float number) {
+	return 1 - pow(1 - number, 5);
+}
+float MathFunc::easeInOutSine(float number) {
+	return -(cos(PI * number) - 1) / 2;
+}
+
 //スケーリング行列を設定する関数
 void MathFunc::Affine::SetMatScale(Matrix4& affineMat , Vector3 scale) {
 	//スケーリング行列を宣言
@@ -180,7 +188,8 @@ Matrix4 MathFunc::Utility::CreatMatView(Vector3 eye , Vector3 target , Vector3 u
 	XMMATRIX xmMatView = XMMatrixLookAtLH(
 		XMLoadFloat3(&xmEye) , XMLoadFloat3(&xmTarget) , XMLoadFloat3(&xmUp));
 
-	xmMatView *= XMMatrixPerspectiveFovLH(XM_PIDIV2,1280 / 720,1.0f,100.0f);
+	//xmMatView *= XMMatrixPerspectiveFovLH(XM_PIDIV4,1280 / 720,1.0f,100.0f);
+	xmMatView *= XMMatrixPerspectiveFovLH(2.0f,1280 / 720,1.0f,100.0f);
 
 	matView = MathFunc::Utility::ConvertXMMATRIXtoMatrix4(xmMatView);
 

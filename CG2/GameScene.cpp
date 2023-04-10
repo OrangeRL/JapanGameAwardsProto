@@ -38,11 +38,6 @@ void GameScene::Initialize(WinApp* winApp)
 
 	crosshair->LoadTexture(11, L"Resources/crosshair.png");
 	crosshair = Sprite::Create(11, { 0,0 });
-
-	for (int i = 0; i < 10; i++) {
-		num_[i] = new Sprite(i, { 0,0 }, { 64,64 }, { 1.0f,1.0f,1.0f,0.5f }, { 0,0 }, 0, 0);
-		num_[i]->Initialize();
-	}
   
 	//UI初期化
 	UIManager.Initialize(1);
@@ -112,10 +107,9 @@ void GameScene::Update()
 	viewProjection_.UpdateView();
 
 	//UI更新
-	UIManager.Update(rhythm, player->GetIsDead());
+	UIManager.Update(rhythm,&input_, player->GetIsDead());
 
 	if (rhythm->GetSoundState().isPause == 0) {
-
 
 		player->Update(reilCamera->GetWorldTransform(), reilCamera->GetWorldTransform().rotation);
 
@@ -395,10 +389,7 @@ void GameScene::Draw() {
 
 
 	crosshair->Draw();
-	for (int i = 0; i < 10; i++) {
-		num_[i]->Draw();
-	}
-  
+	
 	UIManager.Draw(rhythm);
   
 	// デバッグテキストの描画
@@ -664,7 +655,7 @@ void GameScene::Collisions() {
 					if (enemy->GetWorldTransform().translation.z - player->GetPos().z < 2 &&
 						-2 < enemy->GetWorldTransform().translation.z - player->GetPos().z) {
 
-						player->OnCollision();
+						player->OnCollision(rhythm);
 
 					}
 				}
@@ -682,7 +673,7 @@ void GameScene::Collisions() {
 							-2 < enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z) {
 
 							bulletA->OnCollision();
-							enemy->OnCollision();
+							enemy->OnCollision(rhythm);
 
 						}
 					}
@@ -701,7 +692,7 @@ void GameScene::Collisions() {
 							-2 < enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z) {
 
 							bulletA->OnCollision();
-							enemy->OnCollision();
+							enemy->OnCollision(rhythm);
 							bulletA->OnCollision();
 						}
 					}
@@ -771,7 +762,7 @@ void GameScene::Collisions() {
 
 						//bulletB->OnCollision();
 						//enemy->Reset();
-						player->OnCollision();
+						player->OnCollision(rhythm);
 					}
 				}
 			}
@@ -786,7 +777,7 @@ void GameScene::Collisions() {
 
 						//bulletB->OnCollision();
 						//enemy->Reset();
-						player->OnCollision();
+						player->OnCollision(rhythm);
 					}
 				}
 			}
@@ -807,7 +798,7 @@ void GameScene::Collisions() {
 
 						//bulletB->OnCollision();
 						//enemy->Reset();
-						player->OnCollision();
+						player->OnCollision(rhythm);
 					}
 				}
 			}
@@ -822,7 +813,7 @@ void GameScene::Collisions() {
 
 						//bulletB->OnCollision();
 						//enemy->Reset();
-						player->OnCollision();
+						player->OnCollision(rhythm);
 					}
 				}
 			}

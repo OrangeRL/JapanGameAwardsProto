@@ -3,6 +3,7 @@
 #include "Input.h"
 #include "MathFunc.h"
 #include "PlayerBullet.h"
+#include "Rhythm.h"
 #include "Pattern2.h"
 #include "EnemyBullet.h"
 #include <memory>
@@ -31,7 +32,7 @@ public:
 
 	void Reset();
 
-	void OnCollision();
+	void OnCollision(Rhythm* rhythm);
 
 	//アクセッサ
 	void SetMap(Map* map);
@@ -84,7 +85,9 @@ private:
 
 	Vector3 velocity = {};
 	
-	int life = 100;
+	int life = 3;
+	bool isInvincible = 0;
+	int invincibleTimer = 120;
 
 	const float accelaration = 0.0025f;
 
@@ -116,11 +119,13 @@ private:
 	Vector3 playerPos = {};
 
 	Vector3 move = {};
+	const Vector2 moveLimit = { 15.0f,10.0f };
 
 	ViewProjection* viewProjection_;
 	XMMATRIX* matProjection_;
 	//弾
 	std::list<std::unique_ptr<PlayerBullet>>bullets_;
+	std::list<std::unique_ptr<PlayerBullet>>bulletsSub_[2];
 	PlayerBullet* playerBullet = nullptr;
 
 	std::list<std::unique_ptr<Pattern2>>bulletsAim_;

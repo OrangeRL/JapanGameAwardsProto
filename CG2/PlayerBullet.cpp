@@ -20,7 +20,7 @@ void PlayerBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProje
 {
 	gameObject = new GameObject3D();
 	//gameObject->PreLoadModel("Resources/star/star.obj");
-	gameObject->PreLoadTexture(L"Resources/red.png");
+	//gameObject->PreLoadTexture(L"Resources/red.png");
 	gameObject->SetViewProjection(viewProjection);
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
@@ -46,7 +46,7 @@ void PlayerBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProje
 
 }
 
-void PlayerBullet::Update(Vector3 vec) {
+void PlayerBullet::Update(Vector3 vec, float shotAngle) {
 	const float rotationSpeed = MathFunc::Utility::Deg2Rad(0.1f);
 
 	if (weapon == Weapons::Normal) {
@@ -76,7 +76,7 @@ void PlayerBullet::Update(Vector3 vec) {
 	angle = gameObject->worldTransform.rotation;
 	gameObject->worldTransform.rotation += rotation;
 
-	Attack(newPlayerPos, newEnemyPos, vec);
+	Attack(newPlayerPos, newEnemyPos, vec,shotAngle);
 	if (isShot) 
 	{
 		gameObject->Update();
@@ -94,7 +94,7 @@ void PlayerBullet::Update(Vector3 vec) {
 	
 }
 
-void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos, Vector3 vec) {
+void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos, Vector3 vec, float shotAngle) {
 	const float rotationSpeed = MathFunc::Utility::Deg2Rad(60.0f);
 
 	Vector3 rotation = { 0 , 0 , 0 };
@@ -115,9 +115,9 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos, Vector3 vec) {
 		//gameObject->worldTransform.translation = bossPos;
 		//ボスと自機の差分ベクトルを求める
 		//velocity = newPlayerPos - newEnemyPos;
-		velocity = { sin(vec.y),-vec.x,cos(vec.y)};
-		vec1 = { sin(vec.y + 0.1f) * speed,-vec.x * speed,cos(vec.y + 0.1f) * speed };
-		vec2 = { sin(vec.y - 0.1f) * speed,-vec.x * speed,cos(vec.y - 0.1f) * speed };
+		velocity = { sin(vec.y + shotAngle),-vec.x,cos(vec.y + shotAngle)};
+		//vec1 = { sin(vec.y + shotAngle) * speed,-vec.x * speed,cos(vec.y + shotAngle) * speed };
+		//vec2 = { sin(vec.y - shotAngle) * speed,-vec.x * speed,cos(vec.y - shotAngle) * speed };
 		//ベクトルの正規化
 		//velocity.nomalize();
 		//ベクトルの長さを速さに合わせる
@@ -155,9 +155,9 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos, Vector3 vec) {
 			gameObject->worldTransform.translation.z > canMoveArea + playerPos.z + 400) 
 		{
 			//一定の範囲外で消滅
-			/*isShot = false;
-			isDead_ = true;*/
-
+			//isShot = false;
+			//isDead_ = true;
+      
 		}
 	}
 }
@@ -169,7 +169,7 @@ void PlayerBullet::Draw()
 		gameObject->Draw();
 		for (int i = 0; i < 2; i++) {
 			if (weapon == Weapons::ThreeWay) {
-				gameObjectSub[i]->Draw();
+				//gameObjectSub[i]->Draw();
 			}
 		}
 	}

@@ -56,6 +56,20 @@ void Player::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 }
 
 void Player::Update(WorldTransform wt, Vector3 vec) {
+
+	if (life <= 0) {
+		isDead = true;
+	}
+
+	if (isInvincible == true) {
+		invincibleTimer--;
+
+		if (invincibleTimer <= 0.0f) {
+			isInvincible = false;
+			invincibleTimer = 120;
+		}
+	}
+
 	playerPos = GetWorldTransform().translation;
 
 	Move();
@@ -65,6 +79,13 @@ void Player::Update(WorldTransform wt, Vector3 vec) {
 	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
 		return bullet->IsDead();
 		});
+
+	for (int i = 0; i < 2; i++) {
+		//デスフラグの立った弾を削除
+		bulletsSub_[i].remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
+			return bullet->IsDead();
+			});
+	}
 
 	bulletsAim_.remove_if([](std::unique_ptr<Pattern2>& bullet) {
 		return bullet->IsDead();
@@ -83,7 +104,14 @@ void Player::Update(WorldTransform wt, Vector3 vec) {
 	}
 
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
-		bullet->Update(vec);
+		bullet->Update(vec,0.0f);
+	}
+
+	for (std::unique_ptr<PlayerBullet>& bullet : bulletsSub_[0]) {
+		bullet->Update(vec,0.1f);
+	}
+	for (std::unique_ptr<PlayerBullet>& bullet : bulletsSub_[1]) {
+		bullet->Update(vec, -0.1f);
 	}
 
 	for (std::unique_ptr<Pattern2>& bullet : bulletsAim_) {
@@ -149,12 +177,18 @@ void Player::Aim(Vector3 player, Vector3 enemy) {
 //}
 
 void Player::Draw() {
-	if (isDead == false) {
-		gameObject->Draw();
+	if (isDead == false ) {
+		if (invincibleTimer % 2 == 0) {
+			gameObject->Draw();
+		}
 		//aimObject->Draw();
 		//弾描画
 		for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Draw(); }
 		for (std::unique_ptr<Pattern2>& bullet : bulletsAim_) { bullet->Draw(); }
+
+		for (int i = 0; i < 2; i++) {
+			for (std::unique_ptr<PlayerBullet>& bullet : bulletsSub_[i]) { bullet->Draw(); }
+		}
 	}
 }
 
@@ -183,56 +217,98 @@ void Player::Move() {
 
 	if (input.PushKey(DIK_W) || input.PushKey(DIK_S) || input.PushKey(DIK_D) || input.PushKey(DIK_A) || input.PushKey(DIK_E) || input.PushKey(DIK_Q))
 	{
+	
 		// 移動後の座標を計算
-		if (input.PushKey(DIK_W)) { move = { 0,moveSpeed,0 }; }
-		else if (input.PushKey(DIK_S)) { move = { 0,-moveSpeed,0 }; }
+		if (input.PushKey(DIK_W) && input.PushKey(DIK_S)) {
+			move = { 0,0,0 };
+		}
+		else if (input.PushKey(DIK_W) && gameObject->worldTransform.translation.y <= moveLimit.y) {
+			move = { 0,moveSpeed,0 };
+		}
+		else if (input.PushKey(DIK_S) && gameObject->worldTransform.translation.y >= -moveLimit.y) {
+			move = { 0,-moveSpeed,0 };
+		}
 
-		if (input.PushKey(DIK_D)) { 
+		if (input.PushKey(DIK_D) && input.PushKey(DIK_A)) {
+			move = { 0,0,0 };
+		}
+		else if (input.PushKey(DIK_D) && gameObject->worldTransform.translation.x <= moveLimit.x) {
 			move = { moveSpeed,0,0 };
+
 			if (gameObject->worldTransform.rotation.z >= -0.5f) {
 				gameObject->worldTransform.rotation.z -= 0.01f;
 			}
 		}
 	
-		if (input.PushKey(DIK_A)) { 
+		else if (input.PushKey(DIK_A) && gameObject->worldTransform.translation.x >= -moveLimit.x) {
 			move = { -moveSpeed,0,0 };
+
 			if (gameObject->worldTransform.rotation.z <= 0.5f) {
 				gameObject->worldTransform.rotation.z += 0.01f;
 			}
 		}
 	
-		if (input.PushKey(DIK_D) && input.PushKey(DIK_W)) { move = { moveSpeed,moveSpeed,0 }; }
-		else if (input.PushKey(DIK_D) && input.PushKey(DIK_S)) { move = { moveSpeed,-moveSpeed,0 }; }
+		if (input.PushKey(DIK_D) && gameObject->worldTransform.translation.x <= moveLimit.x) {
+			if (input.PushKey(DIK_W) && gameObject->worldTransform.translation.y <= moveLimit.y) {
+				move = { moveSpeed,moveSpeed,0 };
+			}
+			if (input.PushKey(DIK_S) && gameObject->worldTransform.translation.y >= -moveLimit.y) {
+				move = { moveSpeed,-moveSpeed,0 };
+			}
+		}
+		
 
-		if (input.PushKey(DIK_A) && input.PushKey(DIK_W)) { move = { -moveSpeed,moveSpeed,0 }; }
-		if (input.PushKey(DIK_A) && input.PushKey(DIK_S)) { move = { -moveSpeed,-moveSpeed,0 }; }
+		if (input.PushKey(DIK_A) && gameObject->worldTransform.translation.x >= -moveLimit.x) {
+			if (input.PushKey(DIK_W) && gameObject->worldTransform.translation.y <= moveLimit.y) {
+				move = { -moveSpeed,moveSpeed,0 };
+			}
+			if (input.PushKey(DIK_S) && gameObject->worldTransform.translation.y >= -moveLimit.y) {
+				move = { -moveSpeed,-moveSpeed,0 };
+			}
+		}
+		
 	}
 
-	if (input.TriggerKey(DIK_M)) {
-		isDead = false;
-	}
+	if (input.PushKey(DIK_D) == 0 || (input.PushKey(DIK_D) && input.PushKey(DIK_A))) {
 
-	if (input.PushKey(DIK_D) == 0 && gameObject->worldTransform.rotation.z < 0) {
-		gameObject->worldTransform.rotation.z += 0.01f;
+		if (gameObject->worldTransform.rotation.z < 0) {
+			gameObject->worldTransform.rotation.z += 0.01f;
+		}
 	}
-	else if (input.PushKey(DIK_A) == 0 && gameObject->worldTransform.rotation.z > 0) {
-		gameObject->worldTransform.rotation.z -= 0.01f;
+	if (input.PushKey(DIK_A) == 0 || (input.PushKey(DIK_D) && input.PushKey(DIK_A))) {
+		if (gameObject->worldTransform.rotation.z > 0) {
+			gameObject->worldTransform.rotation.z -= 0.01f;
+		}
 	}
-
-
 
 	gameObject->worldTransform.translation += move;
 }
 
 void Player::NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 enemyPos, Vector3 playerPos, Weapons weapon) {
-	playerPos = GetPos();
-	//enemyPos = enemy->GetWorldTransform().translation;
-	//弾を生成し、初期化
-	std::unique_ptr<PlayerBullet>newBullet = std::make_unique<PlayerBullet>();
-	newBullet->Initialize(viewProjection, matProjection, enemyPos, playerPos,weapon);
+		playerPos = GetPos();
+		//enemyPos = enemy->GetWorldTransform().translation;
+		//弾を生成し、初期化
+		std::unique_ptr<PlayerBullet>newBullet = std::make_unique<PlayerBullet>();
+		newBullet->Initialize(viewProjection, matProjection, enemyPos, playerPos,weapon);
 
-	//弾を登録する
-	bullets_.push_back(std::move(newBullet));
+		//弾を登録する
+		bullets_.push_back(std::move(newBullet));
+
+		if (weapon == Weapons::ThreeWay) {
+			//弾を生成し、初期化
+			std::unique_ptr<PlayerBullet>newBullet1 = std::make_unique<PlayerBullet>();
+			newBullet1->Initialize(viewProjection, matProjection, enemyPos, playerPos, weapon);
+
+			//弾を登録する
+			bulletsSub_[0].push_back(std::move(newBullet1));
+
+			//弾を生成し、初期化
+			std::unique_ptr<PlayerBullet>newBullet2 = std::make_unique<PlayerBullet>();
+			newBullet2->Initialize(viewProjection, matProjection, enemyPos, playerPos, weapon);
+
+			//弾を登録する
+			bulletsSub_[1].push_back(std::move(newBullet2));
+		}
 	
 	timer--;
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
@@ -374,6 +450,12 @@ Vector3 Player::GetAimPos() {
 	};
 }
 
-void Player::OnCollision() {
-	isDead = true;
+void Player::OnCollision(Rhythm* rhythm) {
+
+	if (isInvincible == false) {
+		life--;
+		rhythm->damageSoundPlay(1.0f);
+	}
+
+	isInvincible = true;
 }

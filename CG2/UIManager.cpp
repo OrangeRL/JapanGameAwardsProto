@@ -8,9 +8,9 @@ UIManager::~UIManager() {
 
 void UIManager::Initialize(UINT texnumber) {
 
-	clearSprite = new Sprite(2, { 0.0f,0.0f }, { 1000,500 }, { 1.0f,1.0f,1.0f,1.0f }, { 0,0 }, 0, 0);
+	clearSprite = new Sprite(2, { 0.0f,0.0f }, { 256.0f,64.0f }, { 0.0f,1.0f,1.0f,1.0f }, { 0,0 }, 0, 0);
 	clearSprite->Initialize();
-	clearSprite->SetAnchorPoint({ 0.4f, 0.5f });
+	clearSprite->SetAnchorPoint({ 0.5f, 0.5f });
 	
 	moveSpeed = maxSpeed;
 	position = { 0.0f,-250.0f };
@@ -25,7 +25,7 @@ void UIManager::Initialize(UINT texnumber) {
 
 }
 
-void UIManager::Update(Rhythm* rhythm, int isDead) {
+void UIManager::Update(Rhythm* rhythm, Input* input, int isDead) {
 
 	//最初の「READY?」の処理
 	if (rhythm->GetSoundState().measureCount < 4) {	
@@ -48,7 +48,7 @@ void UIManager::Update(Rhythm* rhythm, int isDead) {
 
 		if (rhythm->GetSoundState().measureCount < 4) {
 			UIPrintf({ window_width / 2 - 200, position.y }, { 1.7f,2.0f }, { 0.0f,1.0f,1.0f,1.0f }, 5, " WAVE");
-			UIPrintf({ window_width / 2 + 40, position.y - 40}, { 2.5f,2.8f }, { 0.0f,1.0f,1.0f,1.0f }, 2, " %f",rhythm->GetSoundState().wave);
+			UIPrintf({ window_width / 2 + 20, position.y - 40}, { 2.8f,2.8f }, { 0.0f,1.0f,1.0f,1.0f }, 2, " %f",rhythm->GetSoundState().wave);
 			UIPrintf({ window_width / 2 - 250,position.y + 100 }, { 2.2f,2.5f }, { 0.0f,1.0f,1.0f,1.0f }, 7, " READY?");
 		}
 	}
@@ -70,7 +70,10 @@ void UIManager::Update(Rhythm* rhythm, int isDead) {
 	//カウントダウン「3,2,1」の処理
 	if (rhythm->GetSoundState().measureCount >= 4 && rhythm->GetSoundState().measureCount < 7) {
 
-		UIPrintf({ window_width / 2 - 300,window_height / 2 - 150 },{ 6.0f,5.0f }, color, 2, " %d",countDown);
+		XMFLOAT2 size = { 6.0f,5.0f };
+		UIPrintf({ window_width / 2 - 300,window_height / 2 - 150 },size, color, 2, " %d",countDown);
+		UIPrintf({ window_width / 2 - 300 - (1.0f - color.w) * 300,window_height / 2 - 150 - (1.0f - color.w) * 150 },
+				 { size.x * (2.0f - color.w),size.y * (2.0f - color.w) }, {color.x,color.y,color.z,color.w / 2}, 2, " %d", countDown);
 		if (rhythm->GetSoundState().timer == 59) {
 			countDown -= 1;
 		}
@@ -78,7 +81,10 @@ void UIManager::Update(Rhythm* rhythm, int isDead) {
 	}
 	//カウントダウン後「START!」の処理
 	else if (rhythm->GetSoundState().measureCount == 7) {
-		UIPrintf({ window_width / 2 - 500,window_height / 2 - 100 }, { 4.0f,3.5f }, color, 7, " START!");
+		XMFLOAT2 size = { 4.0f,3.5f };
+		UIPrintf({ window_width / 2 - 500,window_height / 2 - 100 }, { size.x,size.y }, color, 7, " START!");
+		UIPrintf({ window_width / 2 - 500 - (1.0f - color.w) * 500,window_height / 2 - 100 - (1.0f - color.w) * 100 },
+				{ size.x * (2.0f - color.w),size.y * (2.0f - color.w) }, { color.x,color.y,color.z,color.w / 2 }, 7, " START!");
 	}
 	//1waveが終わったらリセット
 	else if (rhythm->GetSoundState().measureCount >= 79) {
@@ -89,31 +95,40 @@ void UIManager::Update(Rhythm* rhythm, int isDead) {
 	//クリア時の処理
 	if ((rhythm->GetSoundState().measureCount >= 72 && rhythm->GetSoundState().wave == 1) ||
 		(rhythm->GetSoundState().measureCount >= 80 && rhythm->GetSoundState().wave == 2)) {
+
 		if (rotation < maxDegree) {
 			rotation += 6.0f;
-			clearSprite->SetSize({ 800 + maxDegree - rotation,150 + maxDegree - rotation });
-			clearSprite->SetColor({ 1.0f,1.0f,1.0f,rotation / maxDegree });
+			clearSprite->SetSize({ 512 + maxDegree - rotation,150 + maxDegree - rotation });
+			clearSprite->SetColor({ 1.0f,1.0f,0.0f,rotation / maxDegree });
 		}
 		else {
 			if (flashColor.x > 1.0f) {
 
-				flashColor.x -= 0.1f;
-				flashColor.y -= 0.1f;
-				flashColor.z -= 0.1f;
+				flashColor.z -= 0.075f;
+				flashColor.x -= 0.05f;
+				flashColor.y -= 0.05f;
 
+
+			}
+			else {
+				if (flame < maxFlame) {
+					flame++;
+				}
+				clearPos.y = MathFunc::easeOutQuint(flame / maxFlame) * 250;
+				UIPrintf({ window_width / 2 - 400, window_height - 50  - clearPos.y }, { 2.0f,2.0f }, { 0.0f,1.0f,1.0f,1.0f },12, " TOTAL:%05d",score);
+				
 			}
 			clearSprite->SetColor(flashColor);
 		}
 
-		clearSprite->SetTextureRect({ 0,80 }, { 512,80 });
-		clearSprite->SetPosition({ window_width / 2,window_height / 2 });
+		clearSprite->SetPosition({ window_width / 2,window_height / 2 - clearPos.y});
 
 		clearSprite->SetRotation(rotation);
 
 	}
 	else {
 		rotation = 0.0f;
-		flashColor = { 10.0f,10.0f,10.0f,1.0f };
+		flashColor = { 5.0f,5.0f,5.0f,1.0f };
 		color.w -= 0.02f;
 		clearSprite->SetColor(color);
 	}
@@ -131,6 +146,40 @@ void UIManager::Update(Rhythm* rhythm, int isDead) {
 	if (rhythm->GetSoundState().isPause == true) {
 		UIPrintf({ window_width / 2 - 100, window_height / 2 - 50}, { 1.0f,1.0f }, { 0.0f,0.5f,1.0f,1.0f }, 6, " PAUSE");
 	}
+
+	//成功失敗判定の処理
+	if (input->TriggerKey(DIK_SPACE)) {
+		if (rhythm->GetSoundState().isFireActive) {
+			judgeAlpha = 1.0f;
+		}
+	}
+
+	if (rhythm->GetSoundState().judge == Judge::Good) {
+		UIPrintf({ window_width / 2 - 200, 100 }, { 2.0f,2.0f }, { 1.0f,1.0f,0.0f,judgeAlpha }, 5, " GOOD");
+	}
+	else if (rhythm->GetSoundState().judge == Judge::Miss) {
+		UIPrintf({ window_width / 2 - 200, 100 }, { 2.0f,2.0f }, { 1.0f,0.2f,0.2f,judgeAlpha }, 5, " MISS");
+	}
+	judgeAlpha -= 0.05f;
+
+	//コンボ数の表示
+	if (rhythm->GetSoundState().combo < 10) {
+		size = 2;
+	}
+	else if (rhythm->GetSoundState().combo < 100) {
+		size = 3;
+	}
+	else {
+		size = 4;
+	}
+
+	if (rhythm->GetSoundState().combo != 0) {
+		UIPrintf({ window_width / 2 - 50 * size, 550 }, { 2.0f,2.0f }, { 0.0f,1.0f,1.0f,1.0f }, size, " %d", rhythm->GetSoundState().combo);
+		UIPrintf({ window_width / 2 + 50, 600 }, { 1.0f,1.0f }, { 0.0f,1.0f,1.0f,1.0f }, 6, " COMBO");
+	}
+
+	//スコアの表示
+	UIPrintf({ window_width - 310, 0 }, { 0.75f,1.0f }, { 0.0f,1.0f,1.0f,1.0f }, 12, " SCORE:%05d",score);
 }
 
 void UIManager::Draw(Rhythm* rhythm) {
