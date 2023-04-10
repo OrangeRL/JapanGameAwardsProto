@@ -39,15 +39,17 @@ void Boss2::Update(Vector3 player)
 			phase = Boss2Phase::move;
 		}
 		break;
-	case Boss2Phase::move:	//
+
+	case Boss2Phase::move:	//ˆÚ“®
 		moveCoolDown--;
 		if (moveCoolDown <= 0.0f) {
 			gameObject->worldTransform.translation.x += speed;
-			if (gameObject->worldTransform.translation.x >= 10.0f || gameObject->worldTransform.translation.x <= -10.0f) {
+			if (gameObject->worldTransform.translation.x >= 15.0f || gameObject->worldTransform.translation.x <= -15.0f) {
 				speed = -speed;
 			}
 			moveCoolDown = 30.0f;
 		}
+
 
 		if (phaseTimer <= 0.0f) {
 			isDead = false;
@@ -57,27 +59,15 @@ void Boss2::Update(Vector3 player)
 		}
 		break;
 	case Boss2Phase::rush:	//‘O•û‚©‚ç“Ëi
-		if (rushTimer > 0.0f) {
-			rushTimer-=0.1f;
-			for (int i = 0; i < 30; i++) {
-				shakeSpeed = Random(-2, 2);
-			}
-			gameObject->worldTransform.translation += {shakeSpeed, shakeSpeed, shakeSpeed};
+		if (rushTimer >= 0.0f) {
+			shakeSpeed = Random(-0.1f, 0.01f);
 		}
-		else if (rushTimer <= 0.0f) {
-			gameObject->worldTransform.translation.z -= 5.0f;
-			if (gameObject->worldTransform.translation.z <= player.z - 5)
-			{
-				gameObject->worldTransform.translation.z = 1500;
-				rushTimer = 30.0f;
-			}
-		}
-
+		gameObject->worldTransform.translation = { shakeSpeed,shakeSpeed,0.0f };
 		if (phaseTimer <= 0.0f) {
 			isDead = false;
 			phaseTimer = 500.0f;
 			rushTimer = 10.0f;
-			gameObject->worldTransform.translation.z = 1500;
+			gameObject->worldTransform.translation = { 0, 0,1500 };
 			phase = Boss2Phase::limit;
 		}
 

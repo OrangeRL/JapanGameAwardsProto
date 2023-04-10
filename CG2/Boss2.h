@@ -41,7 +41,7 @@ private:
 	float moveCoolDown = 100.0f;
 	float rushTimer = 30.0f;
 	float shakeSpeed = 0;
-	int speed = 5;
+	int speed = 15;
 };
 
 
