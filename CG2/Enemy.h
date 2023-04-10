@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject3D.h"
 #include "EnemyBullet.h"
+#include "Rhythm.h"
 #include "SpawnParticleManager.h"
 #include "Particle2.h"
 #include <memory>
@@ -37,7 +38,7 @@ public:
 
 	void CoolTime();
 
-	void OnCollision();
+	void OnCollision(Rhythm* rhythm);
 
 	/*const std::list<std::unique_ptr<EnemyBullet>>& GetBullets() { return bullets; }*/
 

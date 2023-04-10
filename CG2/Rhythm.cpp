@@ -87,7 +87,10 @@ void Rhythm::Update(Input* input, Vector3 pos, Vector3 rot, int isDead, int stag
 		}
 
 		if (soundState.isPause == false) {
-			if (soundState.measureCount >= 8) {
+			if (soundState.measureCount >= 8 &&
+				((soundState.measureCount < 72 && soundState.wave == 1) ||
+				(soundState.measureCount < 80 && soundState.wave == 2) ||
+					soundState.wave == 3)) {
 
 				//オフセット設定
 				if (input->TriggerKey(DIK_Q) && soundState.offset > -5.0f) {
@@ -143,16 +146,6 @@ void Rhythm::Update(Input* input, Vector3 pos, Vector3 rot, int isDead, int stag
 				//UIの円を徐々に小さくする
 				circle[1]->worldTransform.scale -= shrinkSpeed;
 
-				//曲が一周したら最初から再生(仮)
-				if (soundState.measureCount == 0 && soundState.timer == 0) {
-					//SoundPlayWave(mainBGM);
-					//soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), demoBGM, false, BGMVolume);
-				}
-
-				//目安として2小節目で大きめの音を鳴らす
-				if (soundState.timer == maxTimer / 2) {
-					//SoundPlayWave(guideSound1, BGMVolume);
-				}
 			}
 
 			//タイマーを増やす
@@ -295,11 +288,6 @@ void Rhythm::SoundUnload(SoundData soundData) {
 	soundManager_->SoundUnload(soundData);
 }
 
-void Rhythm::ItemSoundPlay(float volume) {
-	soundManager_->StopWave(itemSound);
-	soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), itemSound, false, volume);
-}
-
 //通常弾
 void Rhythm::NormalShot(SoundState s, Input* input) {
 	shotTiming1 = 30.0f;	//弾発射タイミング1
@@ -326,11 +314,13 @@ void Rhythm::NormalShot(SoundState s, Input* input) {
 
 				soundState.isFireSucces = 1;
 				soundState.judge = Judge::Good;
+				soundState.combo++;
 				SoundPlayWave(shotSound, s.normalSEVolume);
 			}
 			//それ以外のタイミングは失敗
 			else {
 				soundState.judge = Judge::Miss;
+				soundState.combo = 0;
 				SoundPlayWave(missSound, s.normalSEVolume);
 			}
 

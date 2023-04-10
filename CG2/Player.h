@@ -3,6 +3,7 @@
 #include "Input.h"
 #include "MathFunc.h"
 #include "PlayerBullet.h"
+#include "Rhythm.h"
 #include "Pattern2.h"
 #include "EnemyBullet.h"
 #include <memory>
@@ -31,7 +32,7 @@ public:
 
 	void Reset();
 
-	void OnCollision();
+	void OnCollision(Rhythm* rhythm);
 
 	//アクセッサ
 	void SetMap(Map* map);

@@ -62,10 +62,10 @@ void ReilCamera::Update(Input* input,float wave) {
 		}
 	}
 
-	rotation.y += easeInOutSine(flameLeft / MAX_FLAME) * 0.01f;
-	worldTransform_.rotation.y -= easeInOutSine(flameLeft / MAX_FLAME) * 0.01f * 3.14f;
-	rotation.y -= easeInOutSine(flameRight / MAX_FLAME) * 0.01f;
-	worldTransform_.rotation.y += easeInOutSine(flameRight / MAX_FLAME) * 0.01f * 3.14f;
+	rotation.y += MathFunc::easeInOutSine(flameLeft / MAX_FLAME) * 0.01f;
+	worldTransform_.rotation.y -= MathFunc::easeInOutSine(flameLeft / MAX_FLAME) * 0.01f * 3.14f;
+	rotation.y -= MathFunc::easeInOutSine(flameRight / MAX_FLAME) * 0.01f;
+	worldTransform_.rotation.y += MathFunc::easeInOutSine(flameRight / MAX_FLAME) * 0.01f * 3.14f;
 
 	//c•ûŒü‚ÌƒŒ[ƒ‹ƒJƒƒ‰‚Ì“®‚«
 	if (input->PushKey(DIK_I) && input->PushKey(DIK_K)) {
@@ -108,10 +108,10 @@ void ReilCamera::Update(Input* input,float wave) {
 		}
 	}
 
-	rotation.x += easeInOutSine(flameDown / MAX_FLAME) * 0.01f;
-	worldTransform_.rotation.x -= easeInOutSine(flameDown / MAX_FLAME) * 0.01f * 3.14f;
-	rotation.x -= easeInOutSine(flameUp / MAX_FLAME) * 0.01f;
-	worldTransform_.rotation.x += easeInOutSine(flameUp / MAX_FLAME) * 0.01f * 3.14f;
+	rotation.x += MathFunc::easeInOutSine(flameDown / MAX_FLAME) * 0.01f;
+	worldTransform_.rotation.x -= MathFunc::easeInOutSine(flameDown / MAX_FLAME) * 0.01f * 3.14f;
+	rotation.x -= MathFunc::easeInOutSine(flameUp / MAX_FLAME) * 0.01f;
+	worldTransform_.rotation.x += MathFunc::easeInOutSine(flameUp / MAX_FLAME) * 0.01f * 3.14f;
 
 	if (rotation.x >= 0.2f) {
 		flameDown = 0.0f;

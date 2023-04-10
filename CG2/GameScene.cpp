@@ -655,7 +655,7 @@ void GameScene::Collisions() {
 					if (enemy->GetWorldTransform().translation.z - player->GetPos().z < 2 &&
 						-2 < enemy->GetWorldTransform().translation.z - player->GetPos().z) {
 
-						player->OnCollision();
+						player->OnCollision(rhythm);
 
 					}
 				}
@@ -673,7 +673,7 @@ void GameScene::Collisions() {
 							-2 < enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z) {
 
 							bulletA->OnCollision();
-							enemy->OnCollision();
+							enemy->OnCollision(rhythm);
 
 						}
 					}
@@ -692,7 +692,7 @@ void GameScene::Collisions() {
 							-2 < enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z) {
 
 							bulletA->OnCollision();
-							enemy->OnCollision();
+							enemy->OnCollision(rhythm);
 							bulletA->OnCollision();
 						}
 					}
@@ -762,7 +762,7 @@ void GameScene::Collisions() {
 
 						//bulletB->OnCollision();
 						//enemy->Reset();
-						player->OnCollision();
+						player->OnCollision(rhythm);
 					}
 				}
 			}
@@ -777,7 +777,7 @@ void GameScene::Collisions() {
 
 						//bulletB->OnCollision();
 						//enemy->Reset();
-						player->OnCollision();
+						player->OnCollision(rhythm);
 					}
 				}
 			}
@@ -798,7 +798,7 @@ void GameScene::Collisions() {
 
 						//bulletB->OnCollision();
 						//enemy->Reset();
-						player->OnCollision();
+						player->OnCollision(rhythm);
 					}
 				}
 			}
@@ -813,7 +813,7 @@ void GameScene::Collisions() {
 
 						//bulletB->OnCollision();
 						//enemy->Reset();
-						player->OnCollision();
+						player->OnCollision(rhythm);
 					}
 				}
 			}

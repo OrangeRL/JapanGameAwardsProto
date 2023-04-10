@@ -181,6 +181,7 @@ Phase Enemy::GetPhase()
 	return phase;
 }
 
-void Enemy::OnCollision() {
+void Enemy::OnCollision(Rhythm* rhythm) {
 	isDelete_ = true;
+	rhythm->knockSoundPlay(1.0f);
 }

@@ -24,6 +24,8 @@ struct SoundState {
 	float timer = 0.0f;
 	//小節カウント(仮)
 	int measureCount = 0;
+	//コンボ
+	int combo = 0;
 
 	//一時停止中か
 	bool isPause = 0;
@@ -66,7 +68,9 @@ public:
 
 	void SoundPlayWave(SoundData soundData, float volume);
 
-	void ItemSoundPlay(float volume);
+	void ItemSoundPlay(float volume){ soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), itemSound, false, volume); };
+	void damageSoundPlay(float volume){ soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), damageSound, false, volume); };
+	void knockSoundPlay(float volume){ soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), knockSound, false, volume); };
 
 	void NormalShot(SoundState s, Input* input);
 	void RapidShot(SoundState s, Input* input);
@@ -87,7 +91,7 @@ private:
 	//一小節の時間
 	const float maxTimer = 60.0f;
 	//判定の広さ
-	const float judgeBreadth = 3.0f;
+	const float judgeBreadth = 5.0f;
 
 	//弾発射タイミング1
 	float shotTiming1;
@@ -111,6 +115,7 @@ private:
 	SoundManager* soundManager_ = nullptr;
 
 	//音声読み込み
+	//SE
 	SoundData guideSound1 = soundManager_->SoundLoadWave("Resources/rhythm2.wav");
 	SoundData guideSound2 = soundManager_->SoundLoadWave("Resources/rhythm3.wav");
 	SoundData guideSound3 = soundManager_->SoundLoadWave("Resources/rhythm4.wav");
@@ -118,10 +123,14 @@ private:
 	SoundData missSound = soundManager_->SoundLoadWave("Resources/death.wav");
 	SoundData laserSound = soundManager_->SoundLoadWave("Resources/shot4.wav");
 	SoundData explosionSound = soundManager_->SoundLoadWave("Resources/shot3.wav");
+	SoundData itemSound = soundManager_->SoundLoadWave("Resources/item.wav");
+	SoundData damageSound = soundManager_->SoundLoadWave("Resources/damage.wav");
+	SoundData knockSound = soundManager_->SoundLoadWave("Resources/knock.wav");
+
+	//BGM
 	SoundData demoBGM = soundManager_->SoundLoadWave("Resources/demo.wav");
 	SoundData stage1_1BGM = soundManager_->SoundLoadWave("Resources/stage1-1.wav");
 	SoundData stage1_2BGM = soundManager_->SoundLoadWave("Resources/stage1-2.wav");
 	SoundData stage1_bossBGM = soundManager_->SoundLoadWave("Resources/stage1-boss.wav");
-	SoundData itemSound = soundManager_->SoundLoadWave("Resources/item.wav");
 
 };

@@ -1,6 +1,14 @@
 #include "MathFunc.h"
 #include <stdlib.h>
 
+//イージング
+float MathFunc::easeOutQuint(float number) {
+	return 1 - pow(1 - number, 5);
+}
+float MathFunc::easeInOutSine(float number) {
+	return -(cos(PI * number) - 1) / 2;
+}
+
 //スケーリング行列を設定する関数
 void MathFunc::Affine::SetMatScale(Matrix4& affineMat , Vector3 scale) {
 	//スケーリング行列を宣言

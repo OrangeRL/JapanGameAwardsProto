@@ -52,7 +52,7 @@ private:	//メンバ変数
 	float canMoveArea = 120;
 
 	//寿命
-	static const int32_t kLifeTime = 60 * 2;
+	static const int32_t kLifeTime = 60 * 1;
 	//デスタイマー
 	int deathTimer_ = kLifeTime;
 	//デスフラグ

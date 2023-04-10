@@ -12,6 +12,10 @@ namespace MathFunc {
 
 	const float PI = 3.141592f;
 
+	//イージング
+	float easeOutQuint(float number);
+	float easeInOutSine(float number);
+
 	namespace Affine {
 		//ワールド変換行列を設定する関数
 		void SetMatScale(Matrix4& affineMat , Vector3 scale);				//スケーリング行列を設定する関数

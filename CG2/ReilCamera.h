@@ -32,11 +32,6 @@ private:
 	//回転の速度
 	Vector3 rotSpeeed = { 0.005f,0.005f,0.005f };
 	
-	//イージング
-	float easeInOutSine(float number) {
-		return -(cos(PI * number) - 1) / 2;
-		//return sin((number * PI) / 2);
-	}
 	const float MAX_FLAME = 100.0f;
 	float flameLeft = 0;
 	float flameRight = 0;
