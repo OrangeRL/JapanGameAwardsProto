@@ -6,9 +6,10 @@
 #include <vector>
 #include <DirectXmath.h>
 #include <d3dcompiler.h>
-
+#include <iostream>
 #include<wrl.h>
-
+#include <map>
+#include <unordered_map>
 #include "DX12base.h"
 
 #pragma comment(lib,"d3d12.lib")
@@ -29,7 +30,7 @@ public:
 
 	//メンバ関数
 	void LoadModel();
-	void LoadModel(const char* fileName);
+	void LoadModel(const char* fileName, bool smoothing);
 
 	void Initialize();
 
@@ -42,6 +43,7 @@ public:
 	D3D12_VERTEX_BUFFER_VIEW GetVbView();
 
 	D3D12_INDEX_BUFFER_VIEW GetIbView();
+
 
 private:
 	//構造体
@@ -65,6 +67,8 @@ private:
 	std::vector<Vertex> vertices;
 	// 頂点インデックス配列
 	std::vector<unsigned short> indices;
+
+	std::unordered_map<unsigned short, std::vector<unsigned short>> smoothData;
 
 	//頂点データ全体のサイズ
 	UINT sizeVB;
@@ -92,5 +96,25 @@ private:
 
 	//インデックスバッファビューの作成
 	D3D12_INDEX_BUFFER_VIEW ibView;
+
+public:
+	std::vector<Vertex>& GetVertices() { return vertices; }
+	std::vector<unsigned short>& GetIndices() { return indices; }
+
+
 };
 
+class ModelManager
+{
+public:
+	Model tofu;
+	Model star;
+
+	void PreLoad();
+
+	static ModelManager* GetInstance() {
+		static ModelManager instance;
+		return &instance;
+	};
+
+};

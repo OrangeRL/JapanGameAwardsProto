@@ -28,13 +28,14 @@ public:
 	void Draw();
 	
 	void Reset();
-
+	void SetPosition(Vector3 pos) { position = pos; }
 	//反復
 	void Repetition();
 	//離脱
 	void Leave(Vector3 leaveSpeedt, Vector3 leaveSpeedf);
 
 	void CoolTime();
+	void Spawn();
 
 	void OnCollision();
 
@@ -43,6 +44,7 @@ public:
 	WorldTransform GetWorldTransform();
 	//生成される場所を設定
 	WorldTransform Settransform(float x,float y,float z);
+	WorldTransform Settransform(Vector3 x);
 	float GetAttackSpeed();
 	float SetAttackSpeed(float speed);
 	bool GetCoolDown();
@@ -61,7 +63,7 @@ private:
 	GameObject3D* gameObject = nullptr;
 	std::list<std::unique_ptr<EnemyBullet>> bullets;
 	EnemyBullet* enemyBullet = nullptr;
-
+	Vector3 position = { 10.0f,5.0f,0.0f };
 	Vector3 moveSpeed = { 0,0,0 };
 	float attackSpeed = 100.0f;
 	bool isAttack = false;
@@ -70,7 +72,7 @@ private:
 	float coolTime = 150.0f;
 	//行動変化
 	float phaseTimer = 300.0f;
-
+	
 	//消えるまでの時間
 	// 60 * 消えるまでの時間:
 	static const int32_t deleteTime = 60 * 8;
@@ -81,6 +83,8 @@ private:
 
 	SpawnParticleManager spManager;
 	Particle2 pManager;
+
+	int spawnFlag = false;
 };
 
 

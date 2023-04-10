@@ -8,9 +8,11 @@ Enemy::Enemy() {
 Enemy::~Enemy() {
 	delete gameObject;
 }
-
+void Enemy::Spawn() {
+	spawnFlag = true;
+}
 void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName) {
-
+	pManager.Initialize(viewProjection, matProjection, L"Resources/red1x1.png");
 	gameObject = new GameObject3D();
 	gameObject->PreLoadTexture(textureFileName);
 	gameObject->PreLoadModel("Resources/star/star.obj");
@@ -20,18 +22,16 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 
 	gameObject->worldTransform.translation = { 0 , 0 , 100 };
 	gameObject->worldTransform.scale = { 2 , 2 , 2 };
-	
-	pManager.Initialize(viewProjection, matProjection, L"Resources/purple1x1.png");
-	//spManager.Initialize(viewProjection, matProjection);
+	spawnFlag = false;
 }
 
 void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int enemyNum) {
+	
+	//spManager.Update(viewProjection,matProjection,gameObject->worldTransform.translation,gameObject->worldTransform.scale);
+	if (spawnFlag == true) 
+	{
 	pManager.Update(gameObject->worldTransform.translation);
-	if (pManager.GetIsDead() == false) {
-		pManager.Update(gameObject->worldTransform.translation);
 	}
-	//spManager.Update(viewProjection, matProjection,gameObject->worldTransform.translation);
-
 	attackSpeed -= 0.5f;
 	if (enemyNum == 0) {
 	}
@@ -58,6 +58,7 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 		}
 
 	}
+	
 	gameObject->Update();
 }
 
@@ -65,6 +66,7 @@ void Enemy::Draw() {
 	if (pManager.GetIsDead() == true) {
 		gameObject->Draw();
 	}
+	//gameObject->Draw();
 	pManager.Draw();
 	//spManager.Draw();
 }
@@ -117,6 +119,12 @@ WorldTransform Enemy::Settransform(float x,float y,float z)
 	this->gameObject->worldTransform.translation.x = x;
 	this->gameObject->worldTransform.translation.y = y;
 	this->gameObject->worldTransform.translation.z = z;
+
+	return gameObject->worldTransform;
+}
+WorldTransform Enemy::Settransform(Vector3 x)
+{
+	this->gameObject->worldTransform.translation = x;
 
 	return gameObject->worldTransform;
 }

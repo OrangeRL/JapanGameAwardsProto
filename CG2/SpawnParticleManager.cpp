@@ -19,7 +19,6 @@ SpawnParticleManager::~SpawnParticleManager()
 
 void SpawnParticleManager::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 {
-
 	for (unique_ptr<SpawnParticle>& particle : particles)
 	{
 	

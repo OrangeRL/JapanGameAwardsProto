@@ -23,15 +23,10 @@ void Particle2::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjecti
 	for (int i = 0; i < particleValue; i++) {
 
 		gameObject[i] = new GameObject3D;
-		/*if (i > 20) {
-			gameObject[i]->PreLoadTexture(L"Resources/red1x1.png");
-		}*/
-		gameObject[i]->PreLoadTexture(textureFileName);
 		gameObject[i]->SetViewProjection(viewProjection);
 		gameObject[i]->SetMatProjection(matProjection);
+		gameObject[i]->PreLoadTexture(textureFileName);
 		gameObject[i]->Initialize();
-
-		gameObject[i]->Update();
 
 		isDead[i] = true;
 
