@@ -27,8 +27,7 @@ void EnemyBullet::Update()
 	if (bulletNum == 0){
 		gameObject->worldTransform.translation -= posC;
 	}
-
-	if (bulletNum == 1) {
+	else {
 
 	}
 

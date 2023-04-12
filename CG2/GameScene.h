@@ -134,10 +134,10 @@ private: // メンバ変数
 	Particle* particle3 = nullptr;
 	//敵
 	std::list<std::unique_ptr<Enemy>> enemys1;
-	std::list<std::unique_ptr<Enemy>> enemys2;
-	std::list<std::unique_ptr<Enemy>> enemys3;
 	std::list<std::unique_ptr<EnemyBullet>> bullets1;
 	std::list<std::unique_ptr<EnemyBullet>> bullets2;
+
+	int useBullet;
 
 	//天球
 	GameObject3D* skydome = nullptr;
@@ -207,5 +207,4 @@ private: // メンバ変数
 	bool bossWaitFlag = false;
 	float bossWaitTime_;
 //------------------------------------
-
 };

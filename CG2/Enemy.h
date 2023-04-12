@@ -53,9 +53,13 @@ public:
 	bool GetCoolDown();
 	//速度設定
 	Vector3 SetSpeed(float x, float y, float z);
+	void SetBulletNum(int32_t bulletNum);
+	int32_t GetBulletNum();
 
 	bool GetIsAttack();
 	bool SetIsAttack(bool isAttack);
+
+	int GetSpownFlag();
 
 	Phase GetPhase();
 
@@ -66,8 +70,6 @@ private:
 
 	GameObject3D* gameObject = nullptr;
 
-	std::list<std::unique_ptr<EnemyBullet>> bullets;
-	EnemyBullet* enemyBullet = nullptr;
 	Vector3 position = { 10.0f,5.0f,0.0f };
 
 	Vector3 moveSpeed = { 0,0,0 };
@@ -87,6 +89,7 @@ private:
 	//フラグ
 	bool isDelete_ = false;
 
+	int32_t useBullet;
 
 	SpawnParticleManager spManager;
 	Particle2 pManager;

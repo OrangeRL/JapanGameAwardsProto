@@ -171,6 +171,16 @@ Vector3 Enemy::SetSpeed(float x, float y, float z)
 	return moveSpeed;
 }
 
+void Enemy::SetBulletNum(int32_t bulletNum)
+{
+	useBullet = bulletNum;
+}
+
+int32_t Enemy::GetBulletNum()
+{
+	return useBullet;
+}
+
 bool Enemy::GetIsAttack()
 {
 	return isAttack;
@@ -180,6 +190,11 @@ bool Enemy::SetIsAttack(bool isAttack)
 {
 	this->isAttack = isAttack;
 	return this->isAttack;
+}
+
+int Enemy::GetSpownFlag()
+{
+	return spawnFlag;
 }
 
 Phase Enemy::GetPhase()

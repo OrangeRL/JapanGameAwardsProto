@@ -173,7 +173,7 @@ void GameScene::Update()
 				bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetPos(), enemy->GetWorldTransform().translation);
 				bullet->SetTransform(enemy->GetWorldTransform().translation);
 				//使う弾の設定
-				bullet->SetBullet(0);
+				bullet->SetBullet(enemy->GetBulletNum());
 				bullets1.push_back(std::move(bullet));
 				//攻撃頻度の設定 1(速い)~ >1(遅い)
 				enemy->SetAttackSpeed(100.0f);
@@ -196,46 +196,6 @@ void GameScene::Update()
 		}
 		//敵1の削除
 		enemys1.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
-
-		for (std::unique_ptr<Enemy>& enemy : enemys2) {
-			enemy->Update(&viewProjection_, &matProjection_, 1);
-		}
-		//敵の削除
-		enemys2.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
-
-		for (std::unique_ptr<Enemy>& enemy : enemys3) {
-			enemy->Update(&viewProjection_, &matProjection_, 2);
-#pragma region makeEnemyBullet
-			if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() != Phase::spown) {
-				//弾を生成
-				std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
-				//初期化
-				bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetPos(), enemy->GetWorldTransform().translation);
-				bullet->SetScale({ 0.5f,0.5f,0.5f });
-				bullet->SetTransform(enemy->GetWorldTransform().translation);
-				//使う弾の設定
-				bullet->SetBullet(1);
-				bullets2.push_back(std::move(bullet));
-				//攻撃頻度の設定 1(速い)~ >1(遅い)
-				enemy->SetAttackSpeed(5.0f);
-
-				if (enemy->GetIsAttack() == false) {
-					enemy->SetIsAttack(true);
-				}
-			}
-			if (enemy->GetIsAttack() == true) {
-
-				for (std::unique_ptr<EnemyBullet>& bullet : bullets2) {
-					bullet->Update();
-				}
-			}
-
-			//弾&敵を削除する
-			bullets2.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
-#pragma endregion
-		}
-		//敵の削除
-		enemys3.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
 
 		//ボス関連
 
@@ -359,12 +319,6 @@ void GameScene::Draw() {
 		enemy->Draw();
 
 	}
-	for (std::unique_ptr<Enemy>& enemy : enemys2) {
-		enemy->Draw();
-	}
-	for (std::unique_ptr<Enemy>& enemy : enemys3) {
-		enemy->Draw();
-	}
 
 	if (rhythm->GetSoundState().wave == 3) {
 		boss->Draw();
@@ -401,281 +355,6 @@ void GameScene::Draw() {
 
 	Sprite::PostDraw();
 
-}
-
-void GameScene::loadEnemyPopData(int stageNum)
-{
-
-	if (stageNum == 1) {
-		//ファイルを開く
-		std::ifstream file;
-		file.open("Resources/csv/enemy.csv");
-		assert(file.is_open());
-		//ファイルの内容を文字列ストリームにコピー
-		enemyPopCommand << file.rdbuf();
-		//ファイルを閉じる
-		file.close();
-	}
-	
-	if (stageNum == 2) {
-		//ファイルを開く
-		std::ifstream file;
-		file.open("Resources/csv/enemy2.csv");
-		assert(file.is_open());
-		//ファイルの内容を文字列ストリームにコピー
-		enemyPopCommand << file.rdbuf();
-		//ファイルを閉じる
-		file.close();
-	}
-
-	if (waitFlag) {
-		waitTime_--;
-		if (waitTime_ <= 0.0f) {
-			//待機完了
-			waitFlag = false;
-		}
-		return;
-	}
-	//1行分の文字列を入れる
-	std::string line;
-	//コマンド実行
-	while (std::getline(enemyPopCommand, line)) {
-		//1行分の文字列をストリームに変換
-		std::istringstream line_stream(line);
-		std::string world;
-		// ,区切りで行の先頭文字列を取得
-		std::getline(line_stream, world, ',');
-		//"//"から始まる行はコメント
-		if (world.find("//") == 0) {
-			continue;
-		}
-		//POPコマンド
-		if (world.find("Enemy1") == 0) {	//固定砲台
-			//CSVに書いてある値を変数に入れる
-			//x座標
-			std::getline(line_stream, world, ',');
-			float x = (float)std::atof(world.c_str());
-			//y座標
-			std::getline(line_stream, world, ',');
-			float y = (float)std::atof(world.c_str());
-			//z座標
-			std::getline(line_stream, world, ',');
-			float z = (float)std::atof(world.c_str());
-			//移動速度
-			std::getline(line_stream, world, ',');
-			float speedX = (float)std::atof(world.c_str());
-			std::getline(line_stream, world, ',');
-			float speedY = (float)std::atof(world.c_str());
-			std::getline(line_stream, world, ',');
-			float speedZ = (float)std::atof(world.c_str());
-			//敵を発生させる
-			//-------ここにEnemy発生関数---------//
-			//複数化するためにuniq_ptrに変更
-			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
-			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/enemy/enemy1.png");
-			//上で書いてある物をEnemyの座標としてセットする
-			newEnemy->Settransform(x, y, z);
-			newEnemy->SetSpeed(speedX, speedY, speedZ);
-			//敵を登録
-			enemys1.push_back(std::move(newEnemy));
-		}
-		if (world.find("Enemy2") == 0) {	//移動のみ
-			//CSVに書いてある値を変数に入れる
-			//x座標
-			std::getline(line_stream, world, ',');
-			float x = (float)std::atof(world.c_str());
-			//y座標
-			std::getline(line_stream, world, ',');
-			float y = (float)std::atof(world.c_str());
-			//z座標
-			std::getline(line_stream, world, ',');
-			float z = (float)std::atof(world.c_str());
-			//移動速度
-			std::getline(line_stream, world, ',');
-			float speedX = (float)std::atof(world.c_str());
-			std::getline(line_stream, world, ',');
-			float speedY = (float)std::atof(world.c_str());
-			std::getline(line_stream, world, ',');
-			float speedZ = (float)std::atof(world.c_str());
-			//敵を発生させる
-			//-------ここにEnemy発生関数---------//
-			//複数化するためにuniq_ptrに変更
-			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
-			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/enemy/enemy2.png");
-			//上で書いてある物をEnemyの座標としてセットする
-			newEnemy->Settransform(x, y, z);
-			newEnemy->SetSpeed(speedX, speedY, speedZ);
-			//敵を登録
-			enemys2.push_back(std::move(newEnemy));
-		}
-		if (world.find("Enemy3") == 0) {	//移動も攻撃もしない
-			//CSVに書いてある値を変数に入れる
-			//x座標
-			std::getline(line_stream, world, ',');
-			float x = (float)std::atof(world.c_str());
-			//y座標
-			std::getline(line_stream, world, ',');
-			float y = (float)std::atof(world.c_str());
-			//z座標
-			std::getline(line_stream, world, ',');
-			float z = (float)std::atof(world.c_str());
-			//移動速度
-			std::getline(line_stream, world, ',');
-			float speedX = (float)std::atof(world.c_str());
-			std::getline(line_stream, world, ',');
-			float speedY = (float)std::atof(world.c_str());
-			std::getline(line_stream, world, ',');
-			float speedZ = (float)std::atof(world.c_str());
-			//敵を発生させる
-			//-------ここにEnemy発生関数---------//
-			//複数化するためにuniq_ptrに変更
-			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
-			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/red1x1.png");
-			//上で書いてある物をEnemyの座標としてセットする
-			newEnemy->Settransform(x, y, z);
-			newEnemy->SetSpeed(speedX, speedY, speedZ);
-			//敵を登録
-			enemys3.push_back(std::move(newEnemy));
-		}
-		//WAITコマンド
-		else if (world.find("WAIT") == 0)
-		{
-			std::getline(line_stream, world, ',');
-			//待ち時間
-			int32_t waitTime = atoi(world.c_str());
-			//待ち時間
-			waitFlag = true;
-			waitTime_ = waitTime;
-			//コマンドループを抜ける
-			break;
-		}
-	}
-}
-
-void GameScene::UpdateEnemyPopCommand()
-{
-	if (waitFlag) {
-		waitTime_--;
-		if (waitTime_ <= 0.0f) {
-			//待機完了
-			waitFlag = false;
-		}
-		return;
-	}
-	//1行分の文字列を入れる
-	std::string line;
-	//コマンド実行
-	while (std::getline(enemyPopCommand, line)) {
-		//1行分の文字列をストリームに変換
-		std::istringstream line_stream(line);
-		std::string world;
-		// ,区切りで行の先頭文字列を取得
-		std::getline(line_stream, world, ',');
-		//"//"から始まる行はコメント
-		if (world.find("//") == 0) {
-			continue;
-		}
-		//POPコマンド
-		if (world.find("Enemy1") == 0) {	//固定砲台
-			//CSVに書いてある値を変数に入れる
-			//x座標
-			std::getline(line_stream, world, ',');
-			float x = (float)std::atof(world.c_str());
-			//y座標
-			std::getline(line_stream, world, ',');
-			float y = (float)std::atof(world.c_str());
-			//z座標
-			std::getline(line_stream, world, ',');
-			float z = (float)std::atof(world.c_str());
-			//移動速度
-			std::getline(line_stream, world, ',');
-			float speedX = (float)std::atof(world.c_str());
-			std::getline(line_stream, world, ',');
-			float speedY = (float)std::atof(world.c_str());
-			std::getline(line_stream, world, ',');
-			float speedZ = (float)std::atof(world.c_str());
-			//敵を発生させる
-			//-------ここにEnemy発生関数---------//
-			//複数化するためにuniq_ptrに変更
-			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
-			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/enemy/enemy1.png");
-			//上で書いてある物をEnemyの座標としてセットする
-			newEnemy->Settransform(x, y, z);
-			newEnemy->SetSpeed(speedX, speedY, speedZ);
-			//敵を登録
-			enemys1.push_back(std::move(newEnemy));
-		}
-		if (world.find("Enemy2") == 0) {	//移動のみ
-			//CSVに書いてある値を変数に入れる
-			//x座標
-			std::getline(line_stream, world, ',');
-			float x = (float)std::atof(world.c_str());
-			//y座標
-			std::getline(line_stream, world, ',');
-			float y = (float)std::atof(world.c_str());
-			//z座標
-			std::getline(line_stream, world, ',');
-			float z = (float)std::atof(world.c_str());
-			//移動速度
-			std::getline(line_stream, world, ',');
-			float speedX = (float)std::atof(world.c_str());
-			std::getline(line_stream, world, ',');
-			float speedY = (float)std::atof(world.c_str());
-			std::getline(line_stream, world, ',');
-			float speedZ = (float)std::atof(world.c_str());
-			//敵を発生させる
-			//-------ここにEnemy発生関数---------//
-			//複数化するためにuniq_ptrに変更
-			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
-			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/enemy/enemy2.png");
-			//上で書いてある物をEnemyの座標としてセットする
-			newEnemy->Settransform(x, y, z);
-			newEnemy->SetSpeed(speedX, speedY, speedZ);
-			//敵を登録
-			enemys2.push_back(std::move(newEnemy));
-		}
-		if (world.find("Enemy3") == 0) {	//移動も攻撃もしない
-			//CSVに書いてある値を変数に入れる
-			//x座標
-			std::getline(line_stream, world, ',');
-			float x = (float)std::atof(world.c_str());
-			//y座標
-			std::getline(line_stream, world, ',');
-			float y = (float)std::atof(world.c_str());
-			//z座標
-			std::getline(line_stream, world, ',');
-			float z = (float)std::atof(world.c_str());
-			//移動速度
-			std::getline(line_stream, world, ',');
-			float speedX = (float)std::atof(world.c_str());
-			std::getline(line_stream, world, ',');
-			float speedY = (float)std::atof(world.c_str());
-			std::getline(line_stream, world, ',');
-			float speedZ = (float)std::atof(world.c_str());
-			//敵を発生させる
-			//-------ここにEnemy発生関数---------//
-			//複数化するためにuniq_ptrに変更
-			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
-			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/red1x1.png");
-			//上で書いてある物をEnemyの座標としてセットする
-			newEnemy->Settransform(x, y, z);
-			newEnemy->SetSpeed(speedX, speedY, speedZ);
-			//敵を登録
-			enemys3.push_back(std::move(newEnemy));
-		}
-		//WAITコマンド
-		else if (world.find("WAIT") == 0)
-		{
-			std::getline(line_stream, world, ',');
-			//待ち時間
-			int32_t waitTime = atoi(world.c_str());
-			//待ち時間
-			waitFlag = true;
-			waitTime_ = waitTime;
-			//コマンドループを抜ける
-			break;
-		}
-	}
 }
 
 void GameScene::loadBossPopData(int stageNum)
@@ -980,7 +659,6 @@ void GameScene::Collisions() {
 
 void GameScene::LoadCsv(const wchar_t* fileName, int obstacleVal)
 {
-	//読み込み
 	// open file
 	std::ifstream file;
 	file.open(fileName);
@@ -992,6 +670,7 @@ void GameScene::LoadCsv(const wchar_t* fileName, int obstacleVal)
 	std::string line;
 	std::vector<Vector3> obstaclePos;
 	std::vector<int32_t> spawntimer;
+	std::vector<int32_t> bulletNum;
 	//コマンド実行
 	while (std::getline(obstaclePosList, line)) {
 		//1行分の文字列をストリームに変換
@@ -1011,44 +690,59 @@ void GameScene::LoadCsv(const wchar_t* fileName, int obstacleVal)
 			int z = (int)std::atof(word.c_str());
 			std::getline(line_stream, word, ',');
 			int32_t timer = (int)std::atof(word.c_str());
+			std::getline(line_stream, word, ',');
+			useBullet = (int)std::atof(word.c_str());
 			//座標
 			Vector3 pos(x, y, z);
 			//待ち時間
 			int32_t waitTime = timer;
 			obstaclePos.push_back(pos);
 			spawntimer.push_back(waitTime);
+			bulletNum.push_back(useBullet);
 		}
 	}
-	int i = 1;
+	int i = 0;
 	spawntime += 1;
 	for (std::unique_ptr<Enemy>& newEnemy : enemys1) {
 		if (spawntime == spawntimer[1]) {
-			if (i < obstaclePos.size() && i < 5) {
-				newEnemy->Settransform(obstaclePos[i]);
+			if (i < obstaclePos.size() && i < 4) {
+				if (newEnemy->GetSpownFlag() == false) {
+					newEnemy->Settransform(obstaclePos[i]);
+				}
+				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
 				newEnemy->Spawn();
 			}
 			i++;
 		}
 		if (spawntime == spawntimer[6]) {
-			if (i < obstaclePos.size() && i < 13) {
-				newEnemy->Settransform(obstaclePos[i]);
+			if (i < obstaclePos.size() && i < 12) {
+				if (newEnemy->GetSpownFlag() == false) {
+					newEnemy->Settransform(obstaclePos[i]);
+				}
+				newEnemy->SetBulletNum(bulletNum[i]);
 				//newEnemy->SetSpeed(0, 100, -100);
 				newEnemy->Spawn();
 			}
 			i++;
 		}
 		if (spawntime == spawntimer[14]) {
-			if (i < obstaclePos.size() && i < 17) {
-				newEnemy->Settransform(obstaclePos[i]);
+			if (i < obstaclePos.size() && i < 16) {
+				if (newEnemy->GetSpownFlag() == false) {
+					newEnemy->Settransform(obstaclePos[i]);
+				}
+				newEnemy->SetBulletNum(bulletNum[i]);
 				//newEnemy->SetSpeed(0, 100, -100);
 				newEnemy->Spawn();
 			}
 			i++;
 		}
 		if (spawntime == spawntimer[18]) {
-			if (i < obstaclePos.size() && i < 21) {
-				newEnemy->Settransform(obstaclePos[i]);
+			if (i < obstaclePos.size() && i < 20) {
+				if (newEnemy->GetSpownFlag() == false) {
+					newEnemy->Settransform(obstaclePos[i]);
+				}
+				newEnemy->SetBulletNum(bulletNum[i]);
 				//newEnemy->SetSpeed(0, 100, -100);
 				newEnemy->Spawn();
 			}
@@ -1056,7 +750,10 @@ void GameScene::LoadCsv(const wchar_t* fileName, int obstacleVal)
 		}
 		if (spawntime == spawntimer[22]) {
 			if (i < obstaclePos.size() && i < obstacleVal) {
-				newEnemy->Settransform(obstaclePos[i]);
+				if (newEnemy->GetSpownFlag() == false) {
+					newEnemy->Settransform(obstaclePos[i]);
+				}
+				newEnemy->SetBulletNum(bulletNum[i]);
 				//newEnemy->SetSpeed(0, 100, -100);
 				newEnemy->Spawn();
 			}
