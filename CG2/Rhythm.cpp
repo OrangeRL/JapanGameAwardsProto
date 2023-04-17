@@ -158,14 +158,16 @@ void Rhythm::Update(Input* input, Vector3 pos, Vector3 rot, int isDead, int stag
 			}
 
 			//¬ß‚ªˆê’è‚Ü‚Å‚¢‚Á‚½‚çƒŠƒZƒbƒg
-			if (soundState.wave == 1 && soundState.measureCount >= 80) {
+			if ((soundState.wave == 1 && soundState.measureCount >= 80) ||
+				(soundState.wave == 2 && soundState.measureCount >= 88)) {
 				soundState.measureCount = 0;
 				soundState.wave++;
+				soundState.combo = 0;
 			}
-			else if (soundState.wave == 2 && soundState.measureCount >= 90) {
+			/*else if (soundState.wave == 2 && soundState.measureCount >= 88) {
 				soundState.measureCount = 0;
 				soundState.wave++;
-			}
+			}*/
 		}
 
 		//ˆê’â~

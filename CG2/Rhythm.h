@@ -69,8 +69,9 @@ public:
 	void SoundPlayWave(SoundData soundData, float volume);
 
 	void ItemSoundPlay(float volume){ soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), itemSound, false, volume); };
-	void damageSoundPlay(float volume){ soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), damageSound, false, volume); };
-	void knockSoundPlay(float volume){ soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), knockSound, false, volume); };
+	void DamageSoundPlay(float volume){ soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), damageSound, false, volume); };
+	void KnockSoundPlay(float volume){ soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), knockSound, false, volume); };
+	void ScoreRisePlay(float volume){ soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), scoreRiseSound, false, volume); };
 
 	void NormalShot(SoundState s, Input* input);
 	void RapidShot(SoundState s, Input* input);
@@ -126,6 +127,7 @@ private:
 	SoundData itemSound = soundManager_->SoundLoadWave("Resources/item.wav");
 	SoundData damageSound = soundManager_->SoundLoadWave("Resources/damage.wav");
 	SoundData knockSound = soundManager_->SoundLoadWave("Resources/knock.wav");
+	SoundData scoreRiseSound = soundManager_->SoundLoadWave("Resources/scoreRise.wav");
 
 	//BGM
 	SoundData demoBGM = soundManager_->SoundLoadWave("Resources/demo.wav");

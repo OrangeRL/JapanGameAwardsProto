@@ -199,7 +199,7 @@ private: // メンバ変数
 	std::stringstream enemyPopCommand;
 	bool waitFlag = true;
 	float waitTime_=10;
-	size_t enemyVal = 50;
+	size_t enemyVal = 5;
 //------------------------------------
 //ボスコマンド関係
 //------------------------------------

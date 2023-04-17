@@ -123,6 +123,8 @@ void GameScene::Update()
 	//UI更新
 	UIManager.Update(rhythm, &input_, player->GetIsDead());
 
+	rhythm->Update(&input_, player->GetPos(), reilCamera->GetWorldTransform().rotation, player->GetIsDead(), stage);
+
 	if (rhythm->GetSoundState().isPause == 0) {
 
 		player->Update(reilCamera->GetWorldTransform(), reilCamera->GetWorldTransform().rotation);
@@ -185,7 +187,7 @@ void GameScene::Update()
 			if (enemy->GetIsAttack() == true) {
 
 				for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
-					bullet->Update();
+					//bullet->Update();
 				}
 			}
 
@@ -315,13 +317,12 @@ void GameScene::Update()
 					}
 				}
 			}*/
-			rhythm->Update(&input_, player->GetPos(), reilCamera->GetWorldTransform().rotation, player->GetIsDead(), stage);
-			//プレイヤーの弾発射処理
-			if (input_.TriggerKey(DIK_SPACE) && rhythm->GetSoundState().isFireSucces) {
-				player->NewBullet(&viewProjection_, &matProjection_, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,0.0f }, rhythm->GetSoundState().weapon);
-				//player->NewBulletAim(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
-				Collisions();
-			}
+		//プレイヤーの弾発射処理
+		if (input_.TriggerKey(DIK_SPACE) && rhythm->GetSoundState().isFireSucces) {
+			player->NewBullet(&viewProjection_, &matProjection_, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,0.0f }, rhythm->GetSoundState().weapon);
+			//player->NewBulletAim(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
+			Collisions();
+		}
 	}	
 
 #pragma region DebugText

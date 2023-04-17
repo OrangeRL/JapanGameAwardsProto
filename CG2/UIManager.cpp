@@ -100,6 +100,9 @@ void UIManager::Update(Rhythm* rhythm, Input* input, int isDead) {
 			rotation += 6.0f;
 			clearSprite->SetSize({ 512 + maxDegree - rotation,150 + maxDegree - rotation });
 			clearSprite->SetColor({ 1.0f,1.0f,0.0f,rotation / maxDegree });
+
+			comboBonus = 100 * rhythm->GetSoundState().combo;
+			clearBonus = 10000 * rhythm->GetSoundState().wave;
 		}
 		else {
 			if (flashColor.x > 1.0f) {
@@ -108,20 +111,62 @@ void UIManager::Update(Rhythm* rhythm, Input* input, int isDead) {
 				flashColor.x -= 0.05f;
 				flashColor.y -= 0.05f;
 
-
 			}
 			else {
-				if (flame < maxFlame) {
-					flame++;
+				if (flameY < maxFlame) {
+					flameY++;
 				}
-				clearPos.y = MathFunc::easeOutQuint(flame / maxFlame) * 250;
-				UIPrintf({ window_width / 2 - 400, window_height - 50  - clearPos.y }, { 2.0f,2.0f }, { 0.0f,1.0f,1.0f,1.0f },12, " TOTAL:%05d",score);
+				else {
+					//トータルスコアの計算
+					if (clearBonus > 0) {
+						if (clearBonus > scoreRiseWidth) {
+							clearBonus -= scoreRiseWidth;
+							score += scoreRiseWidth;
+
+							rhythm->ScoreRisePlay(1.0f);
+						}
+						else {
+							score += clearBonus;
+							clearBonus = 0;
+						}
+					}
+					else if (comboBonus > 0) {
+
+						if (comboBonus > scoreRiseWidth) {
+							comboBonus -= scoreRiseWidth;
+							score += scoreRiseWidth;
+
+							rhythm->ScoreRisePlay(1.0f);
+						}
+						else {
+							score += comboBonus;
+							comboBonus = 0;
+						}
+					}
+				}
+				clearPos.y = MathFunc::easeOutQuint(flameY / maxFlame) * 250;
+				UIPrintf({ window_width / 2 - 450 - clearPos.x, window_height + 50 - clearPos.y * 2 }, { 0.75f,0.75f }, { 0.0f,1.0f,1.0f,1.0f }, 12, " CLEAR BONUS");
+				UIPrintf({ window_width / 2 - 150 - clearPos.x, window_height + 0 - clearPos.y * 2 }, { 2.0f,2.0f }, { 0.0f,1.0f,1.0f,1.0f }, 7, " +%05d", clearBonus);
+				UIPrintf({ window_width / 2 - 450 - clearPos.x, window_height + 200  - clearPos.y * 2 }, { 0.75f,0.75f }, { 0.0f,1.0f,1.0f,1.0f },12, " COMBO BONUS");
+				UIPrintf({ window_width / 2 - 150 - clearPos.x, window_height + 150  - clearPos.y * 2 }, { 1.0f,1.0f }, { 0.0f,1.0f,1.0f,1.0f },8 + size, " %d x %d =",100, rhythm->GetSoundState().combo);
+				UIPrintf({ window_width / 2 - 150 - clearPos.x, window_height + 200 - clearPos.y * 2 }, { 2.0f,2.0f }, { 0.0f,1.0f,1.0f,1.0f }, 7, " +%05d", comboBonus);
+				UIPrintf({ window_width / 2 - 400 - clearPos.x, window_height + 400  - clearPos.y * 2 }, { 1.0f,1.0f }, { 0.0f,1.0f,1.0f,1.0f },6, " TOTAL");
+				UIPrintf({ window_width / 2 - 200 - clearPos.x, window_height + 350  - clearPos.y * 2}, { 2.5f,2.5f }, { 0.0f,1.0f,1.0f,1.0f },7, " %06d",score);
 				
 			}
+			//小節が一定までいったらリセット
+			if ((rhythm->GetSoundState().wave == 1 && rhythm->GetSoundState().measureCount >= 79) ||
+				(rhythm->GetSoundState().wave == 2 && rhythm->GetSoundState().measureCount >= 87)) {
+				if (flameX < maxFlame) {
+					flameX++;
+				}
+				clearPos.x = MathFunc::easeInCubic(flameX / maxFlame) * 1500;
+			}
+
 			clearSprite->SetColor(flashColor);
 		}
 
-		clearSprite->SetPosition({ window_width / 2,window_height / 2 - clearPos.y});
+		clearSprite->SetPosition({ window_width / 2 - clearPos.x,window_height / 2 - clearPos.y});
 
 		clearSprite->SetRotation(rotation);
 
@@ -131,6 +176,9 @@ void UIManager::Update(Rhythm* rhythm, Input* input, int isDead) {
 		flashColor = { 5.0f,5.0f,5.0f,1.0f };
 		color.w -= 0.02f;
 		clearSprite->SetColor(color);
+		flameY = 0.0f;
+		flameX = 0.0f;
+		clearPos = { 0.0f,0.0f };
 	}
 
 	//ゲームオーバー時の処理
@@ -174,26 +222,26 @@ void UIManager::Update(Rhythm* rhythm, Input* input, int isDead) {
 	}
 
 	if (rhythm->GetSoundState().combo != 0) {
-		UIPrintf({ window_width / 2 - 50 * size, 550 }, { 2.0f,2.0f }, { 0.0f,1.0f,1.0f,1.0f }, size, " %d", rhythm->GetSoundState().combo);
-		UIPrintf({ window_width / 2 + 50, 600 }, { 1.0f,1.0f }, { 0.0f,1.0f,1.0f,1.0f }, 6, " COMBO");
+		UIPrintf({ window_width / 2 + 400 - (64 * size), 100}, {2.0f,2.0f}, {0.0f,1.0f,1.0f,1.0f}, size, " %d", rhythm->GetSoundState().combo);
+		UIPrintf({ window_width / 2 + 400, 150 }, { 1.0f,1.0f }, { 0.0f,1.0f,1.0f,1.0f }, 6, " COMBO");
 	}
 
 	//スコアの表示
-	UIPrintf({ window_width - 310, 0 }, { 0.75f,1.0f }, { 0.0f,1.0f,1.0f,1.0f }, 12, " SCORE:%05d",score);
+	UIPrintf({ window_width - 350, 0 }, { 0.75f,1.0f }, { 0.0f,1.0f,1.0f,1.0f }, 13, " SCORE:%06d",score);
 }
 
 void UIManager::Draw(Rhythm* rhythm) {
-
-	if (rhythm->GetSoundState().measureCount >= 72 && rhythm->GetSoundState().wave == 1 ||
-		rhythm->GetSoundState().measureCount >= 80 && rhythm->GetSoundState().wave == 2) {
-		clearSprite->Draw();
-	}
 
 	// 全ての文字のスプライトについて
 	for (int i = 0; i < spriteIndex; i++)
 	{
 		// スプライト描画
 		spriteDatas[i]->Draw();
+	}
+
+	if (rhythm->GetSoundState().measureCount >= 72 && rhythm->GetSoundState().wave == 1 ||
+		rhythm->GetSoundState().measureCount >= 80 && rhythm->GetSoundState().wave == 2) {
+		clearSprite->Draw();
 	}
 
 	spriteIndex = 0;

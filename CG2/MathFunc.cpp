@@ -5,6 +5,9 @@
 float MathFunc::easeOutQuint(float number) {
 	return 1 - pow(1 - number, 5);
 }
+float MathFunc::easeInCubic(float number) {
+  return number * number * number;
+}
 float MathFunc::easeInOutSine(float number) {
 	return -(cos(PI * number) - 1) / 2;
 }

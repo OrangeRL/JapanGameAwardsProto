@@ -27,8 +27,14 @@ public:
 
 private:
 	const float maxFlame = 50.0f;
+	//スコア
+	int score = 0;
+	//ボーナススコア
+	int clearBonus = 0;
+	int comboBonus = 0;
+	//スコアの上がり幅
+	const int scoreRiseWidth = 270;
 
-	int score = 5000;
 	int countDown = 3;
 
 	XMFLOAT4 color = {1.0f,1.0f,0.0f,1.0f};
@@ -40,7 +46,8 @@ private:
 	float moveSpeed = 0.1f;
 
 	XMFLOAT2 clearPos = { 0.0f,0.0f };
-	float flame = 0.0f;
+	float flameY = 0.0f;
+	float flameX = 0.0f;
 	//判定表示の透明度
 	float judgeAlpha = 0.0f;
 	//表示する文字数
