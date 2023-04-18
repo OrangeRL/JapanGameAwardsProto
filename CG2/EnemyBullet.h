@@ -22,6 +22,7 @@ public:
 	void Aim(Vector3 player, Vector3 enemy);
 
 	bool IsDead()const { return isDelete_; }
+	bool GetIsDead();
 private:
 	GameObject3D* gameObject = nullptr;
 	//キー入力

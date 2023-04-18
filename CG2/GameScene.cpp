@@ -166,7 +166,7 @@ void GameScene::Update()
 		for (std::unique_ptr<Enemy>& enemy : enemys1) {
 			enemy->Update(&viewProjection_, &matProjection_, 0);
 #pragma region makeEnemyBullet
-			if (enemy->GetAttackSpeed() <= 0.0f) {
+			if (enemy->GetBulletNum() != 2 && enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::Attack) {
 				//弾を生成
 				std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
 				//初期化
@@ -177,13 +177,12 @@ void GameScene::Update()
 				bullets1.push_back(std::move(bullet));
 				//攻撃頻度の設定 1(速い)~ >1(遅い)
 				enemy->SetAttackSpeed(100.0f);
-
 				if (enemy->GetIsAttack() == false) {
 					enemy->SetIsAttack(true);
 				}
 			}
-			if (enemy->GetIsAttack() == true) {
-
+			
+			if (enemy->GetIsAttack()==true || enemy->GetIsDead()==true) {
 				for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
 					bullet->Update();
 				}
@@ -291,15 +290,13 @@ void GameScene::Update()
 	debugText.Printf(0, 120, 1.0f, 10, " Timer:%f", rhythm->GetSoundState().timer);
 	debugText.Printf(0, 180, 1.0f, 17, " measureCount:%d", rhythm->GetSoundState().measureCount);
 	debugText.Printf(0, 200, 1.0f, 9, " weapon:%d", rhythm->GetSoundState().weapon);
-	debugText.Printf(0, 280, 1.0f, 9, " spawn:%d", spawntime);
 	debugText.Printf(0, 220, 1.0f, 7, " wave:%f", rhythm->GetSoundState().wave);
 	debugText.Printf(0, 240, 1.0f, 11, " rotY:%f", reilCamera->GetRotation().x);
 	debugText.Printf(0, 260, 1.0f, 27, " %f,%f,%f",
 		player->GetWorldTransform().matWorld.m[3][0],
 		player->GetWorldTransform().matWorld.m[3][1],
 		player->GetWorldTransform().matWorld.m[3][2]);
-
-	debugText.Printf(0, 280, 1.0f, 11, " Phase : %d", boss->GetPhase());
+	debugText.Printf(0, 280, 1.0f, 9, " spawn:%d", spawntime);
 #pragma endregion
 }
 
@@ -331,7 +328,9 @@ void GameScene::Draw() {
 	}
 
 	for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
-		bullet->Draw();
+		if (bullet->GetIsDead() == false){
+			bullet->Draw();
+		}
 	}
 
 	//アイテム描画
@@ -617,7 +616,7 @@ void GameScene::LoadCsv(const wchar_t* fileName, int obstacleVal)
 	spawntime += 1;
 	for (std::unique_ptr<Enemy>& newEnemy : enemys1) {
 		if (spawntime == spawntimer[0]) {
-			if (i < obstaclePos.size() && i < 12) {
+			if (i < obstaclePos.size() && i < 12 && i >= 0) {
 				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
@@ -689,7 +688,7 @@ void GameScene::LoadCsv(const wchar_t* fileName, int obstacleVal)
 			i++;
 		}
 		if (spawntime == spawntimer[40]) {
-			if (i < obstaclePos.size() && i < 43  && i > 39) {
+			if (i < obstaclePos.size() && i < 44  && i > 39) {
 				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
@@ -713,19 +712,7 @@ void GameScene::LoadCsv(const wchar_t* fileName, int obstacleVal)
 			i++;
 		}
 		if (spawntime == spawntimer[48]) {
-			if (i < obstaclePos.size() && i < 52 && i > 47) {
-				newEnemy->Settransform(obstaclePos[i]);
-				newEnemy->SetBulletNum(bulletNum[i]);
-				newEnemy->SetMoveNum(moveNum[i]);
-				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
-					newEnemy->Spawn();
-				}
-			}
-			i++;
-		}
-		if (spawntime == spawntimer[52]) {
-			if (i < obstaclePos.size() && i < 56 && i > 51) {
+			if (i < obstaclePos.size() && i < 54 && i > 48) {
 				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);

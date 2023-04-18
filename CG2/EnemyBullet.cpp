@@ -91,6 +91,11 @@ void EnemyBullet::Aim(Vector3 player, Vector3 enemy)
 	posC *= speed;
 }
 
+bool EnemyBullet::GetIsDead()
+{
+	return isDelete_;
+}
+
 void EnemyBullet::OnCollision()
 {
 	isDelete_ = true;

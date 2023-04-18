@@ -6,6 +6,10 @@
 #include "Particle2.h"
 #include <memory>
 #include <list>
+enum class Phase {
+	Attack,
+	CoolDown,
+};
 
 class Enemy {
 public:
@@ -30,7 +34,6 @@ public:
 	//離脱
 	void Leave(Vector3 leaveSpeedt, Vector3 leaveSpeedf,int enemyNum);
 
-	void CoolTime();
 	void Spawn();
 
 	void OnCollision(Rhythm* rhythm);
@@ -53,27 +56,33 @@ public:
 
 	bool GetIsAttack();
 	bool SetIsAttack(bool isAttack);
+	bool GetIsDead();
 
 	int GetSpownFlag();
 
 	bool IsDead()const { return isDelete_; }
 
+	Phase GetPhase();
+
 private:
+	Phase phase = Phase::Attack;
+	//行動変化
+	float phaseTimer = 300.0f;
 	
 	GameObject3D* gameObject = nullptr;
 
 	Vector3 position = { 10.0f,5.0f,0.0f };
 
-	Vector3 moveSpeed = { 0.1f,0.1f,0.1f };
+	Vector3 moveSpeed = { 0.0f,0.0f,0.0f };
 	float attackSpeed = 100.0f;
 	bool isAttack = false;
 	//クールタイム
 	bool isCoolDown = true;
-	float coolTime = 150.0f;
+	float coolTime = 1.0f;
 	
 	//消えるまでの時間
 	// 60 * 消えるまでの時間:
-	static const int32_t deleteTime = 60 * 8;
+	static const int32_t deleteTime = 60 * 15;
 	//タイマー
 	int32_t deleteTimer_ = deleteTime;
 	//フラグ

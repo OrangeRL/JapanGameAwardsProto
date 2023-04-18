@@ -32,25 +32,90 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int enemyNum) {
 	
 	//spManager.Update(viewProjection,matProjection,gameObject->worldTransform.translation,gameObject->worldTransform.scale);
-	if (spawnFlag == true) 
+	if (spawnFlag == true)
 	{
-	pManager.Update(gameObject->worldTransform.translation);
+		if (--deleteTimer_ <= 0) {
+			isDelete_ = true;
+		}
 
-	attackSpeed -= 0.5f;
-		if (moveNum == 0){
+		pManager.Update(gameObject->worldTransform.translation);
 
+		attackSpeed -= 0.5f;
+		gameObject->worldTransform.translation += moveSpeed;
+		//移動関連
+		switch (moveNum)
+		{
+		case 1:
+			moveSpeed.x = 0.0f;
+			moveSpeed.y = 0.0f;
+			moveSpeed.z = 0.3f;
+			break;
+		case 2:
+			moveSpeed.x = 0.0f;
+			moveSpeed.y = 0.0f;
+			moveSpeed.z = -0.3f;
+			break;
+		case 3:
+			moveSpeed.x = 0.0f;
+			moveSpeed.y = 0.3f;
+			moveSpeed.z = 0.0f;
+			break;
+		case 4:
+			moveSpeed.x = 0.0f;
+			moveSpeed.y = -0.3f;
+			moveSpeed.z = 0.0f;
+			break;
+		case 5:
+			moveSpeed.x = 0.3f;
+			moveSpeed.y = 0.0f;
+			moveSpeed.z = 0.0f;
+			break;
+		case 6:
+			moveSpeed.x = -0.3f;
+			moveSpeed.y = 0.0f;
+			moveSpeed.z = 0.0f;
+			break;
 		}
-		else if (moveNum == 1) { //front
-			gameObject->worldTransform.translation.z += moveSpeed.z;
+		//if (moveNum == 1) { //正面
+		//	moveSpeed.x = 0.0f;
+		//	moveSpeed.y = 0.0f;
+		//	moveSpeed.z = 0.3f;
+		//}
+		//else if (moveNum == 2) { //後退
+		//	moveSpeed.x = 0.0f;
+		//	moveSpeed.y = 0.0f;
+		//	moveSpeed.z = -0.3f;
+		//}
+		//else if (moveNum == 3) { //上
+		//	moveSpeed.x = 0.0f;
+		//	moveSpeed.y = 0.3f;
+		//	moveSpeed.z = 0.0f;
+		//}
+		//else if (moveNum == 4) { //下
+		//	moveSpeed.x = 0.0f;
+		//	moveSpeed.y = -0.3f;
+		//	moveSpeed.z = 0.0f;
+		//}
+	//攻撃関連
+		switch (phase)
+		{
+		case Phase::Attack:
+			phaseTimer--;
+			if (phaseTimer <= 0.0f) {
+				phaseTimer = 100.0f;
+				phase = Phase::CoolDown;
+			}
+			break;
+		case Phase::CoolDown:
+			phaseTimer -= 0.5f;
+			if (phaseTimer <= 0.0f) {
+				phaseTimer = 300.0f;
+				phase = Phase::Attack;
+			}
+			break;
 		}
-		else if (moveNum == 2) { //Down
-			gameObject->worldTransform.translation.y -= moveSpeed.y;
-		}
-		else if (moveNum == 3) { //UP
-			gameObject->worldTransform.translation.y += moveSpeed.y;
-		}
+		gameObject->Update();
 	}
-	gameObject->Update();
 }
 
 void Enemy::Draw() {
@@ -73,45 +138,22 @@ void Enemy::Repetition()
 //離脱
 void Enemy::Leave(Vector3 leaveSpeedt,Vector3 leaveSpeedf, int enemyNum)
 {
-	if (enemyNum == 0) {	//固定砲台
+	//if (enemyNum == 0) {	//固定砲台
 
-	}
+	//}
 
-	if (enemyNum == 1) {	//ゲート
-		if (gameObject->worldTransform.translation.x >= 1) {
-			gameObject->worldTransform.translation += leaveSpeedt;
-		}
-		if (gameObject->worldTransform.translation.x <= -1) {
-			gameObject->worldTransform.translation += leaveSpeedf;
-		}
-	}
+	//if (enemyNum == 1) {	//ゲート
+	//	if (gameObject->worldTransform.translation.x >= 1) {
+	//		gameObject->worldTransform.translation += leaveSpeedt;
+	//	}
+	//	if (gameObject->worldTransform.translation.x <= -1) {
+	//		gameObject->worldTransform.translation += leaveSpeedf;
+	//	}
+	//}
 
-	if (enemyNum == 2) {	//直線レーザータレット
-		gameObject->worldTransform.rotation.y += 0.3f;
-	}
-
-	if (--deleteTimer_ <= 0) {
-		isDelete_ = true;
-	}
-
-
-}
-
-//弾のクールタイム
-void Enemy::CoolTime()
-{
-	if (isCoolDown) {
-		coolTime--;
-		if (coolTime <= 0.0f) {
-			isCoolDown = false;
-		}
-	}
-	else {
-		coolTime++;
-		if (coolTime >= 150.0f) {
-			isCoolDown = true;
-		}
-	}
+	//if (enemyNum == 2) {	//直線レーザータレット
+	//	gameObject->worldTransform.rotation.y += 0.3f;
+	//}
 }
 
 WorldTransform Enemy::GetWorldTransform() {
@@ -181,9 +223,19 @@ bool Enemy::SetIsAttack(bool isAttack)
 	return this->isAttack;
 }
 
+bool Enemy::GetIsDead()
+{
+	return isDelete_;
+}
+
 int Enemy::GetSpownFlag()
 {
 	return spawnFlag;
+}
+
+Phase Enemy::GetPhase()
+{
+	return phase;
 }
 
 void Enemy::OnCollision(Rhythm* rhythm) {
