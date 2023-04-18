@@ -26,7 +26,7 @@ public:
 
 	void Update(WorldTransform wt, Vector3 vec);
 
-	void Aim(Vector3 player, Vector3 enemy);
+	void Aim(Vector3 player, Vector3 enemy, Vector3 vec, float shotAngle);
 
 	void Draw();
 
@@ -53,10 +53,10 @@ public:
 	ViewProjection* GetViewProjection() { return viewProjection; }
 	WorldTransform GetWorldTransform();
 	Vector3 GetPos();
-
 	Vector3 GetAimPos();
 	int GetIsAimHit();
 	void AimHit();
+	void NotAimHit();
 
 	Vector3 centerVec = { 0,0,0 };
 	Vector3 angle = {};
@@ -80,6 +80,7 @@ private:
 	//ゲームオブジェクト
 	GameObject3D* gameObject = nullptr;
 	GameObject3D* aimObject = nullptr;
+	GameObject3D* aimObjectHitBox = nullptr;
 
 	ViewProjection* viewProjection;
 

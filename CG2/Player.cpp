@@ -43,11 +43,16 @@ void Player::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 	gameObject->Initialize();
 
 	aimObject = new GameObject3D();
-	//aimObject->PreLoadModel("Resources/tofu/tofu.obj");
-	aimObject->PreLoadTexture(L"Resources/crosshair.png");
+	aimObject->PreLoadModel("Resources/circle/circle.obj");
+	aimObject->PreLoadTexture(L"Resources/red.png");
 	aimObject->SetViewProjection(viewProjection_);
 	aimObject->SetMatProjection(matProjection);
 	aimObject->Initialize();
+
+	aimObjectHitBox = new GameObject3D();
+	aimObjectHitBox->SetViewProjection(viewProjection_);
+	aimObjectHitBox->SetMatProjection(matProjection);
+	aimObjectHitBox->Initialize();
 
 	Reset();
 
@@ -97,7 +102,7 @@ void Player::Update(WorldTransform wt, Vector3 vec) {
 
 	if (isDead == false)
 	{
-		aimObject->worldTransform.parent = &wt;
+		//aimObject->worldTransform.parent = &wt;
 		gameObject->worldTransform.parent = &wt;
 		gameObject->Update();
 		aimObject->Update();
@@ -124,31 +129,34 @@ void Player::Update(WorldTransform wt, Vector3 vec) {
 
 void Player::AimHit() {
 	isAimHit = true;
+	aimObject->color = { 1.0f,0.0f,0.0f,0.0f };
+	//aimObject->worldTransform.scale = { 0.2f,0.2f,0.2f };
+	aimObject->worldTransform.scale = { 1.5f,1.5f,1.5f };
 }
+void Player::NotAimHit() {
+	isAimHit = false;
+	aimObject->color = { 0.0f,0.0f,0.0f,1.0f };
+	aimObject->worldTransform.scale = { 1.5f, 1.5f, 1.5f };
 
-void Player::Aim(Vector3 player, Vector3 enemy) {
+}
+void Player::Aim(Vector3 player, Vector3 enemy, Vector3 vec, float shotAngle) {
 
-	//自機から3Dレティクルへのオフセット(Z+向き)
-	Vector3 offset = { 0,0,1.0f };
+	velocity = { sin(vec.y + shotAngle),-vec.x,cos(vec.y + shotAngle) };
+	float speed = -5.0f;
+	velocity.x *= speed;
+	velocity.y *= speed;
+	velocity.z *= speed;
 
-	float speed = -0.2f;
-	posA = player;
-	posB = enemy;
-	posC = posA - posB;
-	//posC.nomalize();
-	//posC *= speed;
-	 // Calculate the distance between the player and enemy vectors
-	distance++;
-	//自機から3Dレティクルへの距離
-	float kDistancePlayerTo3DReticle = distance;
-
-	aimObject->worldTransform.scale = { 1.0f, 1.0f, distance };
-
-	aimObject->worldTransform.translation = gameObject->worldTransform.translation + offset * kDistancePlayerTo3DReticle;
-
-	if (isAimHit == true) {
-		distance = 0;
+	//aimObject->worldTransform.scale = { 1.5f, 1.5f,1.5 };
+	aimObjectHitBox->worldTransform.scale = { 0.5f, 0.5f, 0.5f };
+	//aimObject->worldTransform.translation -= velocity/10;
+	if (aimObject->worldTransform.translation.z > GetPos().z + 40) {
+		aimObject->worldTransform.translation.z = GetPos().z;
+		aimObjectHitBox->worldTransform.translation.z = GetPos().z;
 	}
+	aimObject->worldTransform.translation.x = gameObject->worldTransform.translation.x;
+	aimObject->worldTransform.translation.y = gameObject->worldTransform.translation.y;
+	aimObject->worldTransform.translation.z = GetPos().z-velocity.z*5;
 
 }
 //
@@ -181,7 +189,11 @@ void Player::Draw() {
 		if (invincibleTimer % 2 == 0) {
 			gameObject->Draw();
 		}
-		//aimObject->Draw();
+		if (isAimHit == true) {
+		aimObject->Draw();
+		}
+		aimObject->Draw();
+		aimObjectHitBox->Draw();
 		//弾描画
 		for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Draw(); }
 		for (std::unique_ptr<Pattern2>& bullet : bulletsAim_) { bullet->Draw(); }

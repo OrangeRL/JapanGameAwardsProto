@@ -22,7 +22,7 @@ public:
 	bool IsDead() const { return isDead[particleValue]; }
 private:
 
-	static const int particleValue = 20;
+	static const int particleValue = 15;
 
 	GameObject3D* gameObject[particleValue];
 	Model* model;
