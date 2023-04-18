@@ -37,36 +37,20 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 	pManager.Update(gameObject->worldTransform.translation);
 
 	attackSpeed -= 0.5f;
-	phaseTimer--;
+		if (moveNum == 0){
 
-	switch (phase)
-	{
-	case Phase::spown:
-		if (phaseTimer <= 0.0f) {
-			phase = Phase::normal;
-			phaseTimer = 400.0f;
 		}
-		break;
-	case Phase::normal:	//通常
-		gameObject->worldTransform.translation += moveSpeed;
-		if (phaseTimer <= 0.0f) {
-			phase = Phase::move;
-			phaseTimer = 200.0f;
+		else if (moveNum == 1) { //front
+			gameObject->worldTransform.translation.z += moveSpeed.z;
 		}
-		break;
-	case Phase::move:	//行動
-		if (phaseTimer <= 0.0f) {
-			phase = Phase::leave;
-			phaseTimer = 300.0f;
+		else if (moveNum == 2) { //Down
+			gameObject->worldTransform.translation.y -= moveSpeed.y;
 		}
-		break;
-	case Phase::leave:	//離脱
-		Leave({ 0.3f,0,0 }, { -0.3f,0,0 }, enemyNum);
+		else if (moveNum == 3) { //UP
+			gameObject->worldTransform.translation.y += moveSpeed.y;
+		}
 	}
-
 	gameObject->Update();
-	}
-	
 }
 
 void Enemy::Draw() {
@@ -176,6 +160,11 @@ void Enemy::SetBulletNum(int32_t bulletNum)
 	useBullet = bulletNum;
 }
 
+void Enemy::SetMoveNum(int32_t moveNum)
+{
+	this->moveNum = moveNum;
+}
+
 int32_t Enemy::GetBulletNum()
 {
 	return useBullet;
@@ -195,11 +184,6 @@ bool Enemy::SetIsAttack(bool isAttack)
 int Enemy::GetSpownFlag()
 {
 	return spawnFlag;
-}
-
-Phase Enemy::GetPhase()
-{
-	return phase;
 }
 
 void Enemy::OnCollision(Rhythm* rhythm) {

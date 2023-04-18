@@ -27,7 +27,17 @@ void EnemyBullet::Update()
 	if (bulletNum == 0){
 		gameObject->worldTransform.translation -= posC;
 	}
-	else {
+	else if(bulletNum == 1){
+		gameObject->worldTransform.translation.x += bulletSpeed;
+		gameObject->worldTransform.translation.z -= 0.01f;
+		countSpeed += bulletSpeed;
+		if (countSpeed >= 3.0f || countSpeed <= -3.0f) {
+			countSpeed = 0.0f;
+			bulletSpeed = -bulletSpeed;
+		}
+	}
+	else
+	{
 
 	}
 

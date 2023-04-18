@@ -6,12 +6,6 @@
 #include "Particle2.h"
 #include <memory>
 #include <list>
-enum class Phase {
-	spown,
-	normal,
-	move,
-	leave,
-};
 
 class Enemy {
 public:
@@ -54,6 +48,7 @@ public:
 	//速度設定
 	Vector3 SetSpeed(float x, float y, float z);
 	void SetBulletNum(int32_t bulletNum);
+	void SetMoveNum(int32_t moveNum);
 	int32_t GetBulletNum();
 
 	bool GetIsAttack();
@@ -61,25 +56,20 @@ public:
 
 	int GetSpownFlag();
 
-	Phase GetPhase();
-
 	bool IsDead()const { return isDelete_; }
 
 private:
-	Phase phase = Phase::normal;
-
+	
 	GameObject3D* gameObject = nullptr;
 
 	Vector3 position = { 10.0f,5.0f,0.0f };
 
-	Vector3 moveSpeed = { 0,0,0 };
+	Vector3 moveSpeed = { 0.1f,0.1f,0.1f };
 	float attackSpeed = 100.0f;
 	bool isAttack = false;
 	//クールタイム
 	bool isCoolDown = true;
 	float coolTime = 150.0f;
-	//行動変化
-	float phaseTimer = 300.0f;
 	
 	//消えるまでの時間
 	// 60 * 消えるまでの時間:
@@ -90,6 +80,7 @@ private:
 	bool isDelete_ = false;
 
 	int32_t useBullet;
+	int32_t moveNum;
 
 	SpawnParticleManager spManager;
 	Particle2 pManager;

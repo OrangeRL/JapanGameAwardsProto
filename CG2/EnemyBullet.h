@@ -29,6 +29,9 @@ private:
 	//弾の種類	0=プレイヤー狙い, 1=正面カーテン等
 	int bulletNum;
 
+	float bulletSpeed = 0.01f;
+	float countSpeed;
+
 	Vector3 posA;
 	Vector3 posB;
 	Vector3 posC;

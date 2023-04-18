@@ -135,9 +135,9 @@ private: // メンバ変数
 	//敵
 	std::list<std::unique_ptr<Enemy>> enemys1;
 	std::list<std::unique_ptr<EnemyBullet>> bullets1;
-	std::list<std::unique_ptr<EnemyBullet>> bullets2;
 
 	int useBullet;
+	int enemyMove;
 
 	//天球
 	GameObject3D* skydome = nullptr;
@@ -199,7 +199,7 @@ private: // メンバ変数
 	std::stringstream enemyPopCommand;
 	bool waitFlag = true;
 	float waitTime_=10;
-	size_t enemyVal = 50;
+	size_t enemyVal = 90;
 //------------------------------------
 //ボスコマンド関係
 //------------------------------------
