@@ -27,8 +27,17 @@ void EnemyBullet::Update()
 	if (bulletNum == 0){
 		gameObject->worldTransform.translation -= posC;
 	}
-
-	if (bulletNum == 1) {
+	else if(bulletNum == 1){
+		gameObject->worldTransform.translation.x += bulletSpeed;
+		gameObject->worldTransform.translation.z -= 0.01f;
+		countSpeed += bulletSpeed;
+		if (countSpeed >= 3.0f || countSpeed <= -3.0f) {
+			countSpeed = 0.0f;
+			bulletSpeed = -bulletSpeed;
+		}
+	}
+	else
+	{
 
 	}
 
@@ -80,6 +89,11 @@ void EnemyBullet::Aim(Vector3 player, Vector3 enemy)
 	posC = posA - posB;
 	posC.nomalize();
 	posC *= speed;
+}
+
+bool EnemyBullet::GetIsDead()
+{
+	return isDelete_;
 }
 
 void EnemyBullet::OnCollision()

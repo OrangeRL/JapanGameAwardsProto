@@ -72,7 +72,8 @@ public: // メンバ関数
 	/// 敵発生コマンドの更新
 	/// </summary>
 	void UpdateEnemyPopCommand();
-	void LoadCsv(const wchar_t* fileName, int obstacleVal);
+	void LoadCsv(int obstacleVal);
+	void LoadCsv2(int obstacleVal);
 	const std::list<std::unique_ptr<Enemy>>& GetEnemies() { return enemys1; }
 
 	//セッター
@@ -147,10 +148,10 @@ private: // メンバ変数
 	Particle* particle3 = nullptr;
 	//敵
 	std::list<std::unique_ptr<Enemy>> enemys1;
-	std::list<std::unique_ptr<Enemy>> enemys2;
-	std::list<std::unique_ptr<Enemy>> enemys3;
 	std::list<std::unique_ptr<EnemyBullet>> bullets1;
-	std::list<std::unique_ptr<EnemyBullet>> bullets2;
+
+	int useBullet;
+	int enemyMove;
 
 	//天球
 	GameObject3D* skydome = nullptr;
@@ -208,7 +209,8 @@ private: // メンバ変数
 	std::stringstream enemyPopCommand;
 	bool waitFlag = true;
 	float waitTime_=10;
-	size_t enemyVal = 5;
+	size_t enemyVal = 90;
+	int fileNum = 1;
 //------------------------------------
 //ボスコマンド関係
 //------------------------------------

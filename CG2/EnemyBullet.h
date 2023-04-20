@@ -22,12 +22,16 @@ public:
 	void Aim(Vector3 player, Vector3 enemy);
 
 	bool IsDead()const { return isDelete_; }
+	bool GetIsDead();
 private:
 	GameObject3D* gameObject = nullptr;
 	//キー入力
 	Input& input = Input::GetInstance();
 	//弾の種類	0=プレイヤー狙い, 1=正面カーテン等
 	int bulletNum;
+
+	float bulletSpeed = 0.01f;
+	float countSpeed;
 
 	Vector3 posA;
 	Vector3 posB;

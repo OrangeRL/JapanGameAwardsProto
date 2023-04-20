@@ -7,10 +7,8 @@
 #include <memory>
 #include <list>
 enum class Phase {
-	spown,
-	normal,
-	move,
-	leave,
+	Attack,
+	CoolDown,
 };
 
 class Enemy {
@@ -36,7 +34,6 @@ public:
 	//離脱
 	void Leave(Vector3 leaveSpeedt, Vector3 leaveSpeedf,int enemyNum);
 
-	void CoolTime();
 	void Spawn();
 
 	void OnCollision(Rhythm* rhythm);
@@ -53,40 +50,46 @@ public:
 	bool GetCoolDown();
 	//速度設定
 	Vector3 SetSpeed(float x, float y, float z);
+	void SetBulletNum(int32_t bulletNum);
+	void SetMoveNum(int32_t moveNum);
+	int32_t GetBulletNum();
 
 	bool GetIsAttack();
 	bool SetIsAttack(bool isAttack);
+	bool GetIsDead();
 
-	Phase GetPhase();
+	int GetSpownFlag();
 
 	bool IsDead()const { return isDelete_; }
 
-private:
-	Phase phase = Phase::normal;
+	Phase GetPhase();
 
+private:
+	Phase phase = Phase::Attack;
+	//行動変化
+	float phaseTimer = 300.0f;
+	
 	GameObject3D* gameObject = nullptr;
 
-	std::list<std::unique_ptr<EnemyBullet>> bullets;
-	EnemyBullet* enemyBullet = nullptr;
 	Vector3 position = { 10.0f,5.0f,0.0f };
 
-	Vector3 moveSpeed = { 0,0,0 };
+	Vector3 moveSpeed = { 0.0f,0.0f,0.0f };
 	float attackSpeed = 100.0f;
 	bool isAttack = false;
 	//クールタイム
 	bool isCoolDown = true;
-	float coolTime = 150.0f;
-	//行動変化
-	float phaseTimer = 300.0f;
+	float coolTime = 1.0f;
 	
 	//消えるまでの時間
 	// 60 * 消えるまでの時間:
-	static const int32_t deleteTime = 60 * 8;
+	static const int32_t deleteTime = 60 * 15;
 	//タイマー
 	int32_t deleteTimer_ = deleteTime;
 	//フラグ
 	bool isDelete_ = false;
 
+	int32_t useBullet;
+	int32_t moveNum;
 
 	SpawnParticleManager spManager;
 	Particle2 pManager;

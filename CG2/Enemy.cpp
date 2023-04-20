@@ -30,43 +30,91 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 //Num が 1の奴は移動のみ
 //Num が 0は固定砲台
 void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int enemyNum) {
-
 	//spManager.Update(viewProjection,matProjection,gameObject->worldTransform.translation,gameObject->worldTransform.scale);
 	if (spawnFlag == true)
 	{
+		if (--deleteTimer_ <= 0) {
+			isDelete_ = true;
+		}
+
 		pManager.Update(gameObject->worldTransform.translation);
 
 		attackSpeed -= 0.5f;
-		phaseTimer--;
-
+		gameObject->worldTransform.translation += moveSpeed;
+		//移動関連
+		switch (moveNum)
+		{
+		case 1:
+			moveSpeed.x = 0.0f;
+			moveSpeed.y = 0.0f;
+			moveSpeed.z = 0.1f;
+			break;
+		case 2:
+			moveSpeed.x = 0.0f;
+			moveSpeed.y = 0.0f;
+			moveSpeed.z = -0.1f;
+			break;
+		case 3:
+			moveSpeed.x = 0.0f;
+			moveSpeed.y = 0.1f;
+			moveSpeed.z = 0.0f;
+			break;
+		case 4:
+			moveSpeed.x = 0.0f;
+			moveSpeed.y = -0.1f;
+			moveSpeed.z = 0.0f;
+			break;
+		case 5:
+			moveSpeed.x = 0.1f;
+			moveSpeed.y = 0.0f;
+			moveSpeed.z = 0.0f;
+			break;
+		case 6:
+			moveSpeed.x = -0.1f;
+			moveSpeed.y = 0.0f;
+			moveSpeed.z = 0.0f;
+			break;
+		}
+		//if (moveNum == 1) { //正面
+		//	moveSpeed.x = 0.0f;
+		//	moveSpeed.y = 0.0f;
+		//	moveSpeed.z = 0.3f;
+		//}
+		//else if (moveNum == 2) { //後退
+		//	moveSpeed.x = 0.0f;
+		//	moveSpeed.y = 0.0f;
+		//	moveSpeed.z = -0.3f;
+		//}
+		//else if (moveNum == 3) { //上
+		//	moveSpeed.x = 0.0f;
+		//	moveSpeed.y = 0.3f;
+		//	moveSpeed.z = 0.0f;
+		//}
+		//else if (moveNum == 4) { //下
+		//	moveSpeed.x = 0.0f;
+		//	moveSpeed.y = -0.3f;
+		//	moveSpeed.z = 0.0f;
+		//}
+	//攻撃関連
 		switch (phase)
 		{
-		case Phase::spown:
+		case Phase::Attack:
+			phaseTimer--;
 			if (phaseTimer <= 0.0f) {
-				phase = Phase::normal;
-				phaseTimer = 400.0f;
+				phaseTimer = 100.0f;
+				phase = Phase::CoolDown;
 			}
 			break;
-		case Phase::normal:	//通常
-			gameObject->worldTransform.translation += moveSpeed;
+		case Phase::CoolDown:
+			phaseTimer -= 0.5f;
 			if (phaseTimer <= 0.0f) {
-				phase = Phase::move;
-				phaseTimer = 200.0f;
-			}
-			break;
-		case Phase::move:	//行動
-			if (phaseTimer <= 0.0f) {
-				phase = Phase::leave;
 				phaseTimer = 300.0f;
+				phase = Phase::Attack;
 			}
 			break;
-		case Phase::leave:	//離脱
-			Leave({ 0.3f,0,0 }, { -0.3f,0,0 }, enemyNum);
 		}
-
 		gameObject->Update();
 	}
-
 }
 
 void Enemy::Draw() {
@@ -89,45 +137,22 @@ void Enemy::Repetition()
 //離脱
 void Enemy::Leave(Vector3 leaveSpeedt, Vector3 leaveSpeedf, int enemyNum)
 {
-	if (enemyNum == 0) {	//固定砲台
+	//if (enemyNum == 0) {	//固定砲台
 
-	}
+	//}
 
-	if (enemyNum == 1) {	//ゲート
-		if (gameObject->worldTransform.translation.x >= 1) {
-			gameObject->worldTransform.translation += leaveSpeedt;
-		}
-		if (gameObject->worldTransform.translation.x <= -1) {
-			gameObject->worldTransform.translation += leaveSpeedf;
-		}
-	}
+	//if (enemyNum == 1) {	//ゲート
+	//	if (gameObject->worldTransform.translation.x >= 1) {
+	//		gameObject->worldTransform.translation += leaveSpeedt;
+	//	}
+	//	if (gameObject->worldTransform.translation.x <= -1) {
+	//		gameObject->worldTransform.translation += leaveSpeedf;
+	//	}
+	//}
 
-	if (enemyNum == 2) {	//直線レーザータレット
-		gameObject->worldTransform.rotation.y += 0.3f;
-	}
-
-	if (--deleteTimer_ <= 0) {
-		isDelete_ = true;
-	}
-
-
-}
-
-//弾のクールタイム
-void Enemy::CoolTime()
-{
-	if (isCoolDown) {
-		coolTime--;
-		if (coolTime <= 0.0f) {
-			isCoolDown = false;
-		}
-	}
-	else {
-		coolTime++;
-		if (coolTime >= 150.0f) {
-			isCoolDown = true;
-		}
-	}
+	//if (enemyNum == 2) {	//直線レーザータレット
+	//	gameObject->worldTransform.rotation.y += 0.3f;
+	//}
 }
 
 WorldTransform Enemy::GetWorldTransform() {
@@ -171,6 +196,21 @@ Vector3 Enemy::SetSpeed(float x, float y, float z)
 	return moveSpeed;
 }
 
+void Enemy::SetBulletNum(int32_t bulletNum)
+{
+	useBullet = bulletNum;
+}
+
+void Enemy::SetMoveNum(int32_t moveNum)
+{
+	this->moveNum = moveNum;
+}
+
+int32_t Enemy::GetBulletNum()
+{
+	return useBullet;
+}
+
 bool Enemy::GetIsAttack()
 {
 	return isAttack;
@@ -180,6 +220,16 @@ bool Enemy::SetIsAttack(bool isAttack)
 {
 	this->isAttack = isAttack;
 	return this->isAttack;
+}
+
+bool Enemy::GetIsDead()
+{
+	return isDelete_;
+}
+
+int Enemy::GetSpownFlag()
+{
+	return spawnFlag;
 }
 
 Phase Enemy::GetPhase()
