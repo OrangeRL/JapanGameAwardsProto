@@ -112,7 +112,8 @@ void GameScene::Initialize(WinApp* winApp)
 void GameScene::Update()
 {
 	spawntime += 1;
-	LoadCsv(L"Resources/enemyPos.csv", enemyVal);
+	LoadCsv(enemyVal);
+
 	//ランダムな整数
 	std::default_random_engine engine(seed_gen());
 
@@ -296,7 +297,7 @@ void GameScene::Update()
 		player->GetWorldTransform().matWorld.m[3][0],
 		player->GetWorldTransform().matWorld.m[3][1],
 		player->GetWorldTransform().matWorld.m[3][2]);
-	debugText.Printf(0, 280, 1.0f, 9, " spawn:%d", spawntime);
+	debugText.Printf(0, 280, 1.0f, 12, " spawn:%d", spawntime);
 #pragma endregion
 }
 
@@ -564,11 +565,11 @@ void GameScene::Collisions() {
 
 }
 
-void GameScene::LoadCsv(const wchar_t* fileName, int obstacleVal)
+void GameScene::LoadCsv(int obstacleVal)
 {
 	// open file
 	std::ifstream file;
-	file.open(fileName);
+	file.open(L"Resources/wave1.csv");
 	std::stringstream obstaclePosList;    // string stream
 	obstaclePosList << file.rdbuf();
 	file.close();
@@ -701,7 +702,7 @@ void GameScene::LoadCsv(const wchar_t* fileName, int obstacleVal)
 		}
 		if (spawntime == spawntimer[44]) {
 			if (i < obstaclePos.size() && i < 48 && i > 43) {
-				newEnemy->Settransform(obstaclePos[i]);
+ 				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
@@ -712,7 +713,7 @@ void GameScene::LoadCsv(const wchar_t* fileName, int obstacleVal)
 			i++;
 		}
 		if (spawntime == spawntimer[48]) {
-			if (i < obstaclePos.size() && i < 54 && i > 48) {
+			if (i < obstaclePos.size() && i < 52 && i > 47) {
 				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
