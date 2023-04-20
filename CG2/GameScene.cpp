@@ -780,7 +780,7 @@ void GameScene::LoadCsv2(int obstacleVal)
 	//spawntime += 1;
 	for (std::unique_ptr<Enemy>& newEnemy : enemys1) {
 		if (spawntime == spawntimer[0]) {
-			if (i < obstaclePos.size() && i < 9 && i >= 0) {
+			if (i < obstaclePos.size() && i < 5 && i >= 0) {
 				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
@@ -791,6 +791,101 @@ void GameScene::LoadCsv2(int obstacleVal)
 			}
 			i++;
 		}
-
+		if (spawntime == spawntimer[5]) {
+			if (i < obstaclePos.size() && i < 9 && i > 5) {
+				newEnemy->Settransform(obstaclePos[i]);
+				newEnemy->SetBulletNum(bulletNum[i]);
+				newEnemy->SetMoveNum(moveNum[i]);
+				newEnemy->SetSpeed(0, 0, 0);
+				if (newEnemy->GetSpownFlag() == false) {
+					newEnemy->Spawn();
+				}
+			}
+			i++;
+		}
+		if (spawntime == spawntimer[9]) {
+			if (i < obstaclePos.size() && i < 17 && i > 8) {
+				newEnemy->Settransform(obstaclePos[i]);
+				newEnemy->SetBulletNum(bulletNum[i]);
+				newEnemy->SetMoveNum(moveNum[i]);
+				newEnemy->SetSpeed(0, 0, 0);
+				if (newEnemy->GetSpownFlag() == false) {
+					newEnemy->Spawn();
+				}
+			}
+			i++;
+		}
+		if (spawntime == spawntimer[17]) {
+			if (i < obstaclePos.size() && i < 21 && i > 16) {
+				newEnemy->Settransform(obstaclePos[i]);
+				newEnemy->SetBulletNum(bulletNum[i]);
+				newEnemy->SetMoveNum(moveNum[i]);
+				newEnemy->SetSpeed(0, 0, 0);
+				if (newEnemy->GetSpownFlag() == false) {
+					newEnemy->Spawn();
+				}
+			}
+			i++;
+		}
+		if (spawntime == spawntimer[21]) {
+			if (i < obstaclePos.size() && i < 25 && i > 21) {
+				newEnemy->Settransform(obstaclePos[i]);
+				newEnemy->SetBulletNum(bulletNum[i]);
+				newEnemy->SetMoveNum(moveNum[i]);
+				newEnemy->SetSpeed(0, 0, 0);
+				if (newEnemy->GetSpownFlag() == false) {
+					newEnemy->Spawn();
+				}
+			}
+			i++;
+		}
+		if (spawntime == spawntimer[25]) {
+			if (i < obstaclePos.size() && i < 33 && i > 24) {
+				newEnemy->Settransform(obstaclePos[i]);
+				newEnemy->SetBulletNum(bulletNum[i]);
+				newEnemy->SetMoveNum(moveNum[i]);
+				newEnemy->SetSpeed(0, 0, 0);
+				if (newEnemy->GetSpownFlag() == false) {
+					newEnemy->Spawn();
+				}
+			}
+			i++;
+		}
+		if (spawntime == spawntimer[33]) {
+			if (i < obstaclePos.size() && i < 41 && i > 32) {
+				newEnemy->Settransform(obstaclePos[i]);
+				newEnemy->SetBulletNum(bulletNum[i]);
+				newEnemy->SetMoveNum(moveNum[i]);
+				newEnemy->SetSpeed(0, 0, 0);
+				if (newEnemy->GetSpownFlag() == false) {
+					newEnemy->Spawn();
+				}
+			}
+			i++;
+		}
+		if (spawntime == spawntimer[41]) {
+			if (i < obstaclePos.size() && i < 46 && i > 40) {
+				newEnemy->Settransform(obstaclePos[i]);
+				newEnemy->SetBulletNum(bulletNum[i]);
+				newEnemy->SetMoveNum(moveNum[i]);
+				newEnemy->SetSpeed(0, 0, 0);
+				if (newEnemy->GetSpownFlag() == false) {
+					newEnemy->Spawn();
+				}
+			}
+			i++;
+		}
+		if (spawntime == spawntimer[46]) {
+			if (i < obstaclePos.size() && i < 51 && i > 45) {
+				newEnemy->Settransform(obstaclePos[i]);
+				newEnemy->SetBulletNum(bulletNum[i]);
+				newEnemy->SetMoveNum(moveNum[i]);
+				newEnemy->SetSpeed(0, 0, 0);
+				if (newEnemy->GetSpownFlag() == false) {
+					newEnemy->Spawn();
+				}
+			}
+			i++;
+		}
 	}
 }
