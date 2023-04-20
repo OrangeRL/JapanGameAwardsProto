@@ -36,10 +36,16 @@ void GameScene::Initialize(WinApp* winApp)
 	// UI用テクスチャ読み込み
 	Sprite::LoadTexture(1, L"Resources/gamefont.png");
 	Sprite::LoadTexture(2, L"Resources/text.png");
+	Sprite::LoadTexture(3, L"Resources/white1x1.png");
+	Sprite::LoadTexture(4, L"Resources/optionBackground.png");
+	Sprite::LoadTexture(5, L"Resources/sceneChange.png");
 
 	crosshair->LoadTexture(11, L"Resources/crosshair.png");
 	crosshair = Sprite::Create(11, { 0,0 });
-  
+
+	sceneChangeSprite = new Sprite(5, { -window_width,0.0f }, { window_width,window_height }, { 1.0f,1.0f,1.0f,1.0f }, { 0,0 }, 0, 0);
+	sceneChangeSprite->Initialize();
+
 	//UI初期化
 	UIManager.Initialize(1);
 
@@ -58,6 +64,7 @@ void GameScene::Initialize(WinApp* winApp)
 	skydome->SetMatProjection(&matProjection_);
 	skydome->Initialize();
 	skydome->worldTransform.scale = { 2000.0f,2000.0f,2000.0f };
+	skydome->color = { 0.8f,0.8f,0.8f,1.0f };
 
 	//レールカメラ
 	reilCamera = new ReilCamera();
@@ -109,8 +116,83 @@ void GameScene::Initialize(WinApp* winApp)
 	loadBossPopData(1);
 }
 
-void GameScene::Update()
+void GameScene::Update() {
+
+	sceneChangeSprite->SetPosition({ MathFunc::easeInQuint(sceneShiftFlame / maxFlame) * -1300 ,0.0f });
+
+	if (startTimer <= 0) {
+		//シーン切り替え処理
+		if (isSceneChange == true) {
+
+			if (sceneShiftFlame > 0) {
+				sceneShiftFlame--;
+			}
+
+			if (sceneShiftFlame <= 0) {
+				isSceneChange = false;
+			}
+		}
+		else {
+			if (sceneShiftFlame < maxFlame) {
+				sceneShiftFlame++;
+			}
+		}
+
+		//タイトル画面の更新処理
+		if (scene_ == Scene::Title) {
+			TitleUpdate();
+		}
+		//ゲーム画面の更新処理
+		else if (scene_ == Scene::Stage) {
+			StageUpdate();
+		}
+	}
+	else {
+		startTimer--;
+	}
+
+}
+void GameScene::TitleUpdate() {
+	UIManager.TitleUpdate(rhythm, &input_);
+
+	skydome->worldTransform.rotation.z += 0.001f;
+	skydome->worldTransform.rotation.y += 0.002f;
+	skydome->Update();
+
+	player->SetPos({ 0.0f,0.0f,20.0f });
+	player->Update(reilCamera->GetWorldTransform(), reilCamera->GetWorldTransform().rotation);
+	viewProjection_.UpdateView();
+
+	rhythm->Update(&input_, { 4.3f - UIManager.GetOptionPos() / 90.0f,7.5f + UIManager.GetOptionPos() / 150.0f,-25.0f }, { 0.0f,0.0f,0.0f }, player->GetIsDead(), stage, scene_, UIManager.GetSceneInTitle());
+
+	if (UIManager.GetSceneInTitle() == 5) {
+		isSceneChange = true;
+	}
+
+	if (sceneShiftFlame <= 0) {
+		scene_ = Scene::Stage;
+	}
+
+	if (rhythm->GetSoundState().timer == 0) {
+		if (rhythm->GetSoundState().measureCount == 16) {
+			skydome->color = { 0.0f,0.0f,1.0f,1.0f };
+		}
+		else if (rhythm->GetSoundState().measureCount == 32) {
+			skydome->color = { 1.0f,0.0f,0.0f,1.0f };
+		}
+		else if (rhythm->GetSoundState().measureCount == 48) {
+			skydome->color = { 0.8f,0.8f,0.8f,1.0f };
+		}
+	}
+
+
+}
+
+void GameScene::StageUpdate()
 {
+	skydome->worldTransform.rotation = { 0.0f,0.0f,0.0f };
+	skydome->color = { 0.8f,0.8f,0.8f,1.0f };
+
 	spawntime += 1;
 	LoadCsv(L"Resources/enemyPos.csv", enemyVal);
 	//ランダムな整数
@@ -123,7 +205,7 @@ void GameScene::Update()
 	//UI更新
 	UIManager.Update(rhythm, &input_, player->GetIsDead());
 
-	rhythm->Update(&input_, player->GetPos(), reilCamera->GetWorldTransform().rotation, player->GetIsDead(), stage);
+	rhythm->Update(&input_, player->GetPos(), reilCamera->GetWorldTransform().rotation, player->GetIsDead(), stage, scene_, UIManager.GetSceneInTitle());
 
 	if (rhythm->GetSoundState().isPause == 0) {
 
@@ -144,13 +226,13 @@ void GameScene::Update()
 
 		//アイテムの更新処理
 		for (std::unique_ptr<Item>& item : items_) {
-					item->Update();
+			item->Update();
 		}
 
 		//デスフラグの立ったアイテムを削除
 		items_.remove_if([](std::unique_ptr<Item>& item) {
 			return item->GetIsDead();
-		});
+			});
 
 		//アイテム生成
 		if (input_.TriggerKey(DIK_T)) {
@@ -290,40 +372,58 @@ void GameScene::Update()
 			//UpdateEnemyPopCommand();
 		}
 
-			//UpdateEnemyPopCommand();
-			if (player->GetIsDead() == false) {
-				//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
+		//UpdateEnemyPopCommand();
+		if (player->GetIsDead() == false) {
+			//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
+		}
+
+		if (player->GetIsDead() == false) {
+			//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
+		}
+
+		if (input_.PushKey(DIK_R)) {
+			Reset();
+
+		}
+
+		/*if (player->GetIsDead() == true && particle->GetIsDead() == true) {
+			if (gameoverTimer <= 0) {
+				gameoverTimer = 5;
 			}
-
-			if (player->GetIsDead() == false) {
-				//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
-			}
-
-			if (input_.PushKey(DIK_R)) {
-				Reset();
-
-			}
-
-			/*if (player->GetIsDead() == true && particle->GetIsDead() == true) {
+			else {
+				gameoverTimer--;
 				if (gameoverTimer <= 0) {
-					gameoverTimer = 5;
+					stage = 1;
+					Reset();
+					scene_ = Scene::Title;
 				}
-				else {
-					gameoverTimer--;
-					if (gameoverTimer <= 0) {
-						stage = 1;
-						Reset();
-						scene_ = Scene::Title;
-					}
-				}
-			}*/
+			}
+		}*/
+
+		Collisions();
+
 		//プレイヤーの弾発射処理
 		if (input_.TriggerKey(DIK_SPACE) && rhythm->GetSoundState().isFireSucces) {
 			player->NewBullet(&viewProjection_, &matProjection_, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,0.0f }, rhythm->GetSoundState().weapon);
 			//player->NewBulletAim(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
-			Collisions();
 		}
-	}	
+	}
+	else {
+		if (input_.TriggerKey(DIK_T)) {
+
+			isSceneChange = true;
+			rhythm->DecisionSoundPlay();
+		}
+
+		if (sceneShiftFlame <= 0) {
+
+			scene_ = Scene::Title;
+			rhythm->ResetRhythm();
+			player->SetPos({ 0.0f,0.0f,20.0f });
+			viewProjection_.Initialize();
+			UIManager.Init();
+		}
+	}
 
 #pragma region DebugText
 	debugText.Printf(0, 100, 1.0f, 18, " Q,E...offset:%f", rhythm->GetSoundState().offset);
@@ -345,6 +445,29 @@ void GameScene::Update()
 }
 
 void GameScene::Draw() {
+	if (scene_ == Scene::Title) {
+		TitleDraw();
+	}
+	else if (scene_ == Scene::Stage) {
+		StageDraw();
+	}
+}
+
+void GameScene::TitleDraw() {
+	skydome->Draw();
+	rhythm->Draw(player->GetIsDead());
+
+	//スプライト描画
+	Sprite::PreDraw(dx12base_.GetCmdList().Get());
+	UIManager.Draw(rhythm);
+
+	//シーン切り替えの描画
+	sceneChangeSprite->Draw();
+
+	Sprite::PostDraw();
+
+}
+void GameScene::StageDraw() {
 	//3D描画
 	//プレイヤー描画
 	player->Draw();
@@ -394,11 +517,14 @@ void GameScene::Draw() {
 
 
 	crosshair->Draw();
-	
+
 	UIManager.Draw(rhythm);
-  
+
 	// デバッグテキストの描画
 	debugText.DrawAll(dx12base_.GetCmdList().Get());
+
+	//シーン切り替えの描画
+	sceneChangeSprite->Draw();
 
 	Sprite::PostDraw();
 
@@ -417,7 +543,7 @@ void GameScene::loadEnemyPopData(int stageNum)
 		//ファイルを閉じる
 		file.close();
 	}
-	
+
 	if (stageNum == 2) {
 		//ファイルを開く
 		std::ifstream file;

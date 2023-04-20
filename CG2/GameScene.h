@@ -42,11 +42,23 @@ public: // メンバ関数
 	//初期化
 	void Initialize(WinApp* winApp);
 
-	//毎フレーム処理
+	//毎フレーム処理(全体)
 	void Update();
+	 
+	//毎フレーム処理(タイトル)
+	void TitleUpdate();
 
-	//描画処理
-	void Draw();
+	//毎フレーム処理(ステージ)
+	void StageUpdate();
+
+	//描画処理(全体)
+	void Draw(); 
+
+	//描画処理(タイトル)
+	void TitleDraw(); 
+	
+	//描画処理(ステージ)
+	void StageDraw();
 
 	void Reset();
 
@@ -106,6 +118,7 @@ public: // メンバ関数
 	void UpdateBossPopCommand();
 
 private: // メンバ変数
+
 	WinApp* winApp_ = nullptr;
 	DX12base& dx12base_ = DX12base::GetInstance();
 	Input& input_ = Input::GetInstance();
@@ -146,13 +159,8 @@ private: // メンバ変数
 	std::list<std::unique_ptr<Item>>items_;
 
 	Vector3 enemyPos = {};
-	//シーン管理
-	enum class Scene
-	{
-		Title,//タイトル
-		Stage,//ステージ
-	};
 
+	//シーン管理
 	Scene scene_ = Scene::Title;
 
 	int stage = 1;
@@ -164,6 +172,7 @@ private: // メンバ変数
 
 	Sprite* num_[10];
 	Sprite* crosshair = nullptr;
+	Sprite* sceneChangeSprite = nullptr;
 
 	Particle2 pManager[40];
 	//変形行列
@@ -208,4 +217,11 @@ private: // メンバ変数
 	float bossWaitTime_;
 //------------------------------------
 
+	//立ち上げ時に少し待つ
+	float startTimer = 30.0f;
+
+	bool isSceneChange = false;
+
+	const float maxFlame = 50.0f;
+	float sceneShiftFlame = 0.0f;
 };

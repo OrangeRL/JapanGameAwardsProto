@@ -4,6 +4,7 @@
 #include "Rhythm.h"
 #include "MathFunc.h"
 #include <string>
+#include <random>
 
 class UIManager
 {
@@ -18,12 +19,17 @@ public:
 	~UIManager();
 
 	void Initialize(UINT texnumber);
+	void Init();
 
+	void TitleUpdate(Rhythm* rhythm,Input* input);
 	void Update(Rhythm* rhythm,Input* input, int isDead);
 
 	void Draw(Rhythm* rhythm);
 
 	void UIPrintf(XMFLOAT2 pos,XMFLOAT2 scale, XMFLOAT4 color, int size, const char* fmt, ...);
+
+	float GetOptionPos() { return optionPos; }
+	int GetSceneInTitle() { return sceneInTitle; }
 
 private:
 	const float maxFlame = 50.0f;
@@ -53,8 +59,10 @@ private:
 	//表示する文字数
 	float size = 2;
 
-	Sprite* clearSprite;
+	Sprite* clearSprite = nullptr;
 	Sprite* numbersSprite = nullptr;
+	Sprite* whiteSprite = nullptr;
+	Sprite* optionBGSprite = nullptr;
 
 	// スプライトデータの配列
 	Sprite* spriteDatas[maxCharCount] = {};
@@ -65,5 +73,22 @@ private:
 	char buffer[kBufferSize];
 
 	int j;
+
+	//ランダムな整数
+	std::random_device seed_gen;
+	float titlePosY1 = 0.0f;
+	float titlePosY2 = 0.0f;
+	float titleFlame = 0.0f;
+
+	//フラッシュのタイマー
+	float flashTimer = 0.0f;
+
+	float optionFlame = 0.0f;
+	float optionPos = 0.0f;
+
+	int sceneInTitle = 0;
+	int select = 0;
+
+
 };
 

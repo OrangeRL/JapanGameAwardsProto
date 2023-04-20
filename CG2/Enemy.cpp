@@ -189,5 +189,5 @@ Phase Enemy::GetPhase()
 
 void Enemy::OnCollision(Rhythm* rhythm) {
 	isDelete_ = true;
-	rhythm->KnockSoundPlay(1.0f);
+	rhythm->KnockSoundPlay();
 }

@@ -14,7 +14,7 @@ namespace MathFunc {
 
 	//イージング
 	float easeOutQuint(float number);
-	float easeInCubic(float number);
+	float easeInQuint(float number);
 	float easeInOutSine(float number);
 
 	namespace Affine {
