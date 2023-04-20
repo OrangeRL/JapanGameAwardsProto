@@ -85,6 +85,7 @@ private:
 
 	float optionFlame = 0.0f;
 	float optionPos = 0.0f;
+	int optionSelect = 0;
 
 	int sceneInTitle = 0;
 	int select = 0;

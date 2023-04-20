@@ -132,26 +132,62 @@ void UIManager::TitleUpdate(Rhythm* rhythm, Input* input) {
 	}
 	else if (sceneInTitle == 3) {//オプション画面
 
-		optionPos = MathFunc::easeOutQuint(optionFlame / maxFlame) * -1300;
+		//項目セレクト
+		if (input->TriggerKey(DIK_W) && optionSelect > 0) {
+			optionSelect--;
+			rhythm->SelectSoundPlay();
+		}
+		else if (input->TriggerKey(DIK_S) && optionSelect < 3) {
+			optionSelect++;
+			rhythm->SelectSoundPlay();
+		}
+		if (input->TriggerKey(DIK_SPACE) && optionFlame >= maxFlame) {
+			if (optionSelect == 3) {
+				sceneInTitle = 1;
+				optionSelect = 0;
+				rhythm->DamageSoundPlay();
+			}		
+		}
+
 		if (input->TriggerKey(DIK_BACK) && optionFlame >= maxFlame) {
 			sceneInTitle = 1;
+			optionSelect = 0;
 			rhythm->DamageSoundPlay();
 		}
+		optionPos = MathFunc::easeOutQuint(optionFlame / maxFlame) * -1300;
 
 		if (optionFlame < maxFlame) {
 			optionFlame++;
 		}
 	}
 
-	else {
-	
-	}
-
 	if (sceneInTitle != 0) {
+
 		UIPrintf({ 1650 + optionPos,50 }, { 1.5f,1.5f }, { 1.0f,1.0f,1.0f,1.0f }, 7, " OPTION");
-		UIPrintf({ 1780 + optionPos,150 }, { 0.8f,0.8f }, { 1.0f,1.0f,1.0f,1.0f }, 4, " BGM");
-		UIPrintf({ 1800 + optionPos,300 }, { 0.8f,0.8f }, { 1.0f,1.0f,1.0f,1.0f }, 3, " SE");
-		UIPrintf({ 1750 + optionPos,450 }, { 0.8f,0.8f }, { 1.0f,1.0f,1.0f,1.0f }, 6, " GUIDE");
+		if (optionSelect == 0) {
+			UIPrintf({ 1780 + optionPos,150 }, { 0.8f,0.8f }, { 1.0f,1.0f,1.0f,3.0f / (30 - titleFlame) }, 4, " BGM");
+			UIPrintf({ 1800 + optionPos,300 }, { 0.8f,0.8f }, { 1.0f,1.0f,1.0f,0.5f }, 3, " SE");
+			UIPrintf({ 1750 + optionPos,450 }, { 0.8f,0.8f }, { 1.0f,1.0f,1.0f,0.5f }, 6, " GUIDE");
+			UIPrintf({ 1750 + optionPos,600 }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,0.5f }, 5, " BACK");
+		}
+		else if (optionSelect == 1) {
+			UIPrintf({ 1780 + optionPos,150 }, { 0.8f,0.8f }, { 1.0f,1.0f,1.0f, 0.5f }, 4, " BGM");
+			UIPrintf({ 1800 + optionPos,300 }, { 0.8f,0.8f }, { 1.0f,1.0f,1.0f,3.0f / (30 - titleFlame) }, 3, " SE");
+			UIPrintf({ 1750 + optionPos,450 }, { 0.8f,0.8f }, { 1.0f,1.0f,1.0f,0.5f }, 6, " GUIDE");
+			UIPrintf({ 1750 + optionPos,600 }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,0.5f }, 5, " BACK");
+		}
+		else if (optionSelect == 2) {
+			UIPrintf({ 1780 + optionPos,150 }, { 0.8f,0.8f }, { 1.0f,1.0f,1.0f, 0.5f }, 4, " BGM");
+			UIPrintf({ 1800 + optionPos,300 }, { 0.8f,0.8f }, { 1.0f,1.0f,1.0f,0.5f }, 3, " SE");
+			UIPrintf({ 1750 + optionPos,450 }, { 0.8f,0.8f }, { 1.0f,1.0f,1.0f,3.0f / (30 - titleFlame) }, 6, " GUIDE");
+			UIPrintf({ 1750 + optionPos,600 }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,0.5f }, 5, " BACK");
+		}
+		else if (optionSelect == 3) {
+			UIPrintf({ 1780 + optionPos,150 }, { 0.8f,0.8f }, { 1.0f,1.0f,1.0f, 0.5f }, 4, " BGM");
+			UIPrintf({ 1800 + optionPos,300 }, { 0.8f,0.8f }, { 1.0f,1.0f,1.0f,0.5f }, 3, " SE");
+			UIPrintf({ 1750 + optionPos,450 }, { 0.8f,0.8f }, { 1.0f,1.0f,1.0f,0.5f }, 6, " GUIDE");
+			UIPrintf({ 1750 + optionPos,600 }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,3.0f / (30 - titleFlame) }, 5, " BACK");
+		}
 		optionBGSprite->SetPosition({ 1500.0f + optionPos, 0.0f });
 
 		if (select == 0) {
