@@ -78,12 +78,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\Jim\source\repos\GameAwards2\fbx_sdk\include;$(SolutionDir)DirectXTex;$(SolutionDir)imgui;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Jim\source\repos\GameAwards2\fbx_sdk\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\Jim\source\repos\GameAwards2\fbx_sdk\include;$(SolutionDir)DirectXTex;$(SolutionDir)imgui;$(IncludePath);D:\School\2NenKouki\TD\fbx_sdk\include;$(IncludePath);$(IncludePath)</IncludePath>
+    <LibraryPath>D:\School\2NenKouki\TD\fbx_sdk\lib;C:\Users\Jim\source\repos\GameAwards2\fbx_sdk\lib;$(LibraryPath);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)DirectXTex;$(SolutionDir)imgui;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)DirectXTex;$(SolutionDir)imgui;$(IncludePath);D:\School\2NenKouki\TD\fbx_sdk\include;$(IncludePath);$(IncludePath)</IncludePath>
+    <LibraryPath>D:\School\2NenKouki\TD\fbx_sdk\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -124,6 +125,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>libfbxsdk-md.lib;libxml2-md.lib;zlib-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -141,6 +143,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>libfbxsdk-mt.lib;libxml2-mt.lib;zlib-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -152,6 +155,9 @@
     <ClCompile Include="DX12base.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemyBullet.cpp" />
+    <ClCompile Include="FbxLoader.cpp" />
+    <ClCompile Include="FbxModel.cpp" />
+    <ClCompile Include="FbxObject3D.cpp" />
     <ClCompile Include="FPS.cpp" />
     <ClCompile Include="GameObject3D.cpp" />
     <ClCompile Include="GameScene.cpp" />
@@ -231,6 +237,9 @@
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyBullet.h" />
     <ClInclude Include="ErrorException.h" />
+    <ClInclude Include="FbxLoader.h" />
+    <ClInclude Include="FbxModel.h" />
+    <ClInclude Include="FbxObject3D.h" />
     <ClInclude Include="FPS.h" />
     <ClInclude Include="GameObject3D.h" />
     <ClInclude Include="GameScene.h" />

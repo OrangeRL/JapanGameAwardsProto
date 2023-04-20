@@ -3,6 +3,8 @@
 #include "input.h"
 #include "GameScene.h"
 #include "FPS.h"
+#include"fbxsdk.h"
+#include"FbxLoader.h"
 
 WinApp winApp_;
 using namespace DirectX;
@@ -22,7 +24,7 @@ int WINAPI WinMain(_In_ HINSTANCE , _In_opt_ HINSTANCE , _In_ LPSTR , _In_ int) 
 
 	FPS* fps = new FPS;
 	fps->SetFrameRate(0);
-
+	FbxManager* fbxManager = FbxManager::Create();
 	Input& input_ = Input::GetInstance();
 	GameScene* gameScene = nullptr;
 
@@ -44,6 +46,9 @@ int WINAPI WinMain(_In_ HINSTANCE , _In_opt_ HINSTANCE , _In_ LPSTR , _In_ int) 
 #pragma endregion
 
 	Sprite::StaticInitialize(dx12base.GetDevice() , winApp_.window_width , winApp_.window_height);
+
+	//FBX初期化
+	FbxLoader::GetInstance()->Initialize(dx12base.GetDevice());
 
 	// ゲームシーンの初期化
 	gameScene = new GameScene();
@@ -345,7 +350,7 @@ int WINAPI WinMain(_In_ HINSTANCE , _In_opt_ HINSTANCE , _In_ LPSTR , _In_ int) 
 	//	debugInterface->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
 	//	debugInterface->Release();
 	//}
-
+	FbxLoader::GetInstance()->Finalize();
 	delete gameScene;
 
 

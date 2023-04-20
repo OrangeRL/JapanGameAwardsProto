@@ -84,7 +84,6 @@
     <ClCompile Include="DebugText.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-
     <ClCompile Include="SpawnParticle.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -118,7 +117,6 @@
     <ClCompile Include="SpawnParticleManager.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-
     <ClCompile Include="EnemyBullet.cpp" />
     <ClCompile Include="PlayerBullet.cpp" />
     <ClCompile Include="ReilCamera.cpp" />
@@ -126,7 +124,11 @@
     <ClCompile Include="UIManager.cpp" />
     <ClCompile Include="Boss.cpp" />
     <ClCompile Include="BossBullet.cpp" />
-
+    <ClCompile Include="FbxLoader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="FbxModel.cpp" />
+    <ClCompile Include="FbxObject3D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FPS.h">
@@ -201,7 +203,6 @@
     <ClInclude Include="DebugText.h">
       <Filter>Header</Filter>
     </ClInclude>
-
     <ClInclude Include="SpawnParticle.h">
       <Filter>Header</Filter>
     </ClInclude>
@@ -235,7 +236,6 @@
     <ClInclude Include="SpawnParticleManager.h">
       <Filter>Header</Filter>
     </ClInclude>
-
     <ClInclude Include="EnemyBullet.h" />
     <ClInclude Include="PlayerBullet.h" />
     <ClInclude Include="ReilCamera.h" />
@@ -243,7 +243,11 @@
     <ClInclude Include="UIManager.h" />
     <ClInclude Include="Boss.h" />
     <ClInclude Include="BossBullet.h" />
-
+    <ClInclude Include="FbxLoader.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="FbxModel.h" />
+    <ClInclude Include="FbxObject3D.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Basic.hlsli">

@@ -88,6 +88,12 @@ void GameScene::Initialize(WinApp* winApp)
 	particle3->Initialize(&viewProjection_, &matProjection_, player);
 
 	//loadEnemyPopData();
+	//モデル名を指定してファイル読み込み
+	FbxLoader::GetInstance()->LoadModelFromFile("cube");
+
+	//デバイスをセット
+	/*FbxObject3D::SetDevice(dx12base_.GetDevice());
+	FbxObject3D::SetCamera(&viewProjection_);*/
 
 	rhythm = new Rhythm();
 	rhythm->Initialize(&viewProjection_, &matProjection_);

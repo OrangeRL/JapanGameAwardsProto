@@ -29,7 +29,8 @@
 #include "DirectXMath.h"
 #include "Item.h"
 #include "UIManager.h"
-
+#include"FbxLoader.h"
+#include"FbxObject3D.h"
 class GameScene {
 
 public: // メンバ関数
