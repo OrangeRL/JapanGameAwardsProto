@@ -113,6 +113,7 @@ void GameScene::Update()
 {
 	spawntime += 1;
 	LoadCsv(enemyVal);
+	LoadCsv2(enemyVal);
 
 	//ランダムな整数
 	std::default_random_engine engine(seed_gen());
@@ -724,5 +725,72 @@ void GameScene::LoadCsv(int obstacleVal)
 			}
 			i++;
 		}
+	}
+}
+
+void GameScene::LoadCsv2(int obstacleVal)
+{
+	// open file
+	std::ifstream file;
+	file.open(L"Resources/wave2.csv");
+	std::stringstream obstaclePosList;    // string stream
+	obstaclePosList << file.rdbuf();
+	file.close();
+
+	//1行分の文字列
+	std::string line;
+	std::vector<Vector3> obstaclePos;
+	std::vector<int32_t> spawntimer;
+	std::vector<int32_t> bulletNum;
+	std::vector<int32_t> moveNum;
+	//コマンド実行
+	while (std::getline(obstaclePosList, line)) {
+		//1行分の文字列をストリームに変換
+		std::istringstream line_stream(line);
+		//std::string first_value;
+		std::string word;
+		std::getline(line_stream, word, ',');
+		if (word.find("//") == 0) {
+			continue;
+		}
+		if (word.find("{") == 0) {
+			std::getline(line_stream, word, ',');
+			int x = (int)std::atof(word.c_str());
+			std::getline(line_stream, word, ',');
+			int y = (int)std::atof(word.c_str());
+			std::getline(line_stream, word, ',');
+			int z = (int)std::atof(word.c_str());
+			std::getline(line_stream, word, ',');
+			int32_t timer = (int)std::atof(word.c_str());
+			std::getline(line_stream, word, ',');
+			useBullet = (int)std::atof(word.c_str());
+			std::getline(line_stream, word, ',');
+			enemyMove = (int)std::atof(word.c_str());
+			//座標
+			Vector3 pos(x, y, z);
+			//待ち時間
+			int32_t waitTime = timer;
+			obstaclePos.push_back(pos);
+			spawntimer.push_back(waitTime);
+			bulletNum.push_back(useBullet);
+			moveNum.push_back(enemyMove);
+		}
+	}
+	int i = 0;
+	//spawntime += 1;
+	for (std::unique_ptr<Enemy>& newEnemy : enemys1) {
+		if (spawntime == spawntimer[0]) {
+			if (i < obstaclePos.size() && i < 9 && i >= 0) {
+				newEnemy->Settransform(obstaclePos[i]);
+				newEnemy->SetBulletNum(bulletNum[i]);
+				newEnemy->SetMoveNum(moveNum[i]);
+				newEnemy->SetSpeed(0, 0, 0);
+				if (newEnemy->GetSpownFlag() == false) {
+					newEnemy->Spawn();
+				}
+			}
+			i++;
+		}
+
 	}
 }
