@@ -49,11 +49,11 @@ struct SoundState {
 	//判定のずれ(オフセット)
 	float offset = 0.0f;
 	//BGM音量
-	float BGMVolume = 1.0f;
+	float BGMVolume = 0.5f;
 	//ノーマルSE音量
-	float normalSEVolume = 1.0f;
+	float normalSEVolume = 0.5f;
 	//ガイドSE音量
-	float guideSEVolume = 1.0f;
+	float guideSEVolume = 0.5f;
 	//現在のウェーブ数
 	float wave = 1.0f;
 };
@@ -88,6 +88,10 @@ public:
 	void LaserShot(SoundState s, Input* input);
 
 	void SetWeapon(Weapons weapon) { this->soundState.weapon = weapon; }
+	void SetBGMVolume(float volume) { soundState.BGMVolume = volume; }
+	void SetSEVolume(float volume) { soundState.normalSEVolume = volume; }
+	void SetGSEVolume(float volume) { soundState.guideSEVolume = volume; }
+
 	void ResetRhythm();
 
 	SoundState GetSoundState() { return soundState; }
@@ -119,7 +123,7 @@ private:
 
 	float colorChange = 0.0f;
 
-	float pitch;
+	float pitch = 1.0003f;
 
 	//サウンドマネージャー
 	SoundManager* soundManager_ = nullptr;

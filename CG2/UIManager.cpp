@@ -102,11 +102,11 @@ void UIManager::TitleUpdate(Rhythm* rhythm, Input* input) {
 		}
 
 		//項目セレクト
-		if (input->TriggerKey(DIK_W) && select > 0) {
+		if ((input->TriggerKey(DIK_W) || input->TriggerKey(DIK_UP)) && select > 0) {
 			select--;
 			rhythm->SelectSoundPlay();
 		}
-		else if (input->TriggerKey(DIK_S) && select < 2) {
+		else if ((input->TriggerKey(DIK_S) || input->TriggerKey(DIK_DOWN)) && select < 2) {
 			select++;
 			rhythm->SelectSoundPlay();
 		}
@@ -133,14 +133,47 @@ void UIManager::TitleUpdate(Rhythm* rhythm, Input* input) {
 	else if (sceneInTitle == 3) {//オプション画面
 
 		//項目セレクト
-		if (input->TriggerKey(DIK_W) && optionSelect > 0) {
+		if ((input->TriggerKey(DIK_W) || input->TriggerKey(DIK_UP)) && optionSelect > 0) {
 			optionSelect--;
 			rhythm->SelectSoundPlay();
 		}
-		else if (input->TriggerKey(DIK_S) && optionSelect < 3) {
+		else if ((input->TriggerKey(DIK_S) || input->TriggerKey(DIK_DOWN)) && optionSelect < 3) {
 			optionSelect++;
 			rhythm->SelectSoundPlay();
 		}
+		if ((input->TriggerKey(DIK_D) || input->TriggerKey(DIK_RIGHT))) {
+			if (optionSelect == 0 && BGMVolume < 100) {
+				BGMVolume += 10;
+				rhythm->SelectSoundPlay();
+			}else if (optionSelect == 1 && SEVolume < 100) {
+				SEVolume += 10;
+				rhythm->SetSEVolume(SEVolume / 100);
+				rhythm->SelectSoundPlay();
+			}else if (optionSelect == 2 && GSEVolume < 100) {
+				GSEVolume += 10;
+				rhythm->SelectSoundPlay();
+			}
+		}
+		else if ((input->TriggerKey(DIK_A) || input->TriggerKey(DIK_LEFT))) {
+			if (optionSelect == 0 && BGMVolume > 0) {
+				BGMVolume -= 10;
+				rhythm->SelectSoundPlay();
+			}
+			else if (optionSelect == 1 && SEVolume > 0) {
+				SEVolume -= 10;
+				rhythm->SetSEVolume(SEVolume / 100);
+				rhythm->SelectSoundPlay();
+			}
+			else if (optionSelect == 2 && GSEVolume > 0) {
+				GSEVolume -= 10;
+				rhythm->SelectSoundPlay();
+			}
+		}
+
+		rhythm->SetBGMVolume(BGMVolume / 100);
+		rhythm->SetSEVolume(SEVolume / 100);
+		rhythm->SetGSEVolume(GSEVolume / 100);
+
 		if (input->TriggerKey(DIK_SPACE) && optionFlame >= maxFlame) {
 			if (optionSelect == 3) {
 				sceneInTitle = 1;
@@ -163,7 +196,48 @@ void UIManager::TitleUpdate(Rhythm* rhythm, Input* input) {
 
 	if (sceneInTitle != 0) {
 
+		//成功失敗判定の処理
+		if (rhythm->GetSoundState().judge == Judge::Good) {
+			UIPrintf({2210 + optionPos, 200 }, { 1.5f,1.5f }, { 1.0f,1.0f,0.0f,judgeAlpha }, 5, " GOOD");
+		}
+		else if (rhythm->GetSoundState().judge == Judge::Miss) {
+			UIPrintf({ 2210 + optionPos, 200 }, { 1.5f,1.5f }, { 1.0f,0.2f,0.2f,judgeAlpha }, 5, " MISS");
+		}
+		if (input->TriggerKey(DIK_SPACE)) {
+			if (rhythm->GetSoundState().isFireActive) {
+				judgeAlpha = 1.0f;
+			}
+		}
+		judgeAlpha -= 0.05f;
+
+		//オプション画面の文字
 		UIPrintf({ 1650 + optionPos,50 }, { 1.5f,1.5f }, { 1.0f,1.0f,1.0f,1.0f }, 7, " OPTION");
+		UIPrintf({ 2260 + optionPos,150 }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f }, 5, " TEST");
+		UIPrintf({ 2250 + optionPos,500 }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,0.1f * (30 - titleFlame) }, 6, " SPACE");
+
+		for (int i = 0; i < 100; i += 10) {
+			if (i < BGMVolume) {
+				UIPrintf({ 1710 + optionPos + i * 2,200 }, { 1.0f,1.0f }, { 0.5f,1.0f,1.0f,1.0f }, 2, " |");
+			}
+			else {
+				UIPrintf({ 1710 + optionPos + i * 2,200 }, { 1.0f,1.0f }, { 0.5f,1.0f,1.0f,1.0f }, 2, " -");
+			}
+
+			if (i < SEVolume) {
+				UIPrintf({ 1710 + optionPos + i * 2,350 }, { 1.0f,1.0f }, { 0.5f,1.0f,1.0f,1.0f }, 2, " |");
+			}
+			else {
+				UIPrintf({ 1710 + optionPos + i * 2,350 }, { 1.0f,1.0f }, { 0.5f,1.0f,1.0f,1.0f }, 2, " -");
+			}
+
+			if (i < GSEVolume) {
+				UIPrintf({ 1710 + optionPos + i * 2,500 }, { 1.0f,1.0f }, { 0.5f,1.0f,1.0f,1.0f }, 2, " |");
+			}
+			else {
+				UIPrintf({ 1710 + optionPos + i * 2,500 }, { 1.0f,1.0f }, { 0.5f,1.0f,1.0f,1.0f }, 2, " -");
+			}
+		}
+
 		if (optionSelect == 0) {
 			UIPrintf({ 1780 + optionPos,150 }, { 0.8f,0.8f }, { 1.0f,1.0f,1.0f,3.0f / (30 - titleFlame) }, 4, " BGM");
 			UIPrintf({ 1800 + optionPos,300 }, { 0.8f,0.8f }, { 1.0f,1.0f,1.0f,0.5f }, 3, " SE");
@@ -190,20 +264,22 @@ void UIManager::TitleUpdate(Rhythm* rhythm, Input* input) {
 		}
 		optionBGSprite->SetPosition({ 1500.0f + optionPos, 0.0f });
 
+
+		//タイトル画面の文字
 		if (select == 0) {
-			UIPrintf({ window_width / 2 - 200 + optionPos,450 }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,3.0f / (30 - titleFlame) }, 13, " STAGE SERECT");
+			UIPrintf({ window_width / 2 - 200 + optionPos,450 }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,3.0f / (30 - titleFlame) }, 11, " GAME START");
 			UIPrintf({ window_width / 2 - 200 + optionPos,500 }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,0.2f }, 7, " OPTION");
 			UIPrintf({ window_width / 2 - 200 + optionPos,550 }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,0.2f }, 5, " BACK");
 			UIPrintf({ window_width / 2 - 250 + optionPos + MathFunc::easeInQuint(titleFlame / 30.0f) * 25,450 }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f }, 2, " >");
 		}
 		else if (select == 1) {
-			UIPrintf({ window_width / 2 - 200 + optionPos,450 }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f, 0.2f }, 13, " STAGE SERECT");
+			UIPrintf({ window_width / 2 - 200 + optionPos,450 }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f, 0.2f }, 11, " GAME START");
 			UIPrintf({ window_width / 2 - 200 + optionPos,500 }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,3.0f / (30 - titleFlame) }, 7, " OPTION");
 			UIPrintf({ window_width / 2 - 200 + optionPos,550 }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,0.2f }, 5, " BACK");
 			UIPrintf({ window_width / 2 - 250 + optionPos + MathFunc::easeInQuint(titleFlame / 30.0f) * 25,500 }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f }, 2, " >");
 		}
 		else if (select == 2) {
-			UIPrintf({ window_width / 2 - 200 + optionPos,450 }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f, 0.2f }, 13, " STAGE SERECT");
+			UIPrintf({ window_width / 2 - 200 + optionPos,450 }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f, 0.2f }, 11, " GAME START");
 			UIPrintf({ window_width / 2 - 200 + optionPos,500 }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,0.2f }, 7, " OPTION");
 			UIPrintf({ window_width / 2 - 200 + optionPos,550 }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,3.0f / (30 - titleFlame) }, 5, " BACK");
 			UIPrintf({ window_width / 2 - 250 + optionPos + MathFunc::easeInQuint(titleFlame / 30.0f) * 25,550 }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f }, 2, " >");
@@ -213,13 +289,13 @@ void UIManager::TitleUpdate(Rhythm* rhythm, Input* input) {
 	whiteSprite->SetColor({ 1.0f, 1.0f, 1.0f, flashTimer });
 
 }
-void UIManager::Update(Rhythm* rhythm, Input* input, int isDead) {
+void UIManager::Update(Rhythm* rhythm, Player* player, Input* input, int isDead) {
 
-	/*if (sceneShiftFlame < maxFlame) {
-		sceneShiftFlame++;
-	}*/
-
-	//sceneChangeSprite->SetPosition({ MathFunc::easeInQuint(sceneShiftFlame / maxFlame) * -1300 ,0.0f });
+	//プレイヤーのHP表示
+	UIPrintf({ 10, window_height - 100 }, { 1.0f,1.0f }, { 0.0f,1.0f,1.0f,1.0f }, 4, " HP:");
+	for (float i = 1; i <= player->GetLife(); i++) {
+		UIPrintf({ i * 45 - 10, window_height - 200 }, { 3.0f,4.0f }, { 0.0f,1.0f,0.0f,1.0f }, 2, " -");
+	}
 
 	//最初の「READY?」の処理
 	if (rhythm->GetSoundState().measureCount < 4) {
@@ -422,6 +498,7 @@ void UIManager::Update(Rhythm* rhythm, Input* input, int isDead) {
 
 	//スコアの表示
 	UIPrintf({ window_width - 350, 0 }, { 0.75f,1.0f }, { 0.0f,1.0f,1.0f,1.0f }, 13, " SCORE:%06d", score);
+
 }
 
 void UIManager::Draw(Rhythm* rhythm) {

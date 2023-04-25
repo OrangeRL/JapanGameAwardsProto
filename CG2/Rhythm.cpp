@@ -9,6 +9,14 @@ Rhythm::~Rhythm() {
 	SoundUnload(explosionSound);
 	SoundUnload(itemSound);
 	SoundUnload(missSound);
+	SoundUnload(damageSound);
+	SoundUnload(knockSound);
+	SoundUnload(scoreRiseSound);
+	SoundUnload(countdownSound);
+	SoundUnload(decisionSound);
+	SoundUnload(selectSound);
+
+	SoundUnload(titleBGM);
 	SoundUnload(demoBGM);
 	SoundUnload(stage1_1BGM);
 	SoundUnload(stage1_2BGM);
@@ -50,17 +58,14 @@ void Rhythm::ResetRhythm() {
 	soundState.isPause = 0;
 	soundState.weapon = Weapons::Normal;
 	soundState.isFireSucces;
-	soundState.isFireActive = 1;
 	soundState.isLaserActive = 0;
 	soundState.judge = Judge::None;
-	soundState.normalSEVolume = 0.5f;
-	soundState.guideSEVolume = 0.5f;
-	soundState.BGMVolume = 0.5f;
+	circle[1]->worldTransform.scale = { 5.0f,5.0f,0.0f };
+	circle[1]->color.z = 1.0f;
 }
 
 void Rhythm::Update(Input* input, Vector3 pos, Vector3 rot, int isDead, int stage, Scene scene, int select) {
 
-	//最初の音声再生処理
 	if (scene == Scene::Title) {
 
 		soundState.weapon = Weapons::Normal;
@@ -69,6 +74,7 @@ void Rhythm::Update(Input* input, Vector3 pos, Vector3 rot, int isDead, int stag
 			soundState.measureCount = 0;
 		}
 
+		//最初の音声再生処理
 		if (soundState.timer == 0 && soundState.measureCount <= 0) {
 			soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), titleBGM, false, soundState.BGMVolume);
 		}
@@ -78,11 +84,26 @@ void Rhythm::Update(Input* input, Vector3 pos, Vector3 rot, int isDead, int stag
 		circle[1]->color.z -= 0.05f;
 		circle[1]->worldTransform.scale -= shrinkSpeed;
 
-		colorChange += 0.05f;
 		for (int i = 0; i < circleNum; i++) {
 			circle[i]->worldTransform.translation = pos;
 			circle[i]->worldTransform.rotation = rot;
 			circle[i]->Update();
+		}
+
+		if (select == 3) {
+			//UI(円)の更新
+			if (input->TriggerKey(DIK_SPACE) && soundState.isFireActive == 1) {
+				colorChange = 0.0f;
+			}
+			colorChange += 0.05f;
+
+			NormalShot(soundState,input);
+			if (soundState.judge == Judge::Good) {
+				circle[0]->color = { 1.0f,1.0f,colorChange,0.0f };
+			}
+			else if (soundState.judge == Judge::Miss) {
+				circle[0]->color = { 1.0f,colorChange,colorChange,0.0f };
+			}
 		}
 
 		//タイマーを増やす
@@ -94,12 +115,9 @@ void Rhythm::Update(Input* input, Vector3 pos, Vector3 rot, int isDead, int stag
 			soundState.measureCount++;
 		}
 		if (soundState.timer == 0.0f || soundState.timer == 30.0f) {
-			colorChange = 0.0f;
 			circle[1]->worldTransform.scale = { 5.0f,5.0f,0.0f };
 			circle[1]->color.z = 1.0f;
 		}
-
-		circle[0]->color = { 1.0f,1.0f,colorChange,0.0f };
 
 		if (select == 5) {
 			if (titleBGM.pSourceVoice) {
@@ -108,6 +126,12 @@ void Rhythm::Update(Input* input, Vector3 pos, Vector3 rot, int isDead, int stag
 			soundState.wave = 1;
 			soundState.measureCount = 0;
 			soundState.timer = 0;
+		}
+
+		pitch = 1.0003f;
+		if (titleBGM.pSourceVoice) {
+			titleBGM.pSourceVoice->SetVolume(soundState.BGMVolume);
+			titleBGM.pSourceVoice->SetFrequencyRatio(pitch);
 		}
 
 	}
@@ -165,14 +189,6 @@ void Rhythm::Update(Input* input, Vector3 pos, Vector3 rot, int isDead, int stag
 					((soundState.measureCount < 72 && soundState.wave == 1) ||
 						(soundState.measureCount < 80 && soundState.wave == 2) ||
 						soundState.wave == 3)) {
-
-					//オフセット設定
-					if (input->TriggerKey(DIK_Q) && soundState.offset > -5.0f) {
-						soundState.offset--;
-					}
-					else if (input->TriggerKey(DIK_E) && soundState.offset < 5.0f) {
-						soundState.offset++;
-					}
 
 					//タイマーが一周したらレーザー発射可能に
 					if (soundState.timer == 30.0f) {
@@ -283,32 +299,6 @@ void Rhythm::Update(Input* input, Vector3 pos, Vector3 rot, int isDead, int stag
 
 				}
 			}
-
-			//音量調節
-			//BGM
-			if (input->PushKey(DIK_UP) && soundState.BGMVolume < 2.0f) {
-				soundState.BGMVolume += 0.01;
-			}
-			if (input->PushKey(DIK_DOWN) && soundState.BGMVolume >= 0.0f) {
-				soundState.BGMVolume -= 0.01;
-				if (soundState.BGMVolume <= 0.0f) {
-					soundState.BGMVolume = 0;
-				}
-			}
-			//SE
-			if (input->PushKey(DIK_RIGHT) && soundState.guideSEVolume < 2.0f) {
-				soundState.guideSEVolume += 0.01;
-			}
-			if (input->PushKey(DIK_LEFT) && soundState.guideSEVolume >= 0.0f) {
-				soundState.guideSEVolume -= 0.01;
-				if (soundState.guideSEVolume <= 0.0f) {
-					soundState.guideSEVolume = 0;
-				}
-			}
-
-
-			//demoBGM.pSourceVoice->SetVolume(BGMVolume);
-			//stage1BGM.pSourceVoice->SetVolume(soundState.BGMVolume);
 
 			//UI(円)の更新
 			if (input->TriggerKey(DIK_SPACE)) {

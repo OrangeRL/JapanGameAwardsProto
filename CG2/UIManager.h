@@ -2,6 +2,7 @@
 #include "WinApp.h"
 #include "Sprite.h"
 #include "Rhythm.h"
+#include "Player.h"
 #include "MathFunc.h"
 #include <string>
 #include <random>
@@ -22,7 +23,7 @@ public:
 	void Init();
 
 	void TitleUpdate(Rhythm* rhythm,Input* input);
-	void Update(Rhythm* rhythm,Input* input, int isDead);
+	void Update(Rhythm* rhythm,Player* player,Input* input, int isDead);
 
 	void Draw(Rhythm* rhythm);
 
@@ -90,6 +91,9 @@ private:
 	int sceneInTitle = 0;
 	int select = 0;
 
+	float BGMVolume = 50.0f;
+	float SEVolume = 50.0f;
+	float GSEVolume = 50.0f;
 
 };
 
