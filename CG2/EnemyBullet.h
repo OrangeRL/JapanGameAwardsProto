@@ -10,7 +10,7 @@ public:
 	~EnemyBullet();
 
 	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName,Vector3 player, Vector3 enemy);
-	void Update();
+	void Update(bool enemy);
 	void Draw();
 	void OnCollision();
 	WorldTransform GetWorldTransform();

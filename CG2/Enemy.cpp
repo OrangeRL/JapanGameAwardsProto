@@ -47,7 +47,7 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 		case 1:
 			moveSpeed.x = 0.0f;
 			moveSpeed.y = 0.0f;
-			moveSpeed.z = 0.1f;
+			moveSpeed.z = 0.3f;
 			break;
 		case 2:
 			moveSpeed.x = 0.0f;

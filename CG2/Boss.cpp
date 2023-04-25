@@ -11,7 +11,7 @@ void Boss::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 
 	gameObject->worldTransform.scale = { 3 , 3 , 3 };
 	gameObject->worldTransform.rotation = { 0,90,0 };
-	gameObject->worldTransform.translation = { 0 , 0 , 1500 };
+	gameObject->worldTransform.translation = { 0 , 0 , 1200 };
 }
 
 void Boss::Update()
@@ -22,7 +22,6 @@ void Boss::Update()
 	{
 	case BossPhase::spown:	// íaê∂
 		if (phaseTimer <= 0.0f) {
-			isDead = false;
 			phaseTimer = 300.0f;
 			phase = BossPhase::attack;
 		}
@@ -59,7 +58,7 @@ void Boss::Update()
 
 void Boss::Draw()
 {
-	if (isDead == false) {
+	if (HP > 0) {
 		gameObject->Draw();
 	}
 }
@@ -139,8 +138,15 @@ bool Boss::GetIsDead()
 	return isDead;
 }
 
+int Boss::GetHP()
+{
+	return HP;
+}
+
 void Boss::OnCollision()
 {
-	trueDead = true;
-	isDead = true;
+	HP -= 1;
+	if (HP <= 0) {
+		isDead = true;
+	}
 }

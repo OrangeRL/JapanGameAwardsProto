@@ -21,7 +21,7 @@ void EnemyBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjec
 	
 }
 
-void EnemyBullet::Update()
+void EnemyBullet::Update(bool enemy)
 {
 	//プレイヤーを狙う
 	if (bulletNum == 0){
@@ -41,7 +41,7 @@ void EnemyBullet::Update()
 
 	}
 
-	if (--deleteTimer_ <= 0) {
+	if (--deleteTimer_ <= 0 || enemy == true) {
 		isDelete_ = true;
 	}
 
