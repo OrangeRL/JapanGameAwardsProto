@@ -13,6 +13,12 @@
     <FxCompile Include="Resources\Shaders\SpritePixelShader.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="FbxPixelShader.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="FbxVertexShader.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Player.cpp">
@@ -254,6 +260,9 @@
       <Filter>Shader</Filter>
     </None>
     <None Include="Resources\Shaders\SpriteShaderHeader.hlsli">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="FbxHeader.hlsli">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

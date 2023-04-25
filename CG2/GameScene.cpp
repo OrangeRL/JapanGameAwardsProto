@@ -15,6 +15,8 @@ GameScene::~GameScene() {
 	delete particle;
 	delete particle2;
 	delete reilCamera;
+	/*delete(object1); 
+	delete(model1);*/
 	//delete UIManager;
 }
 
@@ -89,11 +91,17 @@ void GameScene::Initialize(WinApp* winApp)
 
 	//loadEnemyPopData();
 	//モデル名を指定してファイル読み込み
-	FbxLoader::GetInstance()->LoadModelFromFile("cube");
+	//model1 = FbxLoader::GetInstance()->LoadModelFromFile("cube");
 
-	//デバイスをセット
-	/*FbxObject3D::SetDevice(dx12base_.GetDevice());
-	FbxObject3D::SetCamera(&viewProjection_);*/
+	////デバイスをセット
+	//FbxObject3D::SetDevice(dx12base_.GetDevice());
+	//FbxObject3D::SetCamera(&viewProjection_);
+	//FbxObject3D::CreateGraphicsPipeline();
+
+	////3Dオブジェクト生成とモデルのセット
+	//object1=new FbxObject3D;
+	//object1->Initialize();
+	//object1->SetModel(model1);
 
 	rhythm = new Rhythm();
 	rhythm->Initialize(&viewProjection_, &matProjection_);
@@ -140,6 +148,8 @@ void GameScene::Update()
 		particle2->Update2();
 
 		skydome->Update();
+		
+		//object1->Update();
 		
 
 		crosshair->SetPosition({ player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y });
@@ -317,7 +327,7 @@ void GameScene::Draw() {
 	//3D描画
 	//プレイヤー描画
 	
-
+	//object1->Draw(dx12base_.GetCmdList().Get());
 	rhythm->Draw(player->GetIsDead());
 	particle->Draw();
 	particle2->Draw();

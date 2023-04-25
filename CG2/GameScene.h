@@ -29,8 +29,10 @@
 #include "DirectXMath.h"
 #include "Item.h"
 #include "UIManager.h"
-#include"FbxLoader.h"
-#include"FbxObject3D.h"
+//#include"FbxLoader.h"
+//#include"FbxObject3D.h"
+
+
 class GameScene {
 
 public: // メンバ関数
@@ -194,6 +196,9 @@ private: // メンバ変数
 
 	//UI関連
 	UIManager UIManager;
+
+	//FbxModel* model1 = nullptr; 
+	//FbxObject3D* object1 = nullptr;
 
 // 敵コマンド関係
 //------------------------------------

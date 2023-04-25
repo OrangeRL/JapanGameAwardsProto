@@ -43,16 +43,32 @@ void Player::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 	gameObject->Initialize();
 
 	aimObject = new GameObject3D();
-	aimObject->PreLoadModel("Resources/circle/circle.obj");
+	aimObject->PreLoadModel("Resources/square/square.obj");
 	aimObject->PreLoadTexture(L"Resources/red.png");
 	aimObject->SetViewProjection(viewProjection_);
 	aimObject->SetMatProjection(matProjection);
 	aimObject->Initialize();
 
-	aimObjectHitBox = new GameObject3D();
-	aimObjectHitBox->SetViewProjection(viewProjection_);
-	aimObjectHitBox->SetMatProjection(matProjection);
-	aimObjectHitBox->Initialize();
+	aimObject2 = new GameObject3D();
+	aimObject2->PreLoadModel("Resources/square/square.obj");
+	aimObject2->PreLoadTexture(L"Resources/red.png");
+	aimObject2->SetViewProjection(viewProjection_);
+	aimObject2->SetMatProjection(matProjection);
+	aimObject2->Initialize();
+
+	aimObject3 = new GameObject3D();
+	aimObject3->PreLoadModel("Resources/square/square.obj");
+	aimObject3->PreLoadTexture(L"Resources/red.png");
+	aimObject3->SetViewProjection(viewProjection_);
+	aimObject3->SetMatProjection(matProjection);
+	aimObject3->Initialize();
+
+	aimObject4 = new GameObject3D();
+	aimObject4->PreLoadModel("Resources/square/square.obj");
+	aimObject4->PreLoadTexture(L"Resources/red.png");
+	aimObject4->SetViewProjection(viewProjection_);
+	aimObject4->SetMatProjection(matProjection);
+	aimObject4->Initialize();
 
 	Reset();
 
@@ -106,6 +122,9 @@ void Player::Update(WorldTransform wt, Vector3 vec) {
 		gameObject->worldTransform.parent = &wt;
 		gameObject->Update();
 		aimObject->Update();
+		aimObject2->Update();
+		aimObject3->Update();
+		aimObject4->Update();
 	}
 
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
@@ -130,14 +149,24 @@ void Player::Update(WorldTransform wt, Vector3 vec) {
 void Player::AimHit() {
 	isAimHit = true;
 	aimObject->color = { 1.0f,0.0f,0.0f,0.0f };
-	//aimObject->worldTransform.scale = { 0.2f,0.2f,0.2f };
+	aimObject2->color = { 1.0f,0.0f,0.0f,0.0f };
+	aimObject3->color = { 1.0f,0.0f,0.0f,0.0f };
+	aimObject4->color = { 1.0f,0.0f,0.0f,0.0f };
 	aimObject->worldTransform.scale = { 1.5f,1.5f,1.5f };
+	aimObject2->worldTransform.scale = { 1.0f,1.0f,1.0f };
+	aimObject3->worldTransform.scale = { 0.5f,0.5f,0.5f };
+	aimObject4->worldTransform.scale = { 0.5f,0.5f,0.5f };
 }
 void Player::NotAimHit() {
 	isAimHit = false;
-	aimObject->color = { 0.0f,0.0f,0.0f,1.0f };
+	//aimObject->color = { 0.0f,0.0f,0.0f,1.0f };
+	//aimObject2->color = { 0.0f,0.0f,0.0f,1.0f };
+	//aimObject3->color = { 0.0f,0.0f,0.0f,1.0f };
+	//aimObject4->color = { 0.0f,0.0f,0.0f,1.0f };
 	aimObject->worldTransform.scale = { 1.5f, 1.5f, 1.5f };
-
+	aimObject2->worldTransform.scale = { 1.0f,1.0f,1.0f };
+	aimObject3->worldTransform.scale = { 0.5f,0.5f,0.5f };
+	aimObject4->worldTransform.scale = { 0.5f,0.5f,0.5f };
 }
 void Player::Aim(Vector3 player, Vector3 enemy, Vector3 vec, float shotAngle) {
 
@@ -147,17 +176,28 @@ void Player::Aim(Vector3 player, Vector3 enemy, Vector3 vec, float shotAngle) {
 	velocity.y *= speed;
 	velocity.z *= speed;
 
-	//aimObject->worldTransform.scale = { 1.5f, 1.5f,1.5 };
-	aimObjectHitBox->worldTransform.scale = { 0.5f, 0.5f, 0.5f };
-	//aimObject->worldTransform.translation -= velocity/10;
 	if (aimObject->worldTransform.translation.z > GetPos().z + 40) {
 		aimObject->worldTransform.translation.z = GetPos().z;
-		aimObjectHitBox->worldTransform.translation.z = GetPos().z;
 	}
 	aimObject->worldTransform.translation.x = gameObject->worldTransform.translation.x;
 	aimObject->worldTransform.translation.y = gameObject->worldTransform.translation.y;
-	aimObject->worldTransform.translation.z = GetPos().z-velocity.z*5;
+	aimObject->worldTransform.translation.z = GetPos().z-velocity.z*1;
+	aimObject->worldTransform.rotation.z += 0.01;
+	aimObject2->worldTransform.rotation.z -= 0.01;
+	aimObject3->worldTransform.rotation.z += 0.01;
+	aimObject4->worldTransform.rotation.z -= 0.01;
 
+	aimObject2->worldTransform.translation.x = gameObject->worldTransform.translation.x;
+	aimObject2->worldTransform.translation.y = gameObject->worldTransform.translation.y;
+	aimObject2->worldTransform.translation.z = GetPos().z - velocity.z * 4;
+
+	aimObject3->worldTransform.translation.x = gameObject->worldTransform.translation.x;
+	aimObject3->worldTransform.translation.y = gameObject->worldTransform.translation.y;
+	aimObject3->worldTransform.translation.z = GetPos().z - velocity.z * 7;
+
+	aimObject4->worldTransform.translation.x = gameObject->worldTransform.translation.x;
+	aimObject4->worldTransform.translation.y = gameObject->worldTransform.translation.y;
+	aimObject4->worldTransform.translation.z = GetPos().z - velocity.z * 9;
 }
 //
 //void Player::Aim(Vector3 player, Vector3 enemy) {
@@ -193,7 +233,9 @@ void Player::Draw() {
 		aimObject->Draw();
 		}
 		aimObject->Draw();
-		aimObjectHitBox->Draw();
+		aimObject2->Draw();
+		aimObject3->Draw();
+		aimObject4->Draw();
 		//弾描画
 		for (std::unique_ptr<PlayerBullet>& bullet : bullets_) { bullet->Draw(); }
 		for (std::unique_ptr<Pattern2>& bullet : bulletsAim_) { bullet->Draw(); }

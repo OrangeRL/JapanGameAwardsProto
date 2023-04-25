@@ -80,7 +80,9 @@ private:
 	//ゲームオブジェクト
 	GameObject3D* gameObject = nullptr;
 	GameObject3D* aimObject = nullptr;
-	GameObject3D* aimObjectHitBox = nullptr;
+	GameObject3D* aimObject2 = nullptr;
+	GameObject3D* aimObject3 = nullptr;
+	GameObject3D* aimObject4 = nullptr;
 
 	ViewProjection* viewProjection;
 
