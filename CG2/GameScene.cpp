@@ -574,7 +574,6 @@ void GameScene::Reset() {
 }
 
 void GameScene::Collisions() {
-
 #pragma region PlayerToEnemyCollision
 	const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = player->GetBullets();
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
@@ -642,12 +641,12 @@ void GameScene::Collisions() {
 
 #pragma region bulletToBoss
 	for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
-		if (bulletA->GetWorldTransform().translation.x - boss->GetWorldTransform().translation.x < 3 &&
-			-3 < bulletA->GetWorldTransform().translation.x - boss->GetWorldTransform().translation.x) {
-			if (bulletA->GetWorldTransform().translation.y - boss->GetWorldTransform().translation.y < 3 &&
-				-3 < bulletA->GetWorldTransform().translation.y - boss->GetWorldTransform().translation.y) {
-				if (bulletA->GetWorldTransform().translation.z - boss->GetWorldTransform().translation.z < 3 &&
-					-3 < bulletA->GetWorldTransform().translation.z - boss->GetWorldTransform().translation.z) {
+		if (boss->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x < 2 &&
+			-2 < boss->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x) {
+			if (boss->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y < 2 &&
+				-2 < boss->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y) {
+				if (boss->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z < 2 &&
+					-2 < boss->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z) {
 					bulletA->OnCollision();
 					boss->OnCollision();
 				}
@@ -660,6 +659,26 @@ void GameScene::Collisions() {
 #pragma region enemyBulletToPlayerCollisions
 	//player-enemybullet
 	for (const std::unique_ptr<EnemyBullet>& bulletB : bullets1) {
+
+		if (player->GetPos().x - bulletB->GetWorldTransform().translation.x < 2 &&
+			-2 < player->GetPos().x - bulletB->GetWorldTransform().translation.x) {
+			if (player->GetPos().y - bulletB->GetWorldTransform().translation.y < 2 &&
+				-2 < player->GetPos().y - bulletB->GetWorldTransform().translation.y) {
+				if (player->GetPos().z - bulletB->GetWorldTransform().translation.z < 2 &&
+					-2 < player->GetPos().z - bulletB->GetWorldTransform().translation.z) {
+
+					//bulletB->OnCollision();
+					//enemy->Reset();
+					player->OnCollision(rhythm);
+				}
+			}
+		}
+	}
+#pragma endregion
+
+#pragma region BossBulletaToPlayer
+
+	for (const std::unique_ptr<BossBullet>& bulletB : bossBullet1) {
 
 		if (player->GetPos().x - bulletB->GetWorldTransform().translation.x < 2 &&
 			-2 < player->GetPos().x - bulletB->GetWorldTransform().translation.x) {
