@@ -11,6 +11,7 @@ GameScene::~GameScene() {
 	delete rhythm;
 	delete player;
 	delete playerBullet;
+	delete boss;
 	delete skydome;
 	delete particle;
 	delete particle2;
@@ -36,10 +37,16 @@ void GameScene::Initialize(WinApp* winApp)
 	// UI用テクスチャ読み込み
 	Sprite::LoadTexture(1, L"Resources/gamefont.png");
 	Sprite::LoadTexture(2, L"Resources/text.png");
+	Sprite::LoadTexture(3, L"Resources/white1x1.png");
+	Sprite::LoadTexture(4, L"Resources/optionBackground.png");
+	Sprite::LoadTexture(5, L"Resources/sceneChange.png");
 
 	crosshair->LoadTexture(11, L"Resources/crosshair.png");
 	crosshair = Sprite::Create(11, { 0,0 });
-  
+
+	sceneChangeSprite = new Sprite(5, { -window_width,0.0f }, { window_width,window_height }, { 1.0f,1.0f,1.0f,1.0f }, { 0,0 }, 0, 0);
+	sceneChangeSprite->Initialize();
+
 	//UI初期化
 	UIManager.Initialize(1);
 
@@ -58,6 +65,7 @@ void GameScene::Initialize(WinApp* winApp)
 	skydome->SetMatProjection(&matProjection_);
 	skydome->Initialize();
 	skydome->worldTransform.scale = { 2000.0f,2000.0f,2000.0f };
+	skydome->color = { 0.8f,0.8f,0.8f,1.0f };
 
 	//レールカメラ
 	reilCamera = new ReilCamera();
@@ -109,8 +117,84 @@ void GameScene::Initialize(WinApp* winApp)
 	loadBossPopData(1);
 }
 
-void GameScene::Update()
+void GameScene::Update() {
+
+	sceneChangeSprite->SetPosition({ MathFunc::easeInQuint(sceneShiftFlame / maxFlame) * -1300 ,0.0f });
+
+	if (startTimer <= 0) {
+		//シーン切り替え処理
+		if (isSceneChange == true) {
+
+			if (sceneShiftFlame > 0) {
+				sceneShiftFlame--;
+			}
+
+			if (sceneShiftFlame <= 0) {
+				rhythm->ResetRhythm();
+				isSceneChange = false;
+			}
+		}
+		else {
+			if (sceneShiftFlame < maxFlame) {
+				sceneShiftFlame++;
+			}
+		}
+
+		//タイトル画面の更新処理
+		if (scene_ == Scene::Title) {
+			TitleUpdate();
+		}
+		//ゲーム画面の更新処理
+		else if (scene_ == Scene::Stage) {
+			StageUpdate();
+		}
+	}
+	else {
+		startTimer--;
+	}
+
+}
+void GameScene::TitleUpdate() {
+	UIManager.TitleUpdate(rhythm, &input_);
+
+	skydome->worldTransform.rotation.z += 0.001f;
+	skydome->worldTransform.rotation.y += 0.002f;
+	skydome->Update();
+
+	player->SetPos({ 0.0f,0.0f,20.0f });
+	player->Update(reilCamera->GetWorldTransform(), reilCamera->GetWorldTransform().rotation);
+	viewProjection_.UpdateView();
+
+	rhythm->Update(&input_, { 4.3f - UIManager.GetOptionPos() / 90.0f,7.5f + UIManager.GetOptionPos() / 150.0f,-25.0f }, { 0.0f,0.0f,0.0f }, player->GetIsDead(), stage, scene_, UIManager.GetSceneInTitle());
+
+	if (UIManager.GetSceneInTitle() == 5) {
+		isSceneChange = true;
+	}
+
+	if (sceneShiftFlame <= 0) {
+		scene_ = Scene::Stage;
+	}
+
+	if (rhythm->GetSoundState().timer == 0) {
+		if (rhythm->GetSoundState().measureCount == 16) {
+			skydome->color = { 0.0f,0.0f,1.0f,1.0f };
+		}
+		else if (rhythm->GetSoundState().measureCount == 32) {
+			skydome->color = { 1.0f,0.0f,0.0f,1.0f };
+		}
+		else if (rhythm->GetSoundState().measureCount == 48) {
+			skydome->color = { 0.8f,0.8f,0.8f,1.0f };
+		}
+	}
+
+
+}
+
+void GameScene::StageUpdate()
 {
+	skydome->worldTransform.rotation = { 0.0f,0.0f,0.0f };
+	skydome->color = { 0.8f,0.8f,0.8f,1.0f };
+
 	spawntime += 1;
 	LoadCsv(enemyVal);
 	LoadCsv2(enemyVal);
@@ -123,7 +207,9 @@ void GameScene::Update()
 	viewProjection_.UpdateView();
 
 	//UI更新
-	UIManager.Update(rhythm, &input_, player->GetIsDead());
+	UIManager.Update(rhythm, player,&input_, player->GetIsDead());
+
+	rhythm->Update(&input_, player->GetPos(), reilCamera->GetWorldTransform().rotation, player->GetIsDead(), stage, scene_, UIManager.GetSceneInTitle());
 
 	if (rhythm->GetSoundState().isPause == 0) {
 
@@ -144,17 +230,17 @@ void GameScene::Update()
 
 		//アイテムの更新処理
 		for (std::unique_ptr<Item>& item : items_) {
-					item->Update();
+			item->Update();
 		}
 
 		//デスフラグの立ったアイテムを削除
 		items_.remove_if([](std::unique_ptr<Item>& item) {
 			return item->GetIsDead();
-		});
+			});
 
 		//アイテム生成
 		if (input_.TriggerKey(DIK_T)) {
-			std::uniform_int_distribution<> dist(0, 4);
+			std::uniform_int_distribution<> dist(0, 2);
 			int value = dist(engine);
 			//アイテムを生成し、初期化
 			std::unique_ptr<Item>item = std::make_unique<Item>();
@@ -168,7 +254,7 @@ void GameScene::Update()
 		for (std::unique_ptr<Enemy>& enemy : enemys1) {
 			enemy->Update(&viewProjection_, &matProjection_, 0);
 #pragma region makeEnemyBullet
-			if (enemy->GetBulletNum() != 2 && enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::Attack) {
+			if (enemy->GetBulletNum() != 2 && enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase()==Phase::Attack) {
 				//弾を生成
 				std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
 				//初期化
@@ -184,9 +270,9 @@ void GameScene::Update()
 				}
 			}
 			
-			if (enemy->GetIsAttack()==true || enemy->GetIsDead()==true) {
+			if (enemy->GetIsAttack()==true) {
 				for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
-					bullet->Update();
+					bullet->Update(enemy->GetIsDead());
 				}
 			}
 
@@ -249,42 +335,59 @@ void GameScene::Update()
 			//UpdateEnemyPopCommand();
 		}
 
-			//UpdateEnemyPopCommand();
-			if (player->GetIsDead() == false) {
-				//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
+		//UpdateEnemyPopCommand();
+		if (player->GetIsDead() == false) {
+			//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
+		}
+
+		if (player->GetIsDead() == false) {
+			//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
+		}
+
+		if (input_.PushKey(DIK_R)) {
+			Reset();
+
+		}
+
+		/*if (player->GetIsDead() == true && particle->GetIsDead() == true) {
+			if (gameoverTimer <= 0) {
+				gameoverTimer = 5;
 			}
-
-			if (player->GetIsDead() == false) {
-				//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
-			}
-
-			if (input_.PushKey(DIK_R)) {
-				Reset();
-
-			}
-
-			/*if (player->GetIsDead() == true && particle->GetIsDead() == true) {
+			else {
+				gameoverTimer--;
 				if (gameoverTimer <= 0) {
-					gameoverTimer = 5;
+					stage = 1;
+					Reset();
+					scene_ = Scene::Title;
 				}
-				else {
-					gameoverTimer--;
-					if (gameoverTimer <= 0) {
-						stage = 1;
-						Reset();
-						scene_ = Scene::Title;
-					}
-				}
-			}*/
-			rhythm->Update(&input_, player->GetPos(), reilCamera->GetWorldTransform().rotation, player->GetIsDead(), stage);
-			//プレイヤーの弾発射処理
-			if (input_.TriggerKey(DIK_SPACE) && rhythm->GetSoundState().isFireSucces) {
-				player->NewBullet(&viewProjection_, &matProjection_, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,0.0f }, rhythm->GetSoundState().weapon);
-				//player->NewBulletAim(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
 			}
-			Collisions();
-	}	
+		}*/
 
+		Collisions();
+
+		//プレイヤーの弾発射処理
+		if (input_.TriggerKey(DIK_SPACE) && rhythm->GetSoundState().isFireSucces) {
+			player->NewBullet(&viewProjection_, &matProjection_, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,0.0f }, rhythm->GetSoundState().weapon);
+			//player->NewBulletAim(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
+		}
+	}
+	else {
+		if (input_.TriggerKey(DIK_T)) {
+
+			isSceneChange = true;
+			rhythm->DecisionSoundPlay();
+		}
+
+		if (sceneShiftFlame <= 0) {
+
+			scene_ = Scene::Title;
+			rhythm->ResetRhythm();
+			player->SetPos({ 0.0f,0.0f,20.0f });
+			viewProjection_.Initialize();
+			UIManager.Init();
+		}
+	}
+  
 #pragma region DebugText
 	debugText.Printf(0, 100, 1.0f, 18, " Q,E...offset:%f", rhythm->GetSoundState().offset);
 	debugText.Printf(0, 140, 1.0f, 25, " Up,Dawn...BGMVolume:%f", rhythm->GetSoundState().BGMVolume);
@@ -299,10 +402,34 @@ void GameScene::Update()
 		player->GetWorldTransform().matWorld.m[3][1],
 		player->GetWorldTransform().matWorld.m[3][2]);
 	debugText.Printf(0, 280, 1.0f, 12, " spawn:%d", spawntime);
+	debugText.Printf(0, 290, 1.0f, 6, " HP:%d", boss->GetHP());
 #pragma endregion
 }
 
 void GameScene::Draw() {
+	if (scene_ == Scene::Title) {
+		TitleDraw();
+	}
+	else if (scene_ == Scene::Stage) {
+		StageDraw();
+	}
+}
+
+void GameScene::TitleDraw() {
+	skydome->Draw();
+	rhythm->Draw(player->GetIsDead());
+
+	//スプライト描画
+	Sprite::PreDraw(dx12base_.GetCmdList().Get());
+	UIManager.Draw(rhythm);
+
+	//シーン切り替えの描画
+	sceneChangeSprite->Draw();
+
+	Sprite::PostDraw();
+
+}
+void GameScene::StageDraw() {
 	//3D描画
 	//プレイヤー描画
 	player->Draw();
@@ -344,11 +471,14 @@ void GameScene::Draw() {
 
 
 	crosshair->Draw();
-	
+
 	UIManager.Draw(rhythm);
-  
+
 	// デバッグテキストの描画
 	debugText.DrawAll(dx12base_.GetCmdList().Get());
+
+	//シーン切り替えの描画
+	sceneChangeSprite->Draw();
 
 	Sprite::PostDraw();
 
@@ -445,7 +575,6 @@ void GameScene::Reset() {
 }
 
 void GameScene::Collisions() {
-
 #pragma region PlayerToEnemyCollision
 	const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = player->GetBullets();
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
@@ -511,9 +640,46 @@ void GameScene::Collisions() {
 	//bullet-enemyBullet
 #pragma endregion
 
+#pragma region bulletToBoss
+	for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
+		if (boss->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x < 2 &&
+			-2 < boss->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x) {
+			if (boss->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y < 2 &&
+				-2 < boss->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y) {
+				if (boss->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z < 2 &&
+					-2 < boss->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z) {
+					bulletA->OnCollision();
+					boss->OnCollision();
+				}
+			}
+		}
+	}
+#pragma endregion
+
+
 #pragma region enemyBulletToPlayerCollisions
 	//player-enemybullet
 	for (const std::unique_ptr<EnemyBullet>& bulletB : bullets1) {
+
+		if (player->GetPos().x - bulletB->GetWorldTransform().translation.x < 2 &&
+			-2 < player->GetPos().x - bulletB->GetWorldTransform().translation.x) {
+			if (player->GetPos().y - bulletB->GetWorldTransform().translation.y < 2 &&
+				-2 < player->GetPos().y - bulletB->GetWorldTransform().translation.y) {
+				if (player->GetPos().z - bulletB->GetWorldTransform().translation.z < 2 &&
+					-2 < player->GetPos().z - bulletB->GetWorldTransform().translation.z) {
+
+					//bulletB->OnCollision();
+					//enemy->Reset();
+					player->OnCollision(rhythm);
+				}
+			}
+		}
+	}
+#pragma endregion
+
+#pragma region BossBulletaToPlayer
+
+	for (const std::unique_ptr<BossBullet>& bulletB : bossBullet1) {
 
 		if (player->GetPos().x - bulletB->GetWorldTransform().translation.x < 2 &&
 			-2 < player->GetPos().x - bulletB->GetWorldTransform().translation.x) {
@@ -562,8 +728,44 @@ void GameScene::Collisions() {
 				}
 			}
 		}
+
+		for (const std::unique_ptr<Pattern2>& bulletA : playerAim) {
+			if (enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x < 4 &&
+				-4 < enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x) {
+				if (enemy->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y < 4 &&
+					-4 < enemy->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y) {
+					if (enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z < 5 &&
+						-5 < enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z) {
+
+						bulletA->OnCollision();
+					}
+				}
+			}
+		}
 	}
 
+	for (std::unique_ptr<Item>& items : items_) {
+		if (items->GetWorldTransform().translation.x - player->GetPos().x < 2 &&
+			-2 < items->GetWorldTransform().translation.x - player->GetPos().x) {
+			if (items->GetWorldTransform().translation.y - player->GetPos().y < 2 &&
+				-2 < items->GetWorldTransform().translation.y - player->GetPos().y) {
+				if (items->GetWorldTransform().translation.z - player->GetPos().z < 2 &&
+					-2 < items->GetWorldTransform().translation.z - player->GetPos().z) {
+
+					items->OnCollision();
+					if (items->GetWeapon() == 0) {
+						rhythm->SetWeapon(Weapons::Normal);
+					}else if (items->GetWeapon() == 1) {
+						rhythm->SetWeapon(Weapons::Rapid);
+					}else if (items->GetWeapon() == 2) {
+						rhythm->SetWeapon(Weapons::ThreeWay);
+					}
+
+					rhythm->ItemSoundPlay();
+				}
+			}
+		}
+	}
 }
 
 void GameScene::LoadCsv(int obstacleVal)
@@ -780,7 +982,7 @@ void GameScene::LoadCsv2(int obstacleVal)
 	//spawntime += 1;
 	for (std::unique_ptr<Enemy>& newEnemy : enemys1) {
 		if (spawntime == spawntimer[0]) {
-			if (i < obstaclePos.size() && i < 9 && i >= 0) {
+			if (i < obstaclePos.size() && i <= 4 && i >= 0) {
 				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
@@ -791,6 +993,101 @@ void GameScene::LoadCsv2(int obstacleVal)
 			}
 			i++;
 		}
-
+		if (spawntime == spawntimer[4]) {
+			if (i < obstaclePos.size() && i < 8 && i > 3) {
+				newEnemy->Settransform(obstaclePos[i]);
+				newEnemy->SetBulletNum(bulletNum[i]);
+				newEnemy->SetMoveNum(moveNum[i]);
+				newEnemy->SetSpeed(0, 0, 0);
+				if (newEnemy->GetSpownFlag() == false) {
+					newEnemy->Spawn();
+				}
+			}
+			i++;
+		}
+		if (spawntime == spawntimer[8]) {
+			if (i < obstaclePos.size() && i < 16 && i > 7) {
+				newEnemy->Settransform(obstaclePos[i]);
+				newEnemy->SetBulletNum(bulletNum[i]);
+				newEnemy->SetMoveNum(moveNum[i]);
+				newEnemy->SetSpeed(0, 0, 0);
+				if (newEnemy->GetSpownFlag() == false) {
+					newEnemy->Spawn();
+				}
+			}
+			i++;
+		}
+		if (spawntime == spawntimer[16]) {
+			if (i < obstaclePos.size() && i < 20 && i > 15) {
+				newEnemy->Settransform(obstaclePos[i]);
+				newEnemy->SetBulletNum(bulletNum[i]);
+				newEnemy->SetMoveNum(moveNum[i]);
+				newEnemy->SetSpeed(0, 0, 0);
+				if (newEnemy->GetSpownFlag() == false) {
+					newEnemy->Spawn();
+				}
+			}
+			i++;
+		}
+		if (spawntime == spawntimer[20]) {
+			if (i < obstaclePos.size() && i < 24 && i > 20) {
+				newEnemy->Settransform(obstaclePos[i]);
+				newEnemy->SetBulletNum(bulletNum[i]);
+				newEnemy->SetMoveNum(moveNum[i]);
+				newEnemy->SetSpeed(0, 0, 0);
+				if (newEnemy->GetSpownFlag() == false) {
+					newEnemy->Spawn();
+				}
+			}
+			i++;
+		}
+		if (spawntime == spawntimer[24]) {
+			if (i < obstaclePos.size() && i < 32 && i > 23) {
+				newEnemy->Settransform(obstaclePos[i]);
+				newEnemy->SetBulletNum(bulletNum[i]);
+				newEnemy->SetMoveNum(moveNum[i]);
+				newEnemy->SetSpeed(0, 0, 0);
+				if (newEnemy->GetSpownFlag() == false) {
+					newEnemy->Spawn();
+				}
+			}
+			i++;
+		}
+		if (spawntime == spawntimer[32]) {
+			if (i < obstaclePos.size() && i < 40 && i > 31) {
+				newEnemy->Settransform(obstaclePos[i]);
+				newEnemy->SetBulletNum(bulletNum[i]);
+				newEnemy->SetMoveNum(moveNum[i]);
+				newEnemy->SetSpeed(0, 0, 0);
+				if (newEnemy->GetSpownFlag() == false) {
+					newEnemy->Spawn();
+				}
+			}
+			i++;
+		}
+		if (spawntime == spawntimer[40]) {
+			if (i < obstaclePos.size() && i < 45 && i > 39) {
+				newEnemy->Settransform(obstaclePos[i]);
+				newEnemy->SetBulletNum(bulletNum[i]);
+				newEnemy->SetMoveNum(moveNum[i]);
+				newEnemy->SetSpeed(0, 0, 0);
+				if (newEnemy->GetSpownFlag() == false) {
+					newEnemy->Spawn();
+				}
+			}
+			i++;
+		}
+		if (spawntime == spawntimer[45]) {
+			if (i < obstaclePos.size() && i < 50 && i > 44) {
+				newEnemy->Settransform(obstaclePos[i]);
+				newEnemy->SetBulletNum(bulletNum[i]);
+				newEnemy->SetMoveNum(moveNum[i]);
+				newEnemy->SetSpeed(0, 0, 0);
+				if (newEnemy->GetSpownFlag() == false) {
+					newEnemy->Spawn();
+				}
+			}
+			i++;
+		}
 	}
 }

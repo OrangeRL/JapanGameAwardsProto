@@ -2,7 +2,7 @@
 #include "MathFunc.h"
 
 Enemy::Enemy() {
-	
+
 }
 
 Enemy::~Enemy() {
@@ -30,7 +30,6 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 //Num が 1の奴は移動のみ
 //Num が 0は固定砲台
 void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int enemyNum) {
-	
 	//spManager.Update(viewProjection,matProjection,gameObject->worldTransform.translation,gameObject->worldTransform.scale);
 	if (spawnFlag == true)
 	{
@@ -53,25 +52,25 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 		case 2:
 			moveSpeed.x = 0.0f;
 			moveSpeed.y = 0.0f;
-			moveSpeed.z = -0.3f;
+			moveSpeed.z = -0.1f;
 			break;
 		case 3:
 			moveSpeed.x = 0.0f;
-			moveSpeed.y = 0.3f;
+			moveSpeed.y = 0.1f;
 			moveSpeed.z = 0.0f;
 			break;
 		case 4:
 			moveSpeed.x = 0.0f;
-			moveSpeed.y = -0.3f;
+			moveSpeed.y = -0.1f;
 			moveSpeed.z = 0.0f;
 			break;
 		case 5:
-			moveSpeed.x = 0.3f;
+			moveSpeed.x = 0.1f;
 			moveSpeed.y = 0.0f;
 			moveSpeed.z = 0.0f;
 			break;
 		case 6:
-			moveSpeed.x = -0.3f;
+			moveSpeed.x = -0.1f;
 			moveSpeed.y = 0.0f;
 			moveSpeed.z = 0.0f;
 			break;
@@ -136,7 +135,7 @@ void Enemy::Repetition()
 {
 }
 //離脱
-void Enemy::Leave(Vector3 leaveSpeedt,Vector3 leaveSpeedf, int enemyNum)
+void Enemy::Leave(Vector3 leaveSpeedt, Vector3 leaveSpeedf, int enemyNum)
 {
 	//if (enemyNum == 0) {	//固定砲台
 
@@ -160,7 +159,7 @@ WorldTransform Enemy::GetWorldTransform() {
 	return gameObject->worldTransform;
 }
 
-WorldTransform Enemy::Settransform(float x,float y,float z)
+WorldTransform Enemy::Settransform(float x, float y, float z)
 {
 	this->gameObject->worldTransform.translation.x = x;
 	this->gameObject->worldTransform.translation.y = y;
@@ -175,7 +174,7 @@ WorldTransform Enemy::Settransform(Vector3 x)
 	return gameObject->worldTransform;
 }
 
-float Enemy::GetAttackSpeed(){
+float Enemy::GetAttackSpeed() {
 	return attackSpeed;
 }
 
@@ -240,5 +239,5 @@ Phase Enemy::GetPhase()
 
 void Enemy::OnCollision(Rhythm* rhythm) {
 	isDelete_ = true;
-	rhythm->knockSoundPlay(1.0f);
+	rhythm->KnockSoundPlay();
 }

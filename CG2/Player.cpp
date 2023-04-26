@@ -508,7 +508,7 @@ void Player::OnCollision(Rhythm* rhythm) {
 
 	if (isInvincible == false) {
 		life--;
-		rhythm->damageSoundPlay(1.0f);
+		rhythm->DamageSoundPlay();
 	}
 
 	isInvincible = true;

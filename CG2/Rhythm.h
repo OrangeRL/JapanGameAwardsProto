@@ -19,6 +19,12 @@ enum class Judge {
 	Good,
 };
 
+enum class Scene
+{
+	Title,//タイトル
+	Stage,//ステージ
+};
+
 struct SoundState {
 	//タイマー
 	float timer = 0.0f;
@@ -43,11 +49,11 @@ struct SoundState {
 	//判定のずれ(オフセット)
 	float offset = 0.0f;
 	//BGM音量
-	float BGMVolume = 1.0f;
+	float BGMVolume = 0.5f;
 	//ノーマルSE音量
-	float normalSEVolume = 1.0f;
+	float normalSEVolume = 0.5f;
 	//ガイドSE音量
-	float guideSEVolume = 1.0f;
+	float guideSEVolume = 0.5f;
 	//現在のウェーブ数
 	float wave = 1.0f;
 };
@@ -60,7 +66,7 @@ public:
 
 	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection);
 
-	void Update(Input* input, Vector3 pos, Vector3 rot, int isDead,int stage);
+	void Update(Input* input, Vector3 pos, Vector3 rot, int isDead,int stage, Scene scene, int select);
 
 	void Draw(int isDead);
 
@@ -68,9 +74,12 @@ public:
 
 	void SoundPlayWave(SoundData soundData, float volume);
 
-	void ItemSoundPlay(float volume){ soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), itemSound, false, volume); };
-	void damageSoundPlay(float volume){ soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), damageSound, false, volume); };
-	void knockSoundPlay(float volume){ soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), knockSound, false, volume); };
+	void ItemSoundPlay(){ soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), itemSound, false, soundState.normalSEVolume); };
+	void DamageSoundPlay(){ soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), damageSound, false, soundState.normalSEVolume); };
+	void KnockSoundPlay(){ soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), knockSound, false, soundState.normalSEVolume); };
+	void ScoreRisePlay(){ soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), scoreRiseSound, false, soundState.normalSEVolume); };
+	void DecisionSoundPlay(){ soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(),decisionSound, false, soundState.normalSEVolume); };
+	void SelectSoundPlay(){ soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(),selectSound, false, soundState.normalSEVolume); };
 
 	void NormalShot(SoundState s, Input* input);
 	void RapidShot(SoundState s, Input* input);
@@ -79,6 +88,11 @@ public:
 	void LaserShot(SoundState s, Input* input);
 
 	void SetWeapon(Weapons weapon) { this->soundState.weapon = weapon; }
+	void SetBGMVolume(float volume) { soundState.BGMVolume = volume; }
+	void SetSEVolume(float volume) { soundState.normalSEVolume = volume; }
+	void SetGSEVolume(float volume) { soundState.guideSEVolume = volume; }
+
+	void ResetRhythm();
 
 	SoundState GetSoundState() { return soundState; }
 
@@ -109,7 +123,7 @@ private:
 
 	float colorChange = 0.0f;
 
-	float pitch;
+	float pitch = 1.0003f;
 
 	//サウンドマネージャー
 	SoundManager* soundManager_ = nullptr;
@@ -126,8 +140,13 @@ private:
 	SoundData itemSound = soundManager_->SoundLoadWave("Resources/item.wav");
 	SoundData damageSound = soundManager_->SoundLoadWave("Resources/damage.wav");
 	SoundData knockSound = soundManager_->SoundLoadWave("Resources/knock.wav");
+	SoundData scoreRiseSound = soundManager_->SoundLoadWave("Resources/scoreRise.wav");
+	SoundData countdownSound = soundManager_->SoundLoadWave("Resources/Countdown.wav");
+	SoundData decisionSound = soundManager_->SoundLoadWave("Resources/decision.wav");
+	SoundData selectSound = soundManager_->SoundLoadWave("Resources/select.wav");
 
 	//BGM
+	SoundData titleBGM = soundManager_->SoundLoadWave("Resources/SHOOTRONOME.wav");
 	SoundData demoBGM = soundManager_->SoundLoadWave("Resources/demo.wav");
 	SoundData stage1_1BGM = soundManager_->SoundLoadWave("Resources/stage1-1.wav");
 	SoundData stage1_2BGM = soundManager_->SoundLoadWave("Resources/stage1-2.wav");

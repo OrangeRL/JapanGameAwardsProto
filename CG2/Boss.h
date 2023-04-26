@@ -34,6 +34,7 @@ public:
 	bool GetIsAttack();
 	bool SetIsAttack(bool isAttack);
 	bool GetIsDead();
+	int GetHP();
 
 	//Ž€–S—p
 	void OnCollision();
@@ -47,7 +48,7 @@ private:
 	BossPhase phase = BossPhase::spown;
 
 	bool trueDead = false;
-	bool isDead = true;
+	bool isDead = false;
 	int HP = 100;
 
 	float attackSpeed = 200.0f;
