@@ -43,33 +43,33 @@ void Player::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 	gameObject->Initialize();
 
 	aimObject = new GameObject3D();
-	aimObject->PreLoadModel("Resources/circle/circle.obj");
+	aimObject->PreLoadModel("Resources/square/square.obj");
 	aimObject->PreLoadTexture(L"Resources/red.png");
 	aimObject->SetViewProjection(viewProjection_);
 	aimObject->SetMatProjection(matProjection);
 	aimObject->Initialize();
 
 	aimObject2 = new GameObject3D();
-	aimObject2->PreLoadModel("Resources/circle/circle.obj");
+	aimObject2->PreLoadModel("Resources/square/square.obj");
 	aimObject2->PreLoadTexture(L"Resources/red.png");
 	aimObject2->SetViewProjection(viewProjection_);
 	aimObject2->SetMatProjection(matProjection);
 	aimObject2->Initialize();
 
 	aimObject3 = new GameObject3D();
-	aimObject3->PreLoadModel("Resources/circle/circle.obj");
+	aimObject3->PreLoadModel("Resources/square/square.obj");
 	aimObject3->PreLoadTexture(L"Resources/red.png");
 	aimObject3->SetViewProjection(viewProjection_);
 	aimObject3->SetMatProjection(matProjection);
 	aimObject3->Initialize();
 
 	aimObject4 = new GameObject3D();
-	aimObject4->PreLoadModel("Resources/circle/circle.obj");
+	aimObject4->PreLoadModel("Resources/square/square.obj");
 	aimObject4->PreLoadTexture(L"Resources/red.png");
 	aimObject4->SetViewProjection(viewProjection_);
 	aimObject4->SetMatProjection(matProjection);
 	aimObject4->Initialize();
-
+	
 	Reset();
 
 	//3Dレティクルのワールドトランスフォーム初期化
@@ -169,7 +169,7 @@ void Player::NotAimHit() {
 	aimObject4->worldTransform.scale = { 0.5f,0.5f,0.5f };
 }
 void Player::Aim(Vector3 player, Vector3 enemy, Vector3 vec, float shotAngle) {
-
+	
 	velocity = { sin(vec.y + shotAngle),-vec.x,cos(vec.y + shotAngle) };
 	float speed = -5.0f;
 	velocity.x *= speed;
@@ -198,6 +198,12 @@ void Player::Aim(Vector3 player, Vector3 enemy, Vector3 vec, float shotAngle) {
 	aimObject4->worldTransform.translation.x = gameObject->worldTransform.translation.x;
 	aimObject4->worldTransform.translation.y = gameObject->worldTransform.translation.y;
 	aimObject4->worldTransform.translation.z = GetPos().z - velocity.z * 9;
+
+	aimObject->worldTransform.scale = { 1.5f,1.5f,1.5f };
+	aimObject2->worldTransform.scale = { 1.0f,1.0f,1.0f };
+	aimObject3->worldTransform.scale = { 0.5f,0.5f,0.5f };
+	aimObject4->worldTransform.scale = { 0.5f,0.5f,0.5f };
+
 }
 //
 //void Player::Aim(Vector3 player, Vector3 enemy) {

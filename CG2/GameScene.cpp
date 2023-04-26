@@ -575,6 +575,22 @@ void GameScene::Reset() {
 }
 
 void GameScene::Collisions() {
+	for (std::unique_ptr<Enemy>& enemy : enemys1) {
+		if (enemy->GetWorldTransform().translation.x - player->GetAimPos().x < 1 &&
+			-1 < enemy->GetWorldTransform().translation.x - player->GetAimPos().x) {
+			if (enemy->GetWorldTransform().translation.y - player->GetAimPos().y < 1 &&
+				-1 < enemy->GetWorldTransform().translation.y - player->GetAimPos().y) {
+				if (enemy->GetWorldTransform().translation.z - player->GetAimPos().z < 100 &&
+					-100 < enemy->GetWorldTransform().translation.z - player->GetAimPos().z) {
+					player->AimHit();
+				}
+				else
+				{
+					player->NotAimHit();
+				}
+			}
+		}
+	}
 #pragma region PlayerToEnemyCollision
 	const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = player->GetBullets();
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
