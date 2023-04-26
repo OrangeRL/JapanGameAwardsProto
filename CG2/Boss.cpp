@@ -16,6 +16,14 @@ void Boss::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 
 void Boss::Update()
 {
+	if (trueDead) {
+		responTimer--;
+		if (responTimer <= 0.0f) {
+			responTimer = 10.0f;
+			HP -= 1;
+			trueDead = false;
+		}
+	}
 	attackSpeed -= 0.5f;
 	phaseTimer -= 0.1f;
 	switch (phase)
@@ -145,8 +153,5 @@ int Boss::GetHP()
 
 void Boss::OnCollision()
 {
-	HP -= 1;
-	if (HP <= 0) {
-		isDead = true;
-	}
+	trueDead = true;
 }

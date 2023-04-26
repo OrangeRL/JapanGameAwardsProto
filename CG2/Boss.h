@@ -47,9 +47,10 @@ private:
 	float phaseTimer = 3.0f;
 	BossPhase phase = BossPhase::spown;
 
+	float responTimer = 10.0f;
 	bool trueDead = false;
 	bool isDead = false;
-	int HP = 100;
+	int HP = 50;
 
 	float attackSpeed = 200.0f;
 	bool isAttack = false;
