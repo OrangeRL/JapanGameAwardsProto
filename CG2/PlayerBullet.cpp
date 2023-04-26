@@ -116,10 +116,6 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos, Vector3 vec, float
 		//ボスと自機の差分ベクトルを求める
 		//velocity = newPlayerPos - newEnemyPos;
 		velocity = { sin(vec.y + shotAngle),-vec.x,cos(vec.y + shotAngle)};
-		//vec1 = { sin(vec.y + shotAngle) * speed,-vec.x * speed,cos(vec.y + shotAngle) * speed };
-		//vec2 = { sin(vec.y - shotAngle) * speed,-vec.x * speed,cos(vec.y - shotAngle) * speed };
-		//ベクトルの正規化
-		//velocity.nomalize();
 		//ベクトルの長さを速さに合わせる
 		velocity.x *= speed;
 		velocity.y *= speed;
@@ -128,36 +124,12 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos, Vector3 vec, float
 
 	if (isShot) 
 	{
-		//ボスと自機の差分ベクトルを求める
-		//velocity = newPlayerPos - newEnemyPos;
-		//velocity = { wt.rotation.x,wt.rotation.y,wt.rotation.z };
-		
-		//ベクトルの正規化
-		//velocity.nomalize();
-		//ベクトルの長さを速さに合わせる
-		/*velocity.x *= speed;
-		velocity.y *= speed;
-		velocity.z *= speed;*/
-		//発射フラグがtrueならその時点での自機の座標に向かって移動する
 		gameObject->worldTransform.translation -= velocity;
 		if (weapon == Weapons::ThreeWay) {
 
 			gameObjectSub[0]->worldTransform.translation -= vec1;
 			gameObjectSub[1]->worldTransform.translation -= vec2;
 			
-		}
-
-		if (gameObject->worldTransform.translation.x < -canMoveArea ||
-			gameObject->worldTransform.translation.x > canMoveArea ||
-			gameObject->worldTransform.translation.y < -canMoveArea ||
-			gameObject->worldTransform.translation.y > canMoveArea ||
-			gameObject->worldTransform.translation.z < -canMoveArea - 00 ||
-			gameObject->worldTransform.translation.z > canMoveArea + playerPos.z + 400) 
-		{
-			//一定の範囲外で消滅
-			//isShot = false;
-			//isDead_ = true;
-      
 		}
 	}
 }

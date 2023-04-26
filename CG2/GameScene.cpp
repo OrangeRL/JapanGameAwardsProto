@@ -619,12 +619,12 @@ void GameScene::Collisions() {
 		}
 
 		for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
-			if (boss->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x < 2 &&
-				-2 < boss->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x) {
-				if (boss->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y < 2 &&
-					-2 < boss->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y) {
-					if (boss->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z < 2 &&
-						-2 < boss->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z) {
+			if (boss->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x < 40 &&
+				-40 < boss->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x) {
+				if (boss->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y < 200 &&
+					-200 < boss->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y) {
+					if (boss->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z < 200 &&
+						-200 < boss->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z) {
 
 						bulletA->OnCollision();
 						boss->OnCollision();
@@ -651,7 +651,7 @@ void GameScene::Collisions() {
 					if (bulletB->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z < 2 &&
 						-2 < bulletB->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z) {
 
-						bulletA->OnCollision();
+						//bulletA->OnCollision();
 						bulletB->OnCollision();
 
 					}

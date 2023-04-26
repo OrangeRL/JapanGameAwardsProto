@@ -89,7 +89,7 @@ private:
 
 	Vector3 velocity = {};
 
-	int life = 3;
+	int life = 30;
 	bool isInvincible = 0;
 	int invincibleTimer = 120;
 

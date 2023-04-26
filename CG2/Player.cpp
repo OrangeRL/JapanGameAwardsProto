@@ -179,7 +179,7 @@ void Player::Aim(Vector3 player, Vector3 enemy, Vector3 vec, float shotAngle) {
 	if (aimObject->worldTransform.translation.z > GetPos().z + 40) {
 		aimObject->worldTransform.translation.z = GetPos().z;
 	}
-	aimObject->worldTransform.translation.x = gameObject->worldTransform.translation.x;
+	aimObject->worldTransform.translation.x = gameObject->worldTransform.translation.x +0.1;
 	aimObject->worldTransform.translation.y = gameObject->worldTransform.translation.y;
 	aimObject->worldTransform.translation.z = GetPos().z - velocity.z * 1;
 	aimObject->worldTransform.rotation.z += 0.01;

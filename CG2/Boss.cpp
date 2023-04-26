@@ -24,42 +24,44 @@ void Boss::Update()
 			trueDead = false;
 		}
 	}
-	attackSpeed -= 0.5f;
-	phaseTimer -= 0.1f;
-	switch (phase)
-	{
-	case BossPhase::spown:	// íaê∂
-		if (phaseTimer <= 0.0f) {
-			phaseTimer = 300.0f;
-			phase = BossPhase::attack;
+	if (HP > 0) {
+		attackSpeed -= 0.5f;
+		phaseTimer -= 0.1f;
+		switch (phase)
+		{
+		case BossPhase::spown:	// íaê∂
+			if (phaseTimer <= 0.0f) {
+				phaseTimer = 300.0f;
+				phase = BossPhase::attack;
+			}
+			break;
+		case BossPhase::attack:	//çUåÇ1 ÉâÉCÉì(é})Çí£ÇËÇªÇÍÇâÒì]Ç≥ÇπÇÈ
+			//-----------------------
+			Attack();	//é©ï™Ç™âÒì]Ç∑ÇÈÇæÇØÇÃà⁄ìÆ
+			if (phaseTimer <= 0.0f) {
+				phaseTimer = 300.0f;
+				phase = BossPhase::attack2;
+			}
+			break;
+		case BossPhase::attack2:	//çUåÇ2 à⁄ìÆèÍèäÇçiÇÁÇπÇÈ & ÉâÉìÉ_ÉÄÉVÉáÉbÉg
+			// Å´çUåÇèàóù2Å@
+			Attack2();
+			//-----------------------
+			if (phaseTimer <= 0.0f) {
+				phaseTimer = 100.0f;
+				phase = BossPhase::defence;
+			}
+			break;
+		case BossPhase::defence:	//âÒî,ñhå‰
+			// Å´ñhå‰èàóù	É_ÉÅÅ[ÉWåyå∏å¯â ÇèoÇ∑
+			Defence();
+			//-----------------------
+			if (phaseTimer <= 0.0f) {
+				phaseTimer = 300.0f;
+				phase = BossPhase::attack;
+			}
+			break;
 		}
-		break;
-	case BossPhase::attack:	//çUåÇ1 ÉâÉCÉì(é})Çí£ÇËÇªÇÍÇâÒì]Ç≥ÇπÇÈ
-		//-----------------------
-		Attack();	//é©ï™Ç™âÒì]Ç∑ÇÈÇæÇØÇÃà⁄ìÆ
-		if (phaseTimer <= 0.0f) {
-			phaseTimer = 300.0f;
-			phase = BossPhase::attack2;
-		}
-		break;
-	case BossPhase::attack2:	//çUåÇ2 à⁄ìÆèÍèäÇçiÇÁÇπÇÈ & ÉâÉìÉ_ÉÄÉVÉáÉbÉg
-		// Å´çUåÇèàóù2Å@
-		Attack2();
-		//-----------------------
-		if (phaseTimer <= 0.0f) {
-			phaseTimer = 100.0f;
-			phase = BossPhase::defence;
-		}
-		break;
-	case BossPhase::defence:	//âÒî,ñhå‰
-		// Å´ñhå‰èàóù	É_ÉÅÅ[ÉWåyå∏å¯â ÇèoÇ∑
-		Defence();
-		//-----------------------
-		if (phaseTimer <= 0.0f) {
-			phaseTimer = 300.0f;
-			phase = BossPhase::attack;
-		}
-		break;
 	}
 	gameObject->Update();
 }
