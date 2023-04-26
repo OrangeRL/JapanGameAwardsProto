@@ -26,7 +26,7 @@ public:
 
 	void Update(WorldTransform wt, Vector3 vec);
 
-	void Aim(Vector3 player, Vector3 enemy);
+	void Aim(Vector3 player, Vector3 enemy, Vector3 vec, float shotAngle);
 
 	void Draw();
 
@@ -38,7 +38,7 @@ public:
 	void SetMap(Map* map);
 	void SetGoal(Goal* goal);
 	void SetEnemy(Enemy* enemy);
-	void NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 enemyPos,Vector3 playerPos, Weapons weapon);
+	void NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 enemyPos, Vector3 playerPos, Weapons weapon);
 
 	int GetIsGoal();
 	void SetIsGoal(int flag);
@@ -53,10 +53,10 @@ public:
 	ViewProjection* GetViewProjection() { return viewProjection; }
 	WorldTransform GetWorldTransform();
 	Vector3 GetPos();
-
 	Vector3 GetAimPos();
 	int GetIsAimHit();
 	void AimHit();
+	void NotAimHit();
 
 	Vector3 centerVec = { 0,0,0 };
 	Vector3 angle = {};
@@ -80,11 +80,14 @@ private:
 	//ゲームオブジェクト
 	GameObject3D* gameObject = nullptr;
 	GameObject3D* aimObject = nullptr;
+	GameObject3D* aimObject2 = nullptr;
+	GameObject3D* aimObject3 = nullptr;
+	GameObject3D* aimObject4 = nullptr;
 
 	ViewProjection* viewProjection;
 
 	Vector3 velocity = {};
-	
+
 	int life = 3;
 	bool isInvincible = 0;
 	int invincibleTimer = 120;
@@ -114,7 +117,7 @@ private:
 	Map* map = nullptr;
 	Goal* goal = nullptr;
 	Enemy* enemy = nullptr;
-	
+
 	Vector3 enemyPos = {};
 	Vector3 playerPos = {};
 
@@ -133,9 +136,8 @@ private:
 
 	//3Dレティクル用ワールドトランスフォーム
 	WorldTransform worldTransform3DReticle_;
-	
+
 	Vector3 posA;
 	Vector3 posB;
 	Vector3 posC;
 };
-

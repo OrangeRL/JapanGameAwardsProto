@@ -137,7 +137,7 @@ void GameScene::Update()
 		particle2->Update2();
 
 		skydome->Update();
-		player->Aim(player->GetWorldTransform().translation, { 0,0,100 });
+		player->Aim(player->GetWorldTransform().translation, { 0,0,100 }, reilCamera->GetWorldTransform().rotation, 0.0f);
 
 		crosshair->SetPosition({ player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y });
 		crosshair->Sprite::SetSize({ 1,1 });
