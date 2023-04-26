@@ -48,6 +48,7 @@ public:
 	void SetIsEnemy(int flag);
 
 	int GetIsDead();
+	int GetLife() { return life; }
 
 	Vector3 GetAngle();
 	ViewProjection* GetViewProjection() { return viewProjection; }

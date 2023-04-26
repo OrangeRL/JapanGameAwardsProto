@@ -130,6 +130,7 @@ void GameScene::Update() {
 			}
 
 			if (sceneShiftFlame <= 0) {
+				rhythm->ResetRhythm();
 				isSceneChange = false;
 			}
 		}
@@ -206,7 +207,7 @@ void GameScene::StageUpdate()
 	viewProjection_.UpdateView();
 
 	//UI更新
-	UIManager.Update(rhythm, &input_, player->GetIsDead());
+	UIManager.Update(rhythm, player,&input_, player->GetIsDead());
 
 	rhythm->Update(&input_, player->GetPos(), reilCamera->GetWorldTransform().rotation, player->GetIsDead(), stage, scene_, UIManager.GetSceneInTitle());
 
@@ -239,7 +240,7 @@ void GameScene::StageUpdate()
 
 		//アイテム生成
 		if (input_.TriggerKey(DIK_T)) {
-			std::uniform_int_distribution<> dist(0, 4);
+			std::uniform_int_distribution<> dist(0, 2);
 			int value = dist(engine);
 			//アイテムを生成し、初期化
 			std::unique_ptr<Item>item = std::make_unique<Item>();
@@ -727,8 +728,44 @@ void GameScene::Collisions() {
 				}
 			}
 		}
+
+		for (const std::unique_ptr<Pattern2>& bulletA : playerAim) {
+			if (enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x < 4 &&
+				-4 < enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x) {
+				if (enemy->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y < 4 &&
+					-4 < enemy->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y) {
+					if (enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z < 5 &&
+						-5 < enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z) {
+
+						bulletA->OnCollision();
+					}
+				}
+			}
+		}
 	}
 
+	for (std::unique_ptr<Item>& items : items_) {
+		if (items->GetWorldTransform().translation.x - player->GetPos().x < 2 &&
+			-2 < items->GetWorldTransform().translation.x - player->GetPos().x) {
+			if (items->GetWorldTransform().translation.y - player->GetPos().y < 2 &&
+				-2 < items->GetWorldTransform().translation.y - player->GetPos().y) {
+				if (items->GetWorldTransform().translation.z - player->GetPos().z < 2 &&
+					-2 < items->GetWorldTransform().translation.z - player->GetPos().z) {
+
+					items->OnCollision();
+					if (items->GetWeapon() == 0) {
+						rhythm->SetWeapon(Weapons::Normal);
+					}else if (items->GetWeapon() == 1) {
+						rhythm->SetWeapon(Weapons::Rapid);
+					}else if (items->GetWeapon() == 2) {
+						rhythm->SetWeapon(Weapons::ThreeWay);
+					}
+
+					rhythm->ItemSoundPlay();
+				}
+			}
+		}
+	}
 }
 
 void GameScene::LoadCsv(int obstacleVal)
