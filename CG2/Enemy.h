@@ -57,6 +57,7 @@ public:
 	bool GetIsAttack();
 	bool SetIsAttack(bool isAttack);
 	bool GetIsDead();
+	bool SetisDead(bool isDead) {return isDelete_ = isDead; }
 
 	int GetSpownFlag();
 
