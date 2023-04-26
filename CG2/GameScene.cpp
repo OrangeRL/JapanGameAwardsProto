@@ -346,7 +346,6 @@ void GameScene::StageUpdate()
 
 		if (input_.PushKey(DIK_R)) {
 			Reset();
-
 		}
 
 		/*if (player->GetIsDead() == true && particle->GetIsDead() == true) {
@@ -392,8 +391,9 @@ void GameScene::StageUpdate()
 	debugText.Printf(0, 100, 1.0f, 6, " HP:%d", boss->GetHP());
 	//debugText.Printf(0, 200, 1.0f, 16, " Player:%f,%f,%f",
 	//	playerBullet->GetWorldTransform().translation.x, playerBullet->GetWorldTransform().translation.y, playerBullet->GetWorldTransform().translation.z);
-	debugText.Printf(0, 300, 1.0f, 14, " Boss:%2f,%2f,%2f",
+	debugText.Printf(0, 150, 1.0f, 14, " Boss:%2f,%2f,%2f",
 		boss->GetWorldTransform().translation.x, boss->GetWorldTransform().translation.y, boss->GetWorldTransform().translation.z);
+	debugText.Printf(0, 200, 1.0f, 12, "Enemy:%d", spawntime);
 #pragma endregion
 }
 
@@ -558,11 +558,12 @@ void GameScene::UpdateBossPopCommand()
 }
 
 void GameScene::Reset() {
-
+	reilCamera->Initialize({ 0,0,-50 }, { 0,0,0 });
 	player->Reset();
+	player->SetPos({ 0.0f, 0.0f, 20.0f });
 	particle->Reset();
 	particle2->Reset();
-
+	spawntime = 0;
 }
 
 void GameScene::Collisions() {
@@ -950,6 +951,9 @@ void GameScene::LoadCsv(int obstacleVal)
 			}
 			i++;
 		}
+		if (input_.PushKey(DIK_R)) {
+			newEnemy->Reset();
+		}
 	}
 }
 
@@ -1111,6 +1115,10 @@ void GameScene::LoadCsv2(int obstacleVal)
 				}
 			}
 			i++;
+		}
+
+		if (input_.PushKey(DIK_R)) {
+			newEnemy->Reset();
 		}
 	}
 }

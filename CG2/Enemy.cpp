@@ -22,6 +22,14 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 
 	gameObject->worldTransform.scale = { 2 , 2 , 2 };
 
+	attackSpeed = 100.0f;
+	phaseTimer = 300.0f;
+	coolTime = 1.0f;
+	deleteTimer_ = deleteTime;
+
+	isDelete_ = false;
+	isCoolDown = true;
+	isAttack = false;
 	spawnFlag = false;
 	pManager.Initialize(viewProjection, matProjection, L"Resources/purple1x1.png");
 	//spManager.Initialize(viewProjection, matProjection);
@@ -128,7 +136,9 @@ void Enemy::Draw() {
 }
 
 void Enemy::Reset() {
-	gameObject->worldTransform.translation = { 0 , 0 , 100 };
+	phase = Phase::Attack;
+	phaseTimer = 300.0f;
+	spawnFlag = false;
 }
 //反復
 void Enemy::Repetition()

@@ -253,8 +253,9 @@ void Player::Draw() {
 }
 
 void Player::Reset() {
-	//gameObject->worldTransform.translation = { -10 , 0 , -10 };
+	//gameObject->worldTransform.translation = { 0 , 0 , 20 };
 	moveSpeed = 0;
+	life = 3;
 	isDead = false;
 }
 
