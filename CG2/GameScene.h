@@ -204,6 +204,7 @@ private: // メンバ変数
 	//UI関連
 	UIManager UIManager;
 
+	bool loadCount = false;
 // 敵コマンド関係
 //------------------------------------
 	std::stringstream enemyPopCommand;

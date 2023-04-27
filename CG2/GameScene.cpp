@@ -115,6 +115,7 @@ void GameScene::Initialize(WinApp* winApp)
 	//loadEnemyPopData(1);
 	//ボスの雑魚敵の配置
 	loadBossPopData(1);
+	loadCount = false;
 }
 
 void GameScene::Update() {
@@ -142,10 +143,12 @@ void GameScene::Update() {
 
 		//タイトル画面の更新処理
 		if (scene_ == Scene::Title) {
+			loadCount = false;
 			TitleUpdate();
 		}
 		//ゲーム画面の更新処理
 		else if (scene_ == Scene::Stage) {
+			loadCount = true;
 			StageUpdate();
 		}
 	}
@@ -163,6 +166,8 @@ void GameScene::TitleUpdate() {
 
 	player->SetPos({ 0.0f,0.0f,20.0f });
 	player->Update(reilCamera->GetWorldTransform(), reilCamera->GetWorldTransform().rotation);
+	boss->SetHP(25);
+	spawntime = 0;
 	viewProjection_.UpdateView();
 
 	rhythm->Update(&input_, { 4.3f - UIManager.GetOptionPos() / 90.0f,7.5f + UIManager.GetOptionPos() / 150.0f,-25.0f }, { 0.0f,0.0f,0.0f }, player->GetIsDead(), stage, scene_, UIManager.GetSceneInTitle());
@@ -186,7 +191,7 @@ void GameScene::TitleUpdate() {
 			skydome->color = { 0.8f,0.8f,0.8f,1.0f };
 		}
 	}
-
+	
 
 }
 
@@ -196,8 +201,10 @@ void GameScene::StageUpdate()
 	skydome->color = { 0.8f,0.8f,0.8f,1.0f };
 
 	spawntime += 1;
-	LoadCsv(enemyVal);
-	LoadCsv2(enemyVal);
+	if (loadCount = true) {
+		LoadCsv(enemyVal);
+		LoadCsv2(enemyVal);
+	}
 
 	//ランダムな整数
 	std::default_random_engine engine(seed_gen());
@@ -331,19 +338,6 @@ void GameScene::StageUpdate()
 				UpdateBossPopCommand();
 			}
 		}
-		if (player->GetIsDead() == false) {
-			//UpdateEnemyPopCommand();
-		}
-
-		//UpdateEnemyPopCommand();
-		if (player->GetIsDead() == false) {
-			//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
-		}
-
-		if (player->GetIsDead() == false) {
-			//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
-		}
-
 		if (input_.PushKey(DIK_R)) {
 			Reset();
 		}
@@ -369,6 +363,15 @@ void GameScene::StageUpdate()
 			player->NewBullet(&viewProjection_, &matProjection_, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,0.0f }, rhythm->GetSoundState().weapon);
 			//player->NewBulletAim(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
 		}
+
+		if (boss->GetHP() <= 0) {
+			scene_ = Scene::Title;
+			rhythm->ResetRhythm();
+			player->SetPos({ 0.0f,0.0f,20.0f });
+			viewProjection_.Initialize();
+			UIManager.Init();
+			loadCount = false;
+		}
 	}
 	else {
 		if (input_.TriggerKey(DIK_T)) {
@@ -378,7 +381,7 @@ void GameScene::StageUpdate()
 		}
 
 		if (sceneShiftFlame <= 0) {
-
+			
 			scene_ = Scene::Title;
 			rhythm->ResetRhythm();
 			player->SetPos({ 0.0f,0.0f,20.0f });
@@ -388,12 +391,12 @@ void GameScene::StageUpdate()
 	}
   
 #pragma region DebugText
-	debugText.Printf(0, 100, 1.0f, 6, " HP:%d", boss->GetHP());
-	//debugText.Printf(0, 200, 1.0f, 16, " Player:%f,%f,%f",
-	//	playerBullet->GetWorldTransform().translation.x, playerBullet->GetWorldTransform().translation.y, playerBullet->GetWorldTransform().translation.z);
-	debugText.Printf(0, 150, 1.0f, 14, " Boss:%2f,%2f,%2f",
-		boss->GetWorldTransform().translation.x, boss->GetWorldTransform().translation.y, boss->GetWorldTransform().translation.z);
-	debugText.Printf(0, 200, 1.0f, 12, "Enemy:%d", spawntime);
+	//debugText.Printf(0, 100, 1.0f, 6, " HP:%d", boss->GetHP());
+	////debugText.Printf(0, 200, 1.0f, 16, " Player:%f,%f,%f",
+	////	playerBullet->GetWorldTransform().translation.x, playerBullet->GetWorldTransform().translation.y, playerBullet->GetWorldTransform().translation.z);
+	//debugText.Printf(0, 150, 1.0f, 14, " Boss:%2f,%2f,%2f",
+	//	boss->GetWorldTransform().translation.x, boss->GetWorldTransform().translation.y, boss->GetWorldTransform().translation.z);
+	//debugText.Printf(0, 200, 1.0f, 12, "Enemy:%d", spawntime);
 #pragma endregion
 }
 
@@ -953,6 +956,7 @@ void GameScene::LoadCsv(int obstacleVal)
 		}
 		if (input_.PushKey(DIK_R)) {
 			newEnemy->Reset();
+			newEnemy->Settransform({ 0.0f, 0.0f, -1000.0f });
 		}
 	}
 }
@@ -1119,6 +1123,8 @@ void GameScene::LoadCsv2(int obstacleVal)
 
 		if (input_.PushKey(DIK_R)) {
 			newEnemy->Reset();
+			newEnemy->Settransform({ 0.0f, 0.0f, -1000.0f });
+
 		}
 	}
 }
