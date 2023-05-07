@@ -213,12 +213,6 @@ private: // メンバ変数
 	size_t enemyVal = 90;
 	int fileNum = 1;
 //------------------------------------
-//ボスコマンド関係
-//------------------------------------
-	std::stringstream bossPopCommand;
-	bool bossWaitFlag = false;
-	float bossWaitTime_;
-//------------------------------------
 
 	//立ち上げ時に少し待つ
 	float startTimer = 30.0f;
