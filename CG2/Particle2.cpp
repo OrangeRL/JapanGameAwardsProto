@@ -18,7 +18,7 @@ Particle2::~Particle2() {
 	}
 }
 
-void Particle2::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName) {
+void Particle2::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName,Vector3 position) {
 	soundManager_.Initialize();
 	for (int i = 0; i < particleValue; i++) {
 
@@ -30,7 +30,7 @@ void Particle2::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjecti
 
 		isDead[i] = true;
 
-		Reset();
+		Reset(position);
 
 	}
 
@@ -94,12 +94,12 @@ void Particle2::Update(Vector3 initPos) {
 			gameObject[i]->worldTransform.scale = { 1.5f * timer[i] / 80 , 1.5f * timer[i] / 80 , 1.5f * timer[i] / 80 };
 			gameObject[i]->worldTransform.rotation = { 0.5f * timer[i] / 60, 0.5f * timer[i] / 60, 0.5f * timer[i] / 60 };
 
-			float speed = -0.2f;
+			speed2 = -0.2f;
 			posA = initPos + velocity[i] * 40;
 			posB = initPos;
 			posC = posA - posB;
 			posC.nomalize();
-			posC *= speed;
+			posC *= speed2;
 
 			gameObject[i]->worldTransform.translation -= posC;
 
@@ -127,11 +127,19 @@ void Particle2::Draw() {
 
 }
 
-void Particle2::Reset() {
+void Particle2::Reset(Vector3 position) {
 	for (int i = 0; i < particleValue; i++) {
-
+		isDead[i] = false;
+		timer[i] = 60;
 		particleOff[i] = true;
 		isPlayingBGM = false;
+		speed2 = -0.2f;
+		velocity[i] = {
+				speed * cosf(1.8) ,
+				0 ,
+				speed * -sinf(1.8)
+		};
+		spawnPos[i] = position;
 	}
 }
 

@@ -477,7 +477,9 @@ void GameScene::StageDraw() {
 }
 
 void GameScene::Reset() {
+	UIManager.ResetCountDown();
 	reilCamera->Initialize({ 0,0,-50 }, { 0,0,0 });
+	rhythm->ResetRhythm();
 	player->Reset();
 	player->SetPos({ 0.0f, 0.0f, 20.0f });
 	particle->Reset();
@@ -1039,10 +1041,5 @@ void GameScene::LoadCsv2(int obstacleVal)
 			i++;
 		}
 
-		if (input_.PushKey(DIK_R)) {
-			newEnemy->Reset();
-			newEnemy->Settransform({ 0.0f, 0.0f, -1000.0f });
-
-		}
 	}
 }

@@ -32,6 +32,8 @@ public:
 	float GetOptionPos() { return optionPos; }
 	int GetSceneInTitle() { return sceneInTitle; }
 
+	int ResetCountDown() { return countDown = 3; }
+
 private:
 	const float maxFlame = 50.0f;
 	//ÉXÉRÉA

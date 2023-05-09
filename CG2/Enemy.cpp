@@ -12,13 +12,13 @@ void Enemy::Spawn() {
 	spawnFlag = true;
 }
 void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName) {
-	pManager.Initialize(viewProjection, matProjection, L"Resources/red1x1.png");
 	gameObject = new GameObject3D();
 	gameObject->PreLoadTexture(textureFileName);
 	gameObject->PreLoadModel("Resources/enemy/enemy.obj");
 	gameObject->SetViewProjection(viewProjection);
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
+	pManager.Initialize(viewProjection, matProjection, L"Resources/red1x1.png", gameObject->worldTransform.translation);
 
 	gameObject->worldTransform.scale = { 2 , 2 , 2 };
 
@@ -31,7 +31,6 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 	isCoolDown = true;
 	isAttack = false;
 	spawnFlag = false;
-	pManager.Initialize(viewProjection, matProjection, L"Resources/purple1x1.png");
 	//spManager.Initialize(viewProjection, matProjection);
 }
 
@@ -136,9 +135,10 @@ void Enemy::Draw() {
 }
 
 void Enemy::Reset() {
-	pManager.Reset();
+	pManager.Reset(gameObject->worldTransform.translation);
 	phase = Phase::Attack;
 	phaseTimer = 300.0f;
+	deleteTimer_ = 60 * 15;
 	if (spawnFlag == true)
 	{
 		spawnFlag = false;
