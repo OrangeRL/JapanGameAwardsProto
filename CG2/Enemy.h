@@ -60,6 +60,7 @@ public:
 	bool SetisDead(bool isDead) {return isDelete_ = isDead; }
 
 	int GetSpownFlag();
+	int SetSpownFlag(int spownFlag) { return this->spawnFlag = spownFlag; }
 
 	bool IsDead()const { return isDelete_; }
 

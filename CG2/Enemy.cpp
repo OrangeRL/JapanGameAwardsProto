@@ -139,9 +139,10 @@ void Enemy::Reset() {
 	pManager.Reset();
 	phase = Phase::Attack;
 	phaseTimer = 300.0f;
-	spawnFlag = false;
-	gameObject->worldTransform.translation = { 2 , 2 , 2 };
-
+	if (spawnFlag == true)
+	{
+		spawnFlag = false;
+	}
 }
 //反復
 void Enemy::Repetition()

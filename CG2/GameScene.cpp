@@ -113,8 +113,6 @@ void GameScene::Initialize(WinApp* winApp)
 		enemys1.push_back(std::move(newEnemy));
 	}
 	//loadEnemyPopData(1);
-	//ボスの雑魚敵の配置
-	loadBossPopData(1);
 	loadCount = false;
 }
 
@@ -288,11 +286,10 @@ void GameScene::StageUpdate()
 #pragma endregion
 			enemyPos = enemy->GetWorldTransform().translation;
 		}
-		//敵1の削除
+		//敵の削除
 		enemys1.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
 
 		//ボス関連
-
 		if (rhythm->GetSoundState().wave == 3) {
 			boss->Update();
 #pragma region made BossBullet
@@ -334,9 +331,6 @@ void GameScene::StageUpdate()
 
 			}
 #pragma endregion
-			if (boss->GetPhase() == BossPhase::defence) {
-				UpdateBossPopCommand();
-			}
 		}
 		if (input_.PushKey(DIK_R)) {
 			Reset();
@@ -396,7 +390,8 @@ void GameScene::StageUpdate()
 	////	playerBullet->GetWorldTransform().translation.x, playerBullet->GetWorldTransform().translation.y, playerBullet->GetWorldTransform().translation.z);
 	//debugText.Printf(0, 150, 1.0f, 14, " Boss:%2f,%2f,%2f",
 	//	boss->GetWorldTransform().translation.x, boss->GetWorldTransform().translation.y, boss->GetWorldTransform().translation.z);
-	//debugText.Printf(0, 200, 1.0f, 12, "Enemy:%d", spawntime);
+	debugText.Printf(0, 200, 1.0f, 12, "Enemy:%d", spawntime);
+	
 #pragma endregion
 }
 
@@ -436,7 +431,10 @@ void GameScene::StageDraw() {
 	}*/
 	//敵の描画
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
-		enemy->Draw();
+		if (enemy->GetSpownFlag() == true)
+		{
+			enemy->Draw();
+		}
 	}
 
 	if (rhythm->GetSoundState().wave == 3) {
@@ -485,6 +483,12 @@ void GameScene::Reset() {
 	particle->Reset();
 	particle2->Reset();
 	spawntime = 0;
+
+	for (int i = 1; i <= enemyVal; i++) {
+		for (std::unique_ptr<Enemy>& newEnemy : enemys1) {
+			newEnemy->Reset();
+		}
+	}
 }
 
 void GameScene::Collisions() {
@@ -770,9 +774,9 @@ void GameScene::LoadCsv(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
+				//if (newEnemy->GetSpownFlag() == false) {
 					newEnemy->Spawn();
-				}
+				//}
 			}
 			i++;
 		}
@@ -782,9 +786,9 @@ void GameScene::LoadCsv(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
+				//if (newEnemy->GetSpownFlag() == false) {
 					newEnemy->Spawn();
-				}
+				//}
 			}
 			i++;
 		}
@@ -794,9 +798,9 @@ void GameScene::LoadCsv(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
+				//if (newEnemy->GetSpownFlag() == false) {
 					newEnemy->Spawn();
-				}
+				//}
 			}
 			i++;
 		}
@@ -806,9 +810,9 @@ void GameScene::LoadCsv(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
+				//if (newEnemy->GetSpownFlag() == false) {
 					newEnemy->Spawn();
-				}
+				//}
 			}
 			i++;
 		}
@@ -818,9 +822,9 @@ void GameScene::LoadCsv(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
+				//if (newEnemy->GetSpownFlag() == false) {
 					newEnemy->Spawn();
-				}
+				//}
 			}
 			i++;
 		}
@@ -830,9 +834,9 @@ void GameScene::LoadCsv(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
+				//if (newEnemy->GetSpownFlag() == false) {
 					newEnemy->Spawn();
-				}
+				//}
 			}
 			i++;
 		}
@@ -842,9 +846,9 @@ void GameScene::LoadCsv(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
+				//if (newEnemy->GetSpownFlag() == false) {
 					newEnemy->Spawn();
-				}
+				//}
 			}
 			i++;
 		}
@@ -854,9 +858,9 @@ void GameScene::LoadCsv(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
+				//if (newEnemy->GetSpownFlag() == false) {
 					newEnemy->Spawn();
-				}
+				//
 			}
 			i++;
 		}
@@ -866,15 +870,11 @@ void GameScene::LoadCsv(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
+				//if (newEnemy->GetSpownFlag() == false) {
 					newEnemy->Spawn();
-				}
+				//}
 			}
 			i++;
-		}
-		if (input_.PushKey(DIK_R)) {
-			newEnemy->Reset();
-			newEnemy->Settransform({ 0.0f, 0.0f, -1000.0f });
 		}
 	}
 }
