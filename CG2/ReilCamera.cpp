@@ -1,11 +1,11 @@
 #include "ReilCamera.h"
 
-void ReilCamera::Initialize(Vector3 pos, Vector3 rot) {
+void ReilCamera::Initialize(Vector3 pos, Vector3 rot, WinApp* winApp) {
 	worldTransform_.translation = pos;
 	worldTransform_.rotation = rot;
 	worldTransform_.scale = { 1.0f,1.0f,1.0f };
 
-	viewProjection_.Initialize();
+	viewProjection_.Initialize(winApp);
 }
 
 void ReilCamera::Update(Input* input,float wave) {

@@ -189,7 +189,7 @@ Matrix4 MathFunc::Utility::CreatMatView(Vector3 eye , Vector3 target , Vector3 u
 		XMLoadFloat3(&xmEye) , XMLoadFloat3(&xmTarget) , XMLoadFloat3(&xmUp));
 
 	//xmMatView *= XMMatrixPerspectiveFovLH(XM_PIDIV4,1280 / 720,1.0f,100.0f);
-	xmMatView *= XMMatrixPerspectiveFovLH(2.0f,1280 / 720,1.0f,100.0f);
+	//xmMatView *= XMMatrixPerspectiveFovLH(2.0f,1280 / 720,1.0f,100.0f);
 
 	matView = MathFunc::Utility::ConvertXMMATRIXtoMatrix4(xmMatView);
 

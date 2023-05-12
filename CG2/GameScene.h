@@ -96,7 +96,7 @@ public: // メンバ関数
 	Vector3 GetHitboxPosition1() { return hitboxPosition1; }
 	Vector3 GetHitboxRotation1() { return hitboxRotation1; }
 	Vector3 GetHitboxScale1() { return hitboxScale1; }
-  
+
 	/// <summary>
 	/// 敵発生データの読み込み
 	/// </summary>
@@ -145,6 +145,9 @@ private: // メンバ変数
 
 	//アイテム
 	std::list<std::unique_ptr<Item>>items_;
+
+	FbxModel* model1 = nullptr;
+	FbxObject3D* object1 = nullptr;
 
 	Vector3 enemyPos = {};
 	//シーン管理

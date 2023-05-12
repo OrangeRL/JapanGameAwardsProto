@@ -7,7 +7,7 @@
 class ReilCamera
 {
 public:
-	void Initialize(Vector3 pos, Vector3 rot);
+	void Initialize(Vector3 pos, Vector3 rot, WinApp* winApp);
 
 	void Update(Input* input,float wave);
 

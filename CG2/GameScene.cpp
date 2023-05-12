@@ -43,7 +43,7 @@ void GameScene::Initialize(WinApp* winApp)
 	UIManager.Initialize(1);
 
 
-	viewProjection_.Initialize();
+	viewProjection_.Initialize(winApp);
 
 	//XAudioエンジンのインスタンスを生成
 	//soundManager_ = new SoundManager();
@@ -60,7 +60,8 @@ void GameScene::Initialize(WinApp* winApp)
 
 	//レールカメラ
 	reilCamera = new ReilCamera();
-	reilCamera->Initialize({ 0,0,-50 }, { 0,0,0 });
+	//reilCamera->Initialize({ 0,0,-50 }, { 0,0,0 },winApp);
+	reilCamera->Initialize({ 0,0,-50 }, { 0,0,0 }, winApp);
 
 	//アイテム
 	//item = new Item();
@@ -70,296 +71,303 @@ void GameScene::Initialize(WinApp* winApp)
 	player->Initialize(&viewProjection_, &matProjection_);
 	player->SetPos({ 0.0f, 0.0f, 20.0f });
 
-	boss = new Boss();
-	boss->Initialize(&viewProjection_, &matProjection_);
+	//boss = new Boss();
+	//boss->Initialize(&viewProjection_, &matProjection_);
 
 	viewProjection_ = reilCamera->GetViewProjection();
 
 	//player->SetMap(map);
 	//player->SetGoal(goal);
 
-	particle = new Particle;
-	particle->Initialize(&viewProjection_, &matProjection_, player);
+	//particle = new Particle;
+	//particle->Initialize(&viewProjection_, &matProjection_, player);
 
-	particle2 = new Particle;
-	particle2->Initialize(&viewProjection_, &matProjection_, player);
+	//particle2 = new Particle;
+	//particle2->Initialize(&viewProjection_, &matProjection_, player);
 
-	particle3 = new Particle;
-	particle3->Initialize(&viewProjection_, &matProjection_, player);
-
+	//particle3 = new Particle;
+	//particle3->Initialize(&viewProjection_, &matProjection_, player);
 	//loadEnemyPopData();
 	//モデル名を指定してファイル読み込み
-	FbxLoader::GetInstance()->LoadModelFromFile("cube");
+	model1 = FbxLoader::GetInstance()->LoadModelFromFile("cube");
 
 	//デバイスをセット
-	/*FbxObject3D::SetDevice(dx12base_.GetDevice());
-	FbxObject3D::SetCamera(&viewProjection_);*/
+	FbxObject3D::SetDevice(dx12base_.GetDevice());
+	FbxObject3D::SetCamera(&viewProjection_);
+	FbxObject3D::CreateGraphicsPipeline();
 
-	rhythm = new Rhythm();
-	rhythm->Initialize(&viewProjection_, &matProjection_);
-	spawntime = 0;
-#pragma region enemy初期化
+	object1 = new FbxObject3D;
+	object1->SetViewProjection(&viewProjection_);
+	object1->SetMatProjection(&matProjection_);
+	object1->Initialize();
+	object1->SetModel(model1);
 
-	for (int i = 1; i <= enemyVal; i++)
-	{
-		std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
-		newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/red1x1.png");
-		newEnemy->Settransform({ 0.0f, 0.0f, -1000.0f });
-		//pManager[i].Initialize(&viewProjection_, &matProjection_, L"Resources/purple1x1.png");
-		//敵を登録
-		enemys1.push_back(std::move(newEnemy));
-	}
-	//loadEnemyPopData(1);
-	//ボスの雑魚敵の配置
-	loadBossPopData(1);
+	//rhythm = new Rhythm();
+	//rhythm->Initialize(&viewProjection_, &matProjection_);
+//	spawntime = 0;
+//#pragma region enemy初期化
+//
+//	for (int i = 1; i <= enemyVal; i++)
+//	{
+//		std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
+//		newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/red1x1.png");
+//		newEnemy->Settransform({ 0.0f, 0.0f, -1000.0f });
+//		//pManager[i].Initialize(&viewProjection_, &matProjection_, L"Resources/purple1x1.png");
+//		//敵を登録
+//		enemys1.push_back(std::move(newEnemy));
+//	}
+//	//loadEnemyPopData(1);
+//	//ボスの雑魚敵の配置
+//	loadBossPopData(1);
 }
 
 void GameScene::Update()
 {
-	spawntime += 1;
-	LoadCsv(L"Resources/enemyPos.csv", enemyVal);
-	//ランダムな整数
+	//spawntime += 1;
+	//LoadCsv(L"Resources/enemyPos.csv", enemyVal);
+	////ランダムな整数
 	std::default_random_engine engine(seed_gen());
 
 	viewProjection_ = reilCamera->GetViewProjection();
 
 	viewProjection_.UpdateView();
 
-	//UI更新
-	UIManager.Update(rhythm, &input_, player->GetIsDead());
+	////UI更新
+	//UIManager.Update(rhythm, &input_, player->GetIsDead());
 
-	if (rhythm->GetSoundState().isPause == 0) {
+	//if (rhythm->GetSoundState().isPause == 0) {
 
 		player->Update(reilCamera->GetWorldTransform(), reilCamera->GetWorldTransform().rotation);
 
-		if (player->GetIsDead() == false) {
-			reilCamera->Update(&input_, rhythm->GetSoundState().wave);
-		}
+	//	if (player->GetIsDead() == false) {
+	//		reilCamera->Update(&input_, rhythm->GetSoundState().wave);
+	//	}
 
-		particle->Update();
-		particle2->Update2();
+	//	particle->Update();
+	//	particle2->Update2();
 
 		skydome->Update();
 		
+//
+//		crosshair->SetPosition({ player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y });
+//		crosshair->Sprite::SetSize({ 1,1 });
+//
+//		//アイテムの更新処理
+//		for (std::unique_ptr<Item>& item : items_) {
+//					item->Update();
+//		}
+//
+//		//デスフラグの立ったアイテムを削除
+//		items_.remove_if([](std::unique_ptr<Item>& item) {
+//			return item->GetIsDead();
+//		});
+//
+//		//アイテム生成
+//		if (input_.TriggerKey(DIK_T)) {
+//			std::uniform_int_distribution<> dist(0, 4);
+//			int value = dist(engine);
+//			//アイテムを生成し、初期化
+//			std::unique_ptr<Item>item = std::make_unique<Item>();
+//			item->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", { player->GetPos().x,player->GetPos().y,player->GetPos().z + 20.0f }, value);
+//
+//			//アイテムを登録する
+//			items_.push_back(std::move(item));
+//		}
+//
+//		//敵の更新処理
+//		for (std::unique_ptr<Enemy>& enemy : enemys1) {
+//			enemy->Update(&viewProjection_, &matProjection_, 0);
+//			if (enemy->IsDead()) {
+//				player->NotAimHit();
+//			}
+//#pragma region makeEnemyBullet
+//			if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::move) {
+//				//弾を生成
+//				std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
+//				//初期化
+//				bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetPos(), enemy->GetWorldTransform().translation);
+//				bullet->SetTransform(enemy->GetWorldTransform().translation);
+//				//使う弾の設定
+//				bullet->SetBullet(enemy->GetBulletNum());
+//				bullets1.push_back(std::move(bullet));
+//				//攻撃頻度の設定 1(速い)~ >1(遅い)
+//				enemy->SetAttackSpeed(100.0f);
+//
+//				if (enemy->GetIsAttack() == false) {
+//					enemy->SetIsAttack(true);
+//				}
+//			}
+//			
+//			if (enemy->GetIsAttack() == true) {
+//				for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
+//					bullet->Update();
+//				}
+//			}
+//
+//
+//			//弾&敵を削除する
+//			bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
+//#pragma endregion
+//			enemyPos = enemy->GetWorldTransform().translation;
+//		}
+//		//敵1の削除
+//		enemys1.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
+//		
+//		//ボス関連
+//
+//		if (rhythm->GetSoundState().wave == 3) {
+//			boss->Update();
+//#pragma region made BossBullet
+//			if (boss->GetIsDead() == false) {
+//				if (boss->GetPhase() == BossPhase::attack && boss->GetAttackSpeed() <= 0.0f) {
+//					//弾を生成
+//					std::unique_ptr<BossBullet> bullet = std::make_unique<BossBullet>();
+//					bullet->Initialize(&viewProjection_, &matProjection_, player->GetPos(), boss->GetWorldTransform().translation);
+//					bullet->SetTransform(boss->GetWorldTransform().translation);
+//					bossBullet1.push_back(std::move(bullet));
+//					boss->SetAttackSpeed(50.0f);
+//					if (boss->GetIsAttack() == false) {
+//						boss->SetIsAttack(true);
+//					}
+//				}
+//				if (boss->GetPhase() == BossPhase::attack2 && boss->GetAttackSpeed() <= 0.0f) {
+//					//弾を生成
+//					std::unique_ptr<BossBullet> bullet = std::make_unique<BossBullet>();
+//					bullet->Initialize(&viewProjection_, &matProjection_, player->GetPos(), boss->GetWorldTransform().translation);
+//					bullet->SetTransform(boss->GetWorldTransform().translation);
+//					bossBullet2.push_back(std::move(bullet));
+//					boss->SetAttackSpeed(150.0f);
+//					if (boss->GetIsAttack() == false) {
+//						boss->SetIsAttack(true);
+//					}
+//				}
+//
+//				if (boss->GetIsAttack() == true) {
+//					for (std::unique_ptr<BossBullet>& bullet : bossBullet1) {
+//						bullet->Update(boss->GetPhase());
+//					}
+//					for (std::unique_ptr<BossBullet>& bullet : bossBullet2) {
+//						bullet->Update(boss->GetPhase());
+//					}
+//				}
+//				//弾&敵を削除する
+//				bossBullet1.remove_if([](std::unique_ptr<BossBullet>& bullet) { return bullet->IsDead(); });
+//				bossBullet2.remove_if([](std::unique_ptr<BossBullet>& bullet) { return bullet->IsDead(); });
+//
+//			}
+//#pragma endregion
+//			if (boss->GetPhase() == BossPhase::defence) {
+//				UpdateBossPopCommand();
+//			}
+//		}
+		//if (player->GetIsDead() == false) {
+		//	//UpdateEnemyPopCommand();
+		//}
 
-		crosshair->SetPosition({ player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y });
-		crosshair->Sprite::SetSize({ 1,1 });
+		//	//UpdateEnemyPopCommand();
+		//	if (player->GetIsDead() == false) {
+		//		//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
+		//	}
 
-		//アイテムの更新処理
-		for (std::unique_ptr<Item>& item : items_) {
-					item->Update();
-		}
+		//	if (player->GetIsDead() == false) {
+		//		//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
+		//	}
 
-		//デスフラグの立ったアイテムを削除
-		items_.remove_if([](std::unique_ptr<Item>& item) {
-			return item->GetIsDead();
-		});
+		//	if (input_.PushKey(DIK_R)) {
+		//		Reset();
+		//	}
 
-		//アイテム生成
-		if (input_.TriggerKey(DIK_T)) {
-			std::uniform_int_distribution<> dist(0, 4);
-			int value = dist(engine);
-			//アイテムを生成し、初期化
-			std::unique_ptr<Item>item = std::make_unique<Item>();
-			item->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", { player->GetPos().x,player->GetPos().y,player->GetPos().z + 20.0f }, value);
+		//	/*if (player->GetIsDead() == true && particle->GetIsDead() == true) {
+		//		if (gameoverTimer <= 0) {
+		//			gameoverTimer = 5;
+		//		}
+		//		else {
+		//			gameoverTimer--;
+		//			if (gameoverTimer <= 0) {
+		//				stage = 1;
+		//				Reset();
+		//				scene_ = Scene::Title;
+		//			}
+		//		}
+		//	}*/
+		//	rhythm->Update(&input_, player->GetPos(), reilCamera->GetWorldTransform().rotation, player->GetIsDead(), stage);
+		//	//プレイヤーの弾発射処理
+		//	if (input_.TriggerKey(DIK_SPACE) && rhythm->GetSoundState().isFireSucces) {
+		//		player->NewBullet(&viewProjection_, &matProjection_, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,0.0f }, rhythm->GetSoundState().weapon);
+		//		//player->NewBulletAim(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
+		//		
+		//	}
+		//	Collisions();
+		//	player->Aim(player->GetWorldTransform().translation, { 0,0,100 }, reilCamera->GetWorldTransform().rotation, 0.0f);
 
-			//アイテムを登録する
-			items_.push_back(std::move(item));
-		}
-
-		//敵の更新処理
-		for (std::unique_ptr<Enemy>& enemy : enemys1) {
-			enemy->Update(&viewProjection_, &matProjection_, 0);
-			if (enemy->IsDead()) {
-				player->NotAimHit();
-			}
-#pragma region makeEnemyBullet
-			if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::move) {
-				//弾を生成
-				std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
-				//初期化
-				bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetPos(), enemy->GetWorldTransform().translation);
-				bullet->SetTransform(enemy->GetWorldTransform().translation);
-				//使う弾の設定
-				bullet->SetBullet(enemy->GetBulletNum());
-				bullets1.push_back(std::move(bullet));
-				//攻撃頻度の設定 1(速い)~ >1(遅い)
-				enemy->SetAttackSpeed(100.0f);
-
-				if (enemy->GetIsAttack() == false) {
-					enemy->SetIsAttack(true);
-				}
-			}
-			
-			if (enemy->GetIsAttack() == true) {
-				for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
-					bullet->Update();
-				}
-			}
-
-
-			//弾&敵を削除する
-			bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
-#pragma endregion
-			enemyPos = enemy->GetWorldTransform().translation;
-		}
-		//敵1の削除
-		enemys1.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
-		
-		//ボス関連
-
-		if (rhythm->GetSoundState().wave == 3) {
-			boss->Update();
-#pragma region made BossBullet
-			if (boss->GetIsDead() == false) {
-				if (boss->GetPhase() == BossPhase::attack && boss->GetAttackSpeed() <= 0.0f) {
-					//弾を生成
-					std::unique_ptr<BossBullet> bullet = std::make_unique<BossBullet>();
-					bullet->Initialize(&viewProjection_, &matProjection_, player->GetPos(), boss->GetWorldTransform().translation);
-					bullet->SetTransform(boss->GetWorldTransform().translation);
-					bossBullet1.push_back(std::move(bullet));
-					boss->SetAttackSpeed(50.0f);
-					if (boss->GetIsAttack() == false) {
-						boss->SetIsAttack(true);
-					}
-				}
-				if (boss->GetPhase() == BossPhase::attack2 && boss->GetAttackSpeed() <= 0.0f) {
-					//弾を生成
-					std::unique_ptr<BossBullet> bullet = std::make_unique<BossBullet>();
-					bullet->Initialize(&viewProjection_, &matProjection_, player->GetPos(), boss->GetWorldTransform().translation);
-					bullet->SetTransform(boss->GetWorldTransform().translation);
-					bossBullet2.push_back(std::move(bullet));
-					boss->SetAttackSpeed(150.0f);
-					if (boss->GetIsAttack() == false) {
-						boss->SetIsAttack(true);
-					}
-				}
-
-				if (boss->GetIsAttack() == true) {
-					for (std::unique_ptr<BossBullet>& bullet : bossBullet1) {
-						bullet->Update(boss->GetPhase());
-					}
-					for (std::unique_ptr<BossBullet>& bullet : bossBullet2) {
-						bullet->Update(boss->GetPhase());
-					}
-				}
-				//弾&敵を削除する
-				bossBullet1.remove_if([](std::unique_ptr<BossBullet>& bullet) { return bullet->IsDead(); });
-				bossBullet2.remove_if([](std::unique_ptr<BossBullet>& bullet) { return bullet->IsDead(); });
-
-			}
-#pragma endregion
-			if (boss->GetPhase() == BossPhase::defence) {
-				UpdateBossPopCommand();
-			}
-		}
-		if (player->GetIsDead() == false) {
-			//UpdateEnemyPopCommand();
-		}
-
-			//UpdateEnemyPopCommand();
-			if (player->GetIsDead() == false) {
-				//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
-			}
-
-			if (player->GetIsDead() == false) {
-				//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
-			}
-
-			if (input_.PushKey(DIK_R)) {
-				Reset();
-			}
-
-			/*if (player->GetIsDead() == true && particle->GetIsDead() == true) {
-				if (gameoverTimer <= 0) {
-					gameoverTimer = 5;
-				}
-				else {
-					gameoverTimer--;
-					if (gameoverTimer <= 0) {
-						stage = 1;
-						Reset();
-						scene_ = Scene::Title;
-					}
-				}
-			}*/
-			rhythm->Update(&input_, player->GetPos(), reilCamera->GetWorldTransform().rotation, player->GetIsDead(), stage);
-			//プレイヤーの弾発射処理
-			if (input_.TriggerKey(DIK_SPACE) && rhythm->GetSoundState().isFireSucces) {
-				player->NewBullet(&viewProjection_, &matProjection_, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,0.0f }, rhythm->GetSoundState().weapon);
-				//player->NewBulletAim(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
-				
-			}
-			Collisions();
-			player->Aim(player->GetWorldTransform().translation, { 0,0,100 }, reilCamera->GetWorldTransform().rotation, 0.0f);
+		object1->Update();
 	}	
 
 #pragma region DebugText
-	debugText.Printf(0, 100, 1.0f, 18, " Q,E...offset:%f", rhythm->GetSoundState().offset);
-	debugText.Printf(0, 140, 1.0f, 25, " Up,Dawn...BGMVolume:%f", rhythm->GetSoundState().BGMVolume);
-	debugText.Printf(0, 160, 1.0f, 32, " Left,Right...guideSEVolume:%f", rhythm->GetSoundState().guideSEVolume);
-	debugText.Printf(0, 120, 1.0f, 10, " Timer:%f", rhythm->GetSoundState().timer);
-	debugText.Printf(0, 180, 1.0f, 17, " measureCount:%d", rhythm->GetSoundState().measureCount);
-	debugText.Printf(0, 200, 1.0f, 9, " weapon:%d", rhythm->GetSoundState().weapon);
-	debugText.Printf(0, 280, 1.0f, 9, " spawn:%d", spawntime);
-	debugText.Printf(0, 220, 1.0f, 7, " wave:%f", rhythm->GetSoundState().wave);
-	debugText.Printf(0, 240, 1.0f, 11, " rotY:%f", reilCamera->GetRotation().x);
-	debugText.Printf(0, 260, 1.0f, 27, " %f,%f,%f",
-		player->GetWorldTransform().matWorld.m[3][0],
-		player->GetWorldTransform().matWorld.m[3][1],
-		player->GetWorldTransform().matWorld.m[3][2]);
+	//debugText.Printf(0, 100, 1.0f, 18, " Q,E...offset:%f", rhythm->GetSoundState().offset);
+	//debugText.Printf(0, 140, 1.0f, 25, " Up,Dawn...BGMVolume:%f", rhythm->GetSoundState().BGMVolume);
+	//debugText.Printf(0, 160, 1.0f, 32, " Left,Right...guideSEVolume:%f", rhythm->GetSoundState().guideSEVolume);
+	//debugText.Printf(0, 120, 1.0f, 10, " Timer:%f", rhythm->GetSoundState().timer);
+	//debugText.Printf(0, 180, 1.0f, 17, " measureCount:%d", rhythm->GetSoundState().measureCount);
+	//debugText.Printf(0, 200, 1.0f, 9, " weapon:%d", rhythm->GetSoundState().weapon);
+	//debugText.Printf(0, 280, 1.0f, 9, " spawn:%d", spawntime);
+	//debugText.Printf(0, 220, 1.0f, 7, " wave:%f", rhythm->GetSoundState().wave);
+	//debugText.Printf(0, 240, 1.0f, 11, " rotY:%f", reilCamera->GetRotation().x);
+	//debugText.Printf(0, 260, 1.0f, 27, " %f,%f,%f",
+	//	player->GetWorldTransform().matWorld.m[3][0],
+	//	player->GetWorldTransform().matWorld.m[3][1],
+	//	player->GetWorldTransform().matWorld.m[3][2]);
 
-	debugText.Printf(0, 280, 1.0f, 11, " Phase : %d", boss->GetPhase());
-#pragma endregion
-}
+//	debugText.Printf(0, 280, 1.0f, 11, " Phase : %d", boss->GetPhase());
+//#pragma endregion
+//}
 
 void GameScene::Draw() {
 	//3D描画
 	//プレイヤー描画
 	
 
-	rhythm->Draw(player->GetIsDead());
-	particle->Draw();
-	particle2->Draw();
+	//rhythm->Draw(player->GetIsDead());
+	//particle->Draw();
+	//particle2->Draw();
 	
 	/*for (int i = 0; i < enemyVal; i++) {
 		pManager[i].Draw();
 	}*/
 	//敵の描画
-	for (std::unique_ptr<Enemy>& enemy : enemys1) {
-		enemy->Draw();
+	//for (std::unique_ptr<Enemy>& enemy : enemys1) {
+	//	enemy->Draw();
+	//}
 
-	}
+	//if (rhythm->GetSoundState().wave == 3) {
+	//	boss->Draw();
+	//	for (std::unique_ptr<BossBullet>& bullet : bossBullet1) {
+	//		bullet->Draw();
+	//	}
 
-	if (rhythm->GetSoundState().wave == 3) {
-		boss->Draw();
-		for (std::unique_ptr<BossBullet>& bullet : bossBullet1) {
-			bullet->Draw();
-		}
+	//	for (std::unique_ptr<BossBullet>& bullet : bossBullet2) {
+	//		bullet->Draw();
+	//	}
+	//}
 
-		for (std::unique_ptr<BossBullet>& bullet : bossBullet2) {
-			bullet->Draw();
-		}
-	}
-
-	for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
-		bullet->Draw();
-	}
-	for (std::unique_ptr<EnemyBullet>& bullet : bullets2) {
-		bullet->Draw();
-	}
+	//for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
+	//	bullet->Draw();
+	//}
+	//for (std::unique_ptr<EnemyBullet>& bullet : bullets2) {
+	//	bullet->Draw();
+	//}
+	
 	player->Draw();
 	//アイテム描画
-	for (std::unique_ptr<Item>& item : items_) { item->Draw(); }
+	//for (std::unique_ptr<Item>& item : items_) { item->Draw(); }
 	skydome->Draw();
-
+	object1->Draw(dx12base_.GetCmdList().Get());
 	//スプライト描画
 	Sprite::PreDraw(dx12base_.GetCmdList().Get());
 
-
-	crosshair->Draw();
-	
-	UIManager.Draw(rhythm);
+	//crosshair->Draw();
+	//
+	//UIManager.Draw(rhythm);
   
 	// デバッグテキストの描画
 	debugText.DrawAll(dx12base_.GetCmdList().Get());

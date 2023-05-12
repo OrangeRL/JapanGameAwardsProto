@@ -7,6 +7,7 @@
 #include<wrl.h>
 #include<d3d12.h>
 #include<d3dx12.h>
+#include "DX12base.h"
 struct Node
 {
 	//名前
@@ -57,6 +58,7 @@ private:
 	//スクラッチイメージ
 	DirectX::ScratchImage scratchImg = {};
 
+	static ID3D12GraphicsCommandList* cmdList;
 private:	//エイリアス
 	//Microsoft::WRL::を省略
 	template<class T>using ComPtr = Microsoft::WRL::ComPtr<T>;
@@ -84,6 +86,8 @@ private:
 	D3D12_INDEX_BUFFER_VIEW ibView = {};
 	//SRV用デスクリプタヒープ
 	ComPtr<ID3D12DescriptorHeap>descHeapSRV;
+
+	DX12base& dx12base = DX12base::GetInstance();
 
 public:
 	//コンストラクタ

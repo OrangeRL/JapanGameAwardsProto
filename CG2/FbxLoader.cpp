@@ -29,7 +29,7 @@ void FbxLoader::Initialize(ComPtr<ID3D12Device> device)
 	fbxImporter = FbxImporter::Create(fbxManager, "");
 }
 
-void FbxLoader::LoadModelFromFile(const std::string& modelName)
+FbxModel* FbxLoader::LoadModelFromFile(const std::string& modelName)
 {
 	//モデルと同じ名前のフォルダから読み込む
 	const std::string directoryPath = baseDirectory + modelName + "/";
@@ -63,6 +63,8 @@ void FbxLoader::LoadModelFromFile(const std::string& modelName)
 
 	//バッファ生成
 	model->CreateBuffers(device);
+
+	return model;
 }
 
 void FbxLoader::ParseNodeRecursive(FbxModel* model, FbxNode* fbxNode, Node* parent)

@@ -33,7 +33,7 @@ public:
 	void Finalize();
 
 	///<summary>///ファイルからFBXモデル読込///</summary>///<paramname="modelName">モデル名</param>
-	void LoadModelFromFile(const std::string& modelName);
+	FbxModel* LoadModelFromFile(const std::string& modelName);
 
 	///<summary>///再帰的にノード構成を解析///</summary>///<paramname="model">読み込み先モデルオブジェクト</param>///<paramname="fbxNode">解析対象のノード</param>
 	void ParseNodeRecursive(FbxModel* model, FbxNode* fbxNode, Node* parent = nullptr);
