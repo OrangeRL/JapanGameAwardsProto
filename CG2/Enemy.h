@@ -35,6 +35,7 @@ public:
 	void Leave(Vector3 leaveSpeedt, Vector3 leaveSpeedf,int enemyNum);
 
 	void Spawn();
+	void AimCheck();
 
 	void OnCollision(Rhythm* rhythm);
 
@@ -60,6 +61,7 @@ public:
 	bool SetisDead(bool isDead) {return isDelete_ = isDead; }
 
 	int GetSpownFlag();
+	int GetAimFlag();
 
 	bool IsDead()const { return isDelete_; }
 
@@ -71,6 +73,7 @@ private:
 	float phaseTimer = 300.0f;
 	
 	GameObject3D* gameObject = nullptr;
+	GameObject3D* aimObject = nullptr;
 
 	Vector3 position = { 10.0f,5.0f,0.0f };
 
@@ -96,7 +99,7 @@ private:
 	Particle2 pManager;
 
 	int spawnFlag = false;
-
+	int aimFlag = false;
 };
 
 

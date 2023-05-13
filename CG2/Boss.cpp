@@ -12,6 +12,7 @@ void Boss::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 	gameObject->worldTransform.scale = { 3 , 3 , 3 };
 	gameObject->worldTransform.rotation = { 0,90,0 };
 	gameObject->worldTransform.translation = { 0 , 0 , 1200 };
+	HP = 25;
 }
 
 void Boss::Update()

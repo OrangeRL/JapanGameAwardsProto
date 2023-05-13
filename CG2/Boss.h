@@ -35,6 +35,7 @@ public:
 	bool SetIsAttack(bool isAttack);
 	bool GetIsDead();
 	int GetHP();
+	int SetHP(int HP) { return this->HP = HP; }
 
 	//Ž€–S—p
 	void OnCollision();
@@ -50,7 +51,7 @@ private:
 	float responTimer = 10.0f;
 	bool trueDead = false;
 	bool isDead = false;
-	int HP = 50;
+	int HP = 25;
 
 	float attackSpeed = 200.0f;
 	bool isAttack = false;

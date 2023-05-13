@@ -204,6 +204,10 @@ private: // メンバ変数
 	//UI関連
 	UIManager UIManager;
 
+	bool loadCount = false;
+
+	int aimCount = 0;
+	bool collisionOccurred = false;  // 判定をトラッキングする
 // 敵コマンド関係
 //------------------------------------
 	std::stringstream enemyPopCommand;
