@@ -175,6 +175,7 @@ void GameScene::TitleUpdate() {
 	}
 
 	if (sceneShiftFlame <= 0) {
+		Reset();
 		scene_ = Scene::Stage;
 	}
 
@@ -202,6 +203,10 @@ void GameScene::StageUpdate()
 	if (loadCount = true) {
 		LoadCsv(enemyVal);
 		LoadCsv2(enemyVal);
+	}
+	else if(loadCount == false)
+	{
+		loadCount = true;
 	}
 
 	//ランダムな整数
@@ -484,11 +489,21 @@ void GameScene::Reset() {
 	player->SetPos({ 0.0f, 0.0f, 20.0f });
 	particle->Reset();
 	particle2->Reset();
+	boss->Reset();
 	spawntime = 0;
 
+	if (loadCount == true)
+	{
+		loadCount = false;
+	}
 	for (int i = 1; i <= enemyVal; i++) {
 		for (std::unique_ptr<Enemy>& newEnemy : enemys1) {
 			newEnemy->Reset();
+		}
+	}
+	for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
+		if (bullet->GetIsDead() == false) {
+			bullet->SetIsDead(true);
 		}
 	}
 }

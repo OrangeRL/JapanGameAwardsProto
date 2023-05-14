@@ -51,32 +51,32 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 		//移動関連
 		switch (moveNum)
 		{
-		case 1:
+		case 1: //前
 			moveSpeed.x = 0.0f;
 			moveSpeed.y = 0.0f;
 			moveSpeed.z = 0.3f;
 			break;
-		case 2:
+		case 2: //後
 			moveSpeed.x = 0.0f;
 			moveSpeed.y = 0.0f;
 			moveSpeed.z = -0.1f;
 			break;
-		case 3:
+		case 3: //上
 			moveSpeed.x = 0.0f;
 			moveSpeed.y = 0.1f;
 			moveSpeed.z = 0.0f;
 			break;
-		case 4:
+		case 4: //下
 			moveSpeed.x = 0.0f;
 			moveSpeed.y = -0.1f;
 			moveSpeed.z = 0.0f;
 			break;
-		case 5:
+		case 5: //右
 			moveSpeed.x = 0.1f;
 			moveSpeed.y = 0.0f;
 			moveSpeed.z = 0.0f;
 			break;
-		case 6:
+		case 6: //左
 			moveSpeed.x = -0.1f;
 			moveSpeed.y = 0.0f;
 			moveSpeed.z = 0.0f;
