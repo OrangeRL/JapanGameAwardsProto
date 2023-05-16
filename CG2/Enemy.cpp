@@ -15,13 +15,13 @@ void Enemy::AimCheck() {
 	aimFlag = true;
 }
 void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName) {
-	pManager.Initialize(viewProjection, matProjection, L"Resources/red1x1.png");
 	gameObject = new GameObject3D();
 	gameObject->PreLoadTexture(textureFileName);
 	gameObject->PreLoadModel("Resources/enemy/enemy.obj");
 	gameObject->SetViewProjection(viewProjection);
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
+	pManager.Initialize(viewProjection, matProjection, L"Resources/red1x1.png", gameObject->worldTransform.translation);
 
 	gameObject->worldTransform.scale = { 2 , 2 , 2 };
 
@@ -64,32 +64,32 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 		//移動関連
 		switch (moveNum)
 		{
-		case 1:
+		case 1: //前
 			moveSpeed.x = 0.0f;
 			moveSpeed.y = 0.0f;
 			moveSpeed.z = 0.3f;
 			break;
-		case 2:
+		case 2: //後
 			moveSpeed.x = 0.0f;
 			moveSpeed.y = 0.0f;
 			moveSpeed.z = -0.1f;
 			break;
-		case 3:
+		case 3: //上
 			moveSpeed.x = 0.0f;
 			moveSpeed.y = 0.1f;
 			moveSpeed.z = 0.0f;
 			break;
-		case 4:
+		case 4: //下
 			moveSpeed.x = 0.0f;
 			moveSpeed.y = -0.1f;
 			moveSpeed.z = 0.0f;
 			break;
-		case 5:
+		case 5: //右
 			moveSpeed.x = 0.1f;
 			moveSpeed.y = 0.0f;
 			moveSpeed.z = 0.0f;
 			break;
-		case 6:
+		case 6: //左
 			moveSpeed.x = -0.1f;
 			moveSpeed.y = 0.0f;
 			moveSpeed.z = 0.0f;
@@ -162,13 +162,15 @@ void Enemy::Draw() {
 }
 
 void Enemy::Reset() {
-	pManager.Reset();
+	pManager.Reset(gameObject->worldTransform.translation);
 	phase = Phase::Attack;
 	phaseTimer = 300.0f;
-	spawnFlag = false;
-	aimFlag = false;
-	gameObject->worldTransform.translation = { 2 , 2 , 2 };
-
+	deleteTimer_ = 60 * 15;
+	if (spawnFlag == true)
+	{
+		spawnFlag = false;
+	}
+  aimFlag = false;
 }
 //反復
 void Enemy::Repetition()

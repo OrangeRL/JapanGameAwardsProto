@@ -10,13 +10,13 @@ public:
 
 	~Particle2();
 
-	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName);
+	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName,Vector3 position);
 	
 	void Update(Vector3 initPos);
 
 	void Draw();
 
-	void Reset();
+	void Reset(Vector3 position);
 
 	int GetIsDead();
 	bool IsDead() const { return isDead[particleValue]; }
@@ -30,6 +30,7 @@ private:
 	Vector3 angle[particleValue] = {};
 
 	const float speed = 0.3;
+	float speed2 = 0.3;
 
 	int isDead[particleValue] = { 0 };
 

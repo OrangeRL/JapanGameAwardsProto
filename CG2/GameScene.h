@@ -205,7 +205,6 @@ private: // メンバ変数
 	UIManager UIManager;
 
 	bool loadCount = false;
-
 	int aimCount = 0;
 	bool collisionOccurred = false;  // 判定をトラッキングする
 // 敵コマンド関係
@@ -215,12 +214,6 @@ private: // メンバ変数
 	float waitTime_=10;
 	size_t enemyVal = 90;
 	int fileNum = 1;
-//------------------------------------
-//ボスコマンド関係
-//------------------------------------
-	std::stringstream bossPopCommand;
-	bool bossWaitFlag = false;
-	float bossWaitTime_;
 //------------------------------------
 
 	//立ち上げ時に少し待つ

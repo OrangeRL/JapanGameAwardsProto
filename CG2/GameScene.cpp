@@ -113,8 +113,7 @@ void GameScene::Initialize(WinApp* winApp)
 		enemys1.push_back(std::move(newEnemy));
 	}
 	//loadEnemyPopData(1);
-	//ボスの雑魚敵の配置
-	loadBossPopData(1);
+	loadCount = false;
 }
 
 void GameScene::Update() {
@@ -142,10 +141,12 @@ void GameScene::Update() {
 
 		//タイトル画面の更新処理
 		if (scene_ == Scene::Title) {
+			loadCount = false;
 			TitleUpdate();
 		}
 		//ゲーム画面の更新処理
 		else if (scene_ == Scene::Stage) {
+			loadCount = true;
 			StageUpdate();
 		}
 	}
@@ -163,6 +164,8 @@ void GameScene::TitleUpdate() {
 
 	player->SetPos({ 0.0f,0.0f,20.0f });
 	player->Update(reilCamera->GetWorldTransform(), reilCamera->GetWorldTransform().rotation);
+	boss->SetHP(25);
+	spawntime = 0;
 	viewProjection_.UpdateView();
 
 	rhythm->Update(&input_, { 4.3f - UIManager.GetOptionPos() / 90.0f,7.5f + UIManager.GetOptionPos() / 150.0f,-25.0f }, { 0.0f,0.0f,0.0f }, player->GetIsDead(), stage, scene_, UIManager.GetSceneInTitle());
@@ -172,6 +175,7 @@ void GameScene::TitleUpdate() {
 	}
 
 	if (sceneShiftFlame <= 0) {
+		Reset();
 		scene_ = Scene::Stage;
 	}
 
@@ -186,7 +190,7 @@ void GameScene::TitleUpdate() {
 			skydome->color = { 0.8f,0.8f,0.8f,1.0f };
 		}
 	}
-
+	
 
 }
 
@@ -196,8 +200,14 @@ void GameScene::StageUpdate()
 	skydome->color = { 0.8f,0.8f,0.8f,1.0f };
 
 	spawntime += 1;
-	LoadCsv(enemyVal);
-	LoadCsv2(enemyVal);
+	if (loadCount = true) {
+		LoadCsv(enemyVal);
+		LoadCsv2(enemyVal);
+	}
+	else if(loadCount == false)
+	{
+		loadCount = true;
+	}
 
 	//ランダムな整数
 	std::default_random_engine engine(seed_gen());
@@ -217,6 +227,15 @@ void GameScene::StageUpdate()
 
 		if (player->GetIsDead() == false) {
 			reilCamera->Update(&input_, rhythm->GetSoundState().wave);
+		}
+		else
+		{
+			if (input_.PushKey(DIK_R)) {
+				scene_ = Scene::Title;
+				rhythm->ResetRhythm();
+				viewProjection_.Initialize();
+				UIManager.Init();
+			}
 		}
 
 		particle->Update();
@@ -281,11 +300,10 @@ void GameScene::StageUpdate()
 #pragma endregion
 			enemyPos = enemy->GetWorldTransform().translation;
 		}
-		//敵1の削除
+		//敵の削除
 		enemys1.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
 
 		//ボス関連
-
 		if (rhythm->GetSoundState().wave == 3) {
 			boss->Update();
 #pragma region made BossBullet
@@ -327,25 +345,6 @@ void GameScene::StageUpdate()
 
 			}
 #pragma endregion
-			if (boss->GetPhase() == BossPhase::defence) {
-				UpdateBossPopCommand();
-			}
-		}
-		if (player->GetIsDead() == false) {
-			//UpdateEnemyPopCommand();
-		}
-
-		//UpdateEnemyPopCommand();
-		if (player->GetIsDead() == false) {
-			//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
-		}
-
-		if (player->GetIsDead() == false) {
-			//enemy->Update(player->GetWorldTransform().translation, enemy->GetWorldTransform().translation);
-		}
-
-		if (input_.PushKey(DIK_R)) {
-			Reset();
 		}
 
 		/*if (player->GetIsDead() == true && particle->GetIsDead() == true) {
@@ -375,16 +374,26 @@ void GameScene::StageUpdate()
 
 			//player->NewBulletAim(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
 		}
+
+		if (boss->GetHP() <= 0) {
+			scene_ = Scene::Title;
+			rhythm->ResetRhythm();
+			player->SetPos({ 0.0f,0.0f,20.0f });
+			viewProjection_.Initialize();
+			UIManager.Init();
+			loadCount = false;
+		}
 	}
 	else {
 		if (input_.TriggerKey(DIK_T)) {
 
+			Reset();
 			isSceneChange = true;
 			rhythm->DecisionSoundPlay();
 		}
 
 		if (sceneShiftFlame <= 0) {
-
+			
 			scene_ = Scene::Title;
 			rhythm->ResetRhythm();
 			player->SetPos({ 0.0f,0.0f,20.0f });
@@ -394,11 +403,11 @@ void GameScene::StageUpdate()
 	}
 
 #pragma region DebugText
-	debugText.Printf(0, 100, 1.0f, 6, " HP:%d", boss->GetHP());
-	//debugText.Printf(0, 200, 1.0f, 16, " Player:%f,%f,%f",
-	//	playerBullet->GetWorldTransform().translation.x, playerBullet->GetWorldTransform().translation.y, playerBullet->GetWorldTransform().translation.z);
-	debugText.Printf(0, 150, 1.0f, 14, " Boss:%2f,%2f,%2f",
-		boss->GetWorldTransform().translation.x, boss->GetWorldTransform().translation.y, boss->GetWorldTransform().translation.z);
+	//debugText.Printf(0, 100, 1.0f, 6, " HP:%d", boss->GetHP());
+	////debugText.Printf(0, 200, 1.0f, 16, " Player:%f,%f,%f",
+	////	playerBullet->GetWorldTransform().translation.x, playerBullet->GetWorldTransform().translation.y, playerBullet->GetWorldTransform().translation.z);
+	//debugText.Printf(0, 150, 1.0f, 14, " Boss:%2f,%2f,%2f",
+	//	boss->GetWorldTransform().translation.x, boss->GetWorldTransform().translation.y, boss->GetWorldTransform().translation.z);
 	debugText.Printf(0, 200, 1.0f, 12, "Enemy:%d", spawntime);
 	debugText.Printf(0, 250, 1.0f, 12, "AimCount:%d", aimCount);
 #pragma endregion
@@ -440,7 +449,10 @@ void GameScene::StageDraw() {
 	}*/
 	//敵の描画
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
-		enemy->Draw();
+		if (enemy->GetSpownFlag() == true)
+		{
+			enemy->Draw();
+		}
 	}
 
 	if (rhythm->GetSoundState().wave == 3) {
@@ -482,96 +494,31 @@ void GameScene::StageDraw() {
 
 }
 
-void GameScene::loadBossPopData(int stageNum)
-{
-	if (stageNum == 1) {
-		//ファイルを開く
-		std::ifstream file;
-		file.open("Resources/csv/bossAttack.csv");
-		assert(file.is_open());
-		//ファイルの内容を文字列ストリームにコピー
-		bossPopCommand << file.rdbuf();
-		//ファイルを閉じる
-		file.close();
-	}
-}
-
-void GameScene::UpdateBossPopCommand()
-{
-	if (bossWaitFlag) {
-		bossWaitTime_--;
-		if (bossWaitTime_ <= 0.0f) {
-			//待機完了
-			bossWaitFlag = false;
-		}
-		return;
-	}
-	//1行分の文字列を入れる
-	std::string line;
-	//コマンド実行
-	while (std::getline(bossPopCommand, line)) {
-		//1行分の文字列をストリームに変換
-		std::istringstream line_stream(line);
-		std::string world;
-		// ,区切りで行の先頭文字列を取得
-		std::getline(line_stream, world, ',');
-		//"//"から始まる行はコメント
-		if (world.find("//") == 0) {
-			continue;
-		}
-		//POPコマンド
-		if (world.find("Enemy1") == 0) {	//固定砲台
-			//CSVに書いてある値を変数に入れる
-			//x座標
-			std::getline(line_stream, world, ',');
-			float x = (float)std::atof(world.c_str());
-			//y座標
-			std::getline(line_stream, world, ',');
-			float y = (float)std::atof(world.c_str());
-			//z座標
-			std::getline(line_stream, world, ',');
-			float z = (float)std::atof(world.c_str());
-			//移動速度
-			std::getline(line_stream, world, ',');
-			float speedX = (float)std::atof(world.c_str());
-			std::getline(line_stream, world, ',');
-			float speedY = (float)std::atof(world.c_str());
-			std::getline(line_stream, world, ',');
-			float speedZ = (float)std::atof(world.c_str());
-			//敵を発生させる
-			//-------ここにEnemy発生関数---------//
-			//複数化するためにuniq_ptrに変更
-			std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
-			newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/red.png");
-			//上で書いてある物をEnemyの座標としてセットする
-			newEnemy->Settransform(x, y, z);
-			newEnemy->SetSpeed(speedX, speedY, speedZ);
-			//敵を登録
-			enemys1.push_back(std::move(newEnemy));
-		}
-		//WAITコマンド
-		else if (world.find("WAIT") == 0)
-		{
-			std::getline(line_stream, world, ',');
-			//待ち時間
-			int32_t waitTime = atoi(world.c_str());
-			//待ち時間
-			bossWaitFlag = true;
-			bossWaitTime_ = waitTime;
-			//コマンドループを抜ける
-			break;
-		}
-	}
-}
-
 void GameScene::Reset() {
+	UIManager.ResetCountDown();
 	reilCamera->Initialize({ 0,0,-50 }, { 0,0,0 });
+	rhythm->ResetRhythm();
 	player->Reset();
 	player->SetPos({ 0.0f, 0.0f, 20.0f });
 	particle->Reset();
 	particle2->Reset();
+	boss->Reset();
 	spawntime = 0;
 	aimCount = 0;
+	if (loadCount == true)
+	{
+		loadCount = false;
+	}
+	for (int i = 1; i <= enemyVal; i++) {
+		for (std::unique_ptr<Enemy>& newEnemy : enemys1) {
+			newEnemy->Reset();
+		}
+	}
+	for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
+		if (bullet->GetIsDead() == false) {
+			bullet->SetIsDead(true);
+		}
+	}
 }
 
 void GameScene::Collisions() {
@@ -861,9 +808,9 @@ void GameScene::LoadCsv(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
+				//if (newEnemy->GetSpownFlag() == false) {
 					newEnemy->Spawn();
-				}
+				//}
 			}
 			i++;
 		}
@@ -873,9 +820,9 @@ void GameScene::LoadCsv(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
+				//if (newEnemy->GetSpownFlag() == false) {
 					newEnemy->Spawn();
-				}
+				//}
 			}
 			i++;
 		}
@@ -885,9 +832,9 @@ void GameScene::LoadCsv(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
+				//if (newEnemy->GetSpownFlag() == false) {
 					newEnemy->Spawn();
-				}
+				//}
 			}
 			i++;
 		}
@@ -897,9 +844,9 @@ void GameScene::LoadCsv(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
+				//if (newEnemy->GetSpownFlag() == false) {
 					newEnemy->Spawn();
-				}
+				//}
 			}
 			i++;
 		}
@@ -909,9 +856,9 @@ void GameScene::LoadCsv(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
+				//if (newEnemy->GetSpownFlag() == false) {
 					newEnemy->Spawn();
-				}
+				//}
 			}
 			i++;
 		}
@@ -921,9 +868,9 @@ void GameScene::LoadCsv(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
+				//if (newEnemy->GetSpownFlag() == false) {
 					newEnemy->Spawn();
-				}
+				//}
 			}
 			i++;
 		}
@@ -933,9 +880,9 @@ void GameScene::LoadCsv(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
+				//if (newEnemy->GetSpownFlag() == false) {
 					newEnemy->Spawn();
-				}
+				//}
 			}
 			i++;
 		}
@@ -945,9 +892,9 @@ void GameScene::LoadCsv(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
+				//if (newEnemy->GetSpownFlag() == false) {
 					newEnemy->Spawn();
-				}
+				//
 			}
 			i++;
 		}
@@ -957,14 +904,11 @@ void GameScene::LoadCsv(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
+				//if (newEnemy->GetSpownFlag() == false) {
 					newEnemy->Spawn();
-				}
+				//}
 			}
 			i++;
-		}
-		if (input_.PushKey(DIK_R)) {
-			newEnemy->Reset();
 		}
 	}
 }
@@ -1129,8 +1073,5 @@ void GameScene::LoadCsv2(int obstacleVal)
 			i++;
 		}
 
-		if (input_.PushKey(DIK_R)) {
-			newEnemy->Reset();
-		}
 	}
 }

@@ -9,7 +9,7 @@ enum BossPhase {
 	spown,
 	attack,
 	attack2,
-	defence,
+	end,
 };
 
 class Boss
@@ -21,7 +21,9 @@ public:
 	//«s“®w¦—p
 	void Attack();
 	void Attack2();
-	void Defence();
+	void End();
+
+	void Reset();
 
 	float Random(float minValue, float maxValue);
 

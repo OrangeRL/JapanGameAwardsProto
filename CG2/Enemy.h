@@ -62,6 +62,7 @@ public:
 
 	int GetSpownFlag();
 	int GetAimFlag();
+	int SetSpownFlag(int spownFlag) { return this->spawnFlag = spownFlag; }
 
 	bool IsDead()const { return isDelete_; }
 

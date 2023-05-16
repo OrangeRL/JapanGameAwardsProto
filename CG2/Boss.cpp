@@ -50,12 +50,12 @@ void Boss::Update()
 			//-----------------------
 			if (phaseTimer <= 0.0f) {
 				phaseTimer = 100.0f;
-				phase = BossPhase::defence;
+				phase = BossPhase::attack;
 			}
 			break;
-		case BossPhase::defence:	//回避,防御
+		case BossPhase::end:	//死亡
 			// ↓防御処理	ダメージ軽減効果を出す
-			Defence();
+			End();
 			//-----------------------
 			if (phaseTimer <= 0.0f) {
 				phaseTimer = 300.0f;
@@ -91,11 +91,29 @@ void Boss::Attack2()	//移動場所を制限する&ランダムショット :
 	}
 }
 
-void Boss::Defence()	//ダメージを軽減させる : 
+void Boss::End()	//ダメージを軽減させる : 
 {
 	if (gameObject->worldTransform.translation.x != 0.0f) {
 		gameObject->worldTransform.translation.x = 0.0f;
 	}
+
+	gameObject->worldTransform.rotation.y += 0.01f;
+	if (gameObject->worldTransform.scale.x != 0 && gameObject->worldTransform.scale.y != 0 && gameObject->worldTransform.scale.z != 0)
+	{
+		gameObject->worldTransform.scale -= {0.1f, 0.1f, 0.1f};
+	}
+}
+
+void Boss::Reset()
+{
+	gameObject->worldTransform.scale = { 3 , 3 , 3 };
+	gameObject->worldTransform.rotation = { 0,90,0 };
+	gameObject->worldTransform.translation = { 0 , 0 , 1200 };
+	HP = 25;
+	trueDead = false;
+	isDead = false;
+	attackSpeed = 200.0f;
+	isAttack = false;
 }
 
 float Boss::Random(float minValue, float maxValue)
