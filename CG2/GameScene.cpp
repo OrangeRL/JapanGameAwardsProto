@@ -228,6 +228,15 @@ void GameScene::StageUpdate()
 		if (player->GetIsDead() == false) {
 			reilCamera->Update(&input_, rhythm->GetSoundState().wave);
 		}
+		else
+		{
+			if (input_.PushKey(DIK_R)) {
+				scene_ = Scene::Title;
+				rhythm->ResetRhythm();
+				viewProjection_.Initialize();
+				UIManager.Init();
+			}
+		}
 
 		particle->Update();
 		particle2->Update2();
@@ -337,9 +346,6 @@ void GameScene::StageUpdate()
 			}
 #pragma endregion
 		}
-		if (input_.PushKey(DIK_R)) {
-			Reset();
-		}
 
 		/*if (player->GetIsDead() == true && particle->GetIsDead() == true) {
 			if (gameoverTimer <= 0) {
@@ -375,6 +381,7 @@ void GameScene::StageUpdate()
 	else {
 		if (input_.TriggerKey(DIK_T)) {
 
+			Reset();
 			isSceneChange = true;
 			rhythm->DecisionSoundPlay();
 		}
