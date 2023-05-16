@@ -217,7 +217,7 @@ void GameScene::StageUpdate()
 	viewProjection_.UpdateView();
 
 	//UI更新
-	UIManager.Update(rhythm, player,&input_, player->GetIsDead());
+	UIManager.Update(rhythm, player, &input_, player->GetIsDead());
 
 	rhythm->Update(&input_, player->GetPos(), reilCamera->GetWorldTransform().rotation, player->GetIsDead(), stage, scene_, UIManager.GetSceneInTitle());
 
@@ -273,7 +273,7 @@ void GameScene::StageUpdate()
 		for (std::unique_ptr<Enemy>& enemy : enemys1) {
 			enemy->Update(&viewProjection_, &matProjection_, 0);
 #pragma region makeEnemyBullet
-			if (enemy->GetBulletNum() != 2 && enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase()==Phase::Attack) {
+			if (enemy->GetBulletNum() != 2 && enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::Attack) {
 				//弾を生成
 				std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
 				//初期化
@@ -288,8 +288,8 @@ void GameScene::StageUpdate()
 					enemy->SetIsAttack(true);
 				}
 			}
-			
-			if (enemy->GetIsAttack()==true) {
+
+			if (enemy->GetIsAttack() == true) {
 				for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
 					bullet->Update(enemy->GetIsDead());
 				}
@@ -365,7 +365,13 @@ void GameScene::StageUpdate()
 
 		//プレイヤーの弾発射処理
 		if (input_.TriggerKey(DIK_SPACE) && rhythm->GetSoundState().isFireSucces) {
-			player->NewBullet(&viewProjection_, &matProjection_, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,0.0f }, rhythm->GetSoundState().weapon);
+			for (std::unique_ptr<Enemy>& enemy : enemys1) {
+				if (enemy->GetAimFlag() == true)
+				{
+					player->NewBullet(&viewProjection_, &matProjection_, enemy->GetWorldTransform().translation, player->GetWorldTransform().translation, rhythm->GetSoundState().weapon);
+				}
+			}
+
 			//player->NewBulletAim(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
 		}
 
@@ -395,7 +401,7 @@ void GameScene::StageUpdate()
 			UIManager.Init();
 		}
 	}
-  
+
 #pragma region DebugText
 	//debugText.Printf(0, 100, 1.0f, 6, " HP:%d", boss->GetHP());
 	////debugText.Printf(0, 200, 1.0f, 16, " Player:%f,%f,%f",
@@ -403,7 +409,7 @@ void GameScene::StageUpdate()
 	//debugText.Printf(0, 150, 1.0f, 14, " Boss:%2f,%2f,%2f",
 	//	boss->GetWorldTransform().translation.x, boss->GetWorldTransform().translation.y, boss->GetWorldTransform().translation.z);
 	debugText.Printf(0, 200, 1.0f, 12, "Enemy:%d", spawntime);
-	
+	debugText.Printf(0, 250, 1.0f, 12, "AimCount:%d", aimCount);
 #pragma endregion
 }
 
@@ -461,7 +467,7 @@ void GameScene::StageDraw() {
 	}
 
 	for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
-		if (bullet->GetIsDead() == false){
+		if (bullet->GetIsDead() == false) {
 			bullet->Draw();
 		}
 	}
@@ -498,7 +504,7 @@ void GameScene::Reset() {
 	particle2->Reset();
 	boss->Reset();
 	spawntime = 0;
-
+	aimCount = 0;
 	if (loadCount == true)
 	{
 		loadCount = false;
@@ -517,11 +523,11 @@ void GameScene::Reset() {
 
 void GameScene::Collisions() {
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
-		if (enemy->GetWorldTransform().translation.x - player->GetAimPos().x < 1 &&
-			-1 < enemy->GetWorldTransform().translation.x - player->GetAimPos().x) {
-			if (enemy->GetWorldTransform().translation.y - player->GetAimPos().y < 1 &&
-				-1 < enemy->GetWorldTransform().translation.y - player->GetAimPos().y) {
-				if (enemy->GetWorldTransform().translation.z - player->GetAimPos().z < 100 &&
+		if (enemy->GetWorldTransform().translation.x - player->GetAimPos().x < 5 &&
+			-5 < enemy->GetWorldTransform().translation.x - player->GetAimPos().x) {
+			if (enemy->GetWorldTransform().translation.y - player->GetAimPos().y < 5 &&
+				-5 < enemy->GetWorldTransform().translation.y - player->GetAimPos().y) {
+				if (enemy->GetWorldTransform().translation.z - player->GetAimPos().z < 50 &&
 					-100 < enemy->GetWorldTransform().translation.z - player->GetAimPos().z) {
 					player->AimHit();
 				}
@@ -562,7 +568,7 @@ void GameScene::Collisions() {
 
 						bulletA->OnCollision();
 						enemy->OnCollision(rhythm);
-
+						aimCount = 0;
 					}
 				}
 			}
@@ -669,17 +675,19 @@ void GameScene::Collisions() {
 		}
 	}
 #pragma endregion
-
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
+	
 		if (enemy->GetWorldTransform().translation.x - player->GetAimPos().x < 2 &&
 			-2 < enemy->GetWorldTransform().translation.x - player->GetAimPos().x) {
 			if (enemy->GetWorldTransform().translation.y - player->GetAimPos().y < 2 &&
 				-2 < enemy->GetWorldTransform().translation.y - player->GetAimPos().y) {
 				if (enemy->GetWorldTransform().translation.z - player->GetAimPos().z < 200 &&
 					-200 < enemy->GetWorldTransform().translation.z - player->GetAimPos().z) {
-
 					player->AimHit();
-
+					if (enemy->GetAimFlag()==false && aimCount < 5) {
+						aimCount++;
+						enemy->AimCheck();
+					}
 				}
 			}
 		}
@@ -728,9 +736,11 @@ void GameScene::Collisions() {
 					items->OnCollision();
 					if (items->GetWeapon() == 0) {
 						rhythm->SetWeapon(Weapons::Normal);
-					}else if (items->GetWeapon() == 1) {
+					}
+					else if (items->GetWeapon() == 1) {
 						rhythm->SetWeapon(Weapons::Rapid);
-					}else if (items->GetWeapon() == 2) {
+					}
+					else if (items->GetWeapon() == 2) {
 						rhythm->SetWeapon(Weapons::ThreeWay);
 					}
 
@@ -865,7 +875,7 @@ void GameScene::LoadCsv(int obstacleVal)
 			i++;
 		}
 		if (spawntime == spawntimer[40]) {
-			if (i < obstaclePos.size() && i < 44  && i > 39) {
+			if (i < obstaclePos.size() && i < 44 && i > 39) {
 				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
@@ -878,7 +888,7 @@ void GameScene::LoadCsv(int obstacleVal)
 		}
 		if (spawntime == spawntimer[44]) {
 			if (i < obstaclePos.size() && i < 48 && i > 43) {
- 				newEnemy->Settransform(obstaclePos[i]);
+				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);

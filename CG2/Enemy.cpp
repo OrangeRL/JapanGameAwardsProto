@@ -11,6 +11,9 @@ Enemy::~Enemy() {
 void Enemy::Spawn() {
 	spawnFlag = true;
 }
+void Enemy::AimCheck() {
+	aimFlag = true;
+}
 void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName) {
 	gameObject = new GameObject3D();
 	gameObject->PreLoadTexture(textureFileName);
@@ -22,6 +25,14 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 
 	gameObject->worldTransform.scale = { 2 , 2 , 2 };
 
+	aimObject = new GameObject3D();
+	aimObject->PreLoadModel("Resources/square/square.obj");
+	aimObject->PreLoadTexture(L"Resources/blue1x1.png");
+	aimObject->SetViewProjection(viewProjection);
+	aimObject->SetMatProjection(matProjection);
+	aimObject->Initialize();
+	aimObject->worldTransform.scale = { 2.5f,2.5f,2.5f };
+
 	attackSpeed = 100.0f;
 	phaseTimer = 300.0f;
 	coolTime = 1.0f;
@@ -31,6 +42,8 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 	isCoolDown = true;
 	isAttack = false;
 	spawnFlag = false;
+	aimFlag = false;
+	pManager.Initialize(viewProjection, matProjection, L"Resources/purple1x1.png");
 	//spManager.Initialize(viewProjection, matProjection);
 }
 
@@ -120,7 +133,15 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 			}
 			break;
 		}
+		if (aimFlag == true)
+		{
+			aimObject->worldTransform.translation.x = gameObject->worldTransform.translation.x + 0.1;
+			aimObject->worldTransform.translation.y = gameObject->worldTransform.translation.y;
+			aimObject->worldTransform.translation.z = gameObject->worldTransform.translation.z - 1;
+			aimObject->worldTransform.rotation.z += 0.01;
+		}
 		gameObject->Update();
+		aimObject->Update();
 	}
 }
 
@@ -128,6 +149,12 @@ void Enemy::Draw() {
 	if (pManager.GetIsDead() == true) {
 		gameObject->Draw();
 	}
+	if (aimFlag == true) 
+	{
+		aimObject->Draw();
+	}
+
+
 	//gameObject->Draw();
 	pManager.Draw();
 	//spManager.Draw();
@@ -143,6 +170,7 @@ void Enemy::Reset() {
 	{
 		spawnFlag = false;
 	}
+  aimFlag = false;
 }
 //反復
 void Enemy::Repetition()
@@ -244,6 +272,11 @@ bool Enemy::GetIsDead()
 int Enemy::GetSpownFlag()
 {
 	return spawnFlag;
+}
+
+int Enemy::GetAimFlag()
+{
+	return aimFlag;
 }
 
 Phase Enemy::GetPhase()
