@@ -284,12 +284,16 @@ void GameScene::StageUpdate()
 			}
 
 			//弾&敵を削除する
+			//rhythm->StopBGM();
 			bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
+			//rhythm->PlayBGM();
 #pragma endregion
 			enemyPos = enemy->GetWorldTransform().translation;
 		}
 		//敵1の削除
+		rhythm->StopBGM();
 		enemys1.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
+		rhythm->PlayBGM();
 
 		//ボス関連
 
