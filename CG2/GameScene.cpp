@@ -376,12 +376,15 @@ void GameScene::StageUpdate()
 		}
 
 		if (boss->GetHP() <= 0) {
+			//boss->SetPhase(end);
+		}
+
+		if (boss->GetSceneChange() == true)
+		{
 			scene_ = Scene::Title;
 			rhythm->ResetRhythm();
-			player->SetPos({ 0.0f,0.0f,20.0f });
 			viewProjection_.Initialize();
 			UIManager.Init();
-			loadCount = false;
 		}
 	}
 	else {
@@ -454,6 +457,11 @@ void GameScene::StageDraw() {
 			enemy->Draw();
 		}
 	}
+	for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
+		if (bullet->GetIsDead() == false) {
+			bullet->Draw();
+		}
+	}
 
 	if (rhythm->GetSoundState().wave == 3) {
 		boss->Draw();
@@ -466,11 +474,7 @@ void GameScene::StageDraw() {
 		}
 	}
 
-	for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
-		if (bullet->GetIsDead() == false) {
-			bullet->Draw();
-		}
-	}
+	
 
 	//アイテム描画
 	for (std::unique_ptr<Item>& item : items_) { item->Draw(); }
@@ -573,7 +577,8 @@ void GameScene::Collisions() {
 				}
 			}
 		}
-
+		
+		
 		for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
 			if (boss->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x < 40 &&
 				-40 < boss->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x) {

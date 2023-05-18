@@ -43,7 +43,7 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 	isAttack = false;
 	spawnFlag = false;
 	aimFlag = false;
-	pManager.Initialize(viewProjection, matProjection, L"Resources/purple1x1.png");
+	//pManager.Initialize(viewProjection, matProjection, L"Resources/purple1x1.png");
 	//spManager.Initialize(viewProjection, matProjection);
 }
 
@@ -170,7 +170,7 @@ void Enemy::Reset() {
 	{
 		spawnFlag = false;
 	}
-  aimFlag = false;
+	aimFlag = false;
 }
 //反復
 void Enemy::Repetition()
