@@ -43,7 +43,7 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 	isAttack = false;
 	spawnFlag = false;
 	aimFlag = false;
-	//pManager.Initialize(viewProjection, matProjection, L"Resources/purple1x1.png");
+	//pManager.Initialize(viewProjection, matProjection);
 	//spManager.Initialize(viewProjection, matProjection);
 }
 

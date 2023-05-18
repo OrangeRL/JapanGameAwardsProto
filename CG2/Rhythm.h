@@ -94,6 +94,8 @@ public:
 
 	void ResetRhythm();
 
+	void ComboUp();
+
 	SoundState GetSoundState() { return soundState; }
 
 private:

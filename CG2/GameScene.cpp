@@ -371,7 +371,9 @@ void GameScene::StageUpdate()
 					player->NewBullet(&viewProjection_, &matProjection_, enemy->GetWorldTransform().translation, player->GetWorldTransform().translation, rhythm->GetSoundState().weapon);
 				}
 			}
-
+			if (rhythm->GetSoundState().wave == 3) {
+				player->NewBullet(&viewProjection_, &matProjection_, boss->GetWorldTransform().translation, player->GetWorldTransform().translation, rhythm->GetSoundState().weapon);
+			}
 			//player->NewBulletAim(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
 		}
 
@@ -500,6 +502,7 @@ void GameScene::StageDraw() {
 
 void GameScene::Reset() {
 	UIManager.ResetCountDown();
+	UIManager.ResetScore();
 	reilCamera->Initialize({ 0,0,-50 }, { 0,0,0 });
 	rhythm->ResetRhythm();
 	player->Reset();
@@ -573,6 +576,7 @@ void GameScene::Collisions() {
 						bulletA->OnCollision();
 						enemy->OnCollision(rhythm);
 						aimCount = 0;
+						rhythm->ComboUp();
 					}
 				}
 			}
@@ -584,8 +588,8 @@ void GameScene::Collisions() {
 				-40 < boss->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x) {
 				if (boss->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y < 200 &&
 					-200 < boss->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y) {
-					if (boss->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z < 200 &&
-						-200 < boss->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z) {
+					if (boss->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z < 20 &&
+						-20 < boss->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z) {
 
 						bulletA->OnCollision();
 						boss->OnCollision();
