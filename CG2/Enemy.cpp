@@ -170,7 +170,7 @@ void Enemy::Reset() {
 	{
 		spawnFlag = false;
 	}
-  aimFlag = false;
+	aimFlag = false;
 }
 //反復
 void Enemy::Repetition()

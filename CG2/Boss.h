@@ -38,6 +38,7 @@ public:
 	bool GetIsDead();
 	int GetHP();
 	int SetHP(int HP) { return this->HP = HP; }
+	bool GetSceneChange() {return sceneChange; }
 
 	//Ž€–S—p
 	void OnCollision();
@@ -57,6 +58,8 @@ private:
 
 	float attackSpeed = 200.0f;
 	bool isAttack = false;
+
+	bool sceneChange = false;
 };
 
 

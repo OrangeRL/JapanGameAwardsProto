@@ -13,6 +13,7 @@ void Boss::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 	gameObject->worldTransform.rotation = { 0,90,0 };
 	gameObject->worldTransform.translation = { 0 , 0 , 1200 };
 	HP = 25;
+	sceneChange = false;
 }
 
 void Boss::Update()
@@ -101,6 +102,13 @@ void Boss::End()	//ダメージを軽減させる :
 	if (gameObject->worldTransform.scale.x != 0 && gameObject->worldTransform.scale.y != 0 && gameObject->worldTransform.scale.z != 0)
 	{
 		gameObject->worldTransform.scale -= {0.1f, 0.1f, 0.1f};
+	}
+	else//スケールが無くなったら
+	{
+		if (sceneChange == false)
+		{
+			sceneChange = true;
+		}
 	}
 }
 
