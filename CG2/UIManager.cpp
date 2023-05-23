@@ -34,9 +34,12 @@ void UIManager::Initialize(UINT texnumber) {
 }
 
 void UIManager::Init() {
-	sceneInTitle = 1;
 	select = 0;
+	score = 0;
 	countDown = 3;
+	sceneInTitle = 0;
+	position = { 0.0f,-250.0f };
+	moveSpeed = maxSpeed;
 }
 
 void UIManager::TitleUpdate(Rhythm* rhythm, Input* input) {
@@ -289,7 +292,7 @@ void UIManager::TitleUpdate(Rhythm* rhythm, Input* input) {
 	whiteSprite->SetColor({ 1.0f, 1.0f, 1.0f, flashTimer });
 
 }
-void UIManager::Update(Rhythm* rhythm, Player* player, Input* input, int isDead) {
+void UIManager::Update(Rhythm* rhythm, Player* player, Input* input, int isDead, int hp) {
 
 	//プレイヤーのHP表示
 	UIPrintf({ 10, window_height - 100 }, { 1.0f,1.0f }, { 0.0f,1.0f,1.0f,1.0f }, 4, " HP:");
@@ -364,7 +367,8 @@ void UIManager::Update(Rhythm* rhythm, Player* player, Input* input, int isDead)
 
 	//クリア時の処理
 	if ((rhythm->GetSoundState().measureCount >= 72 && rhythm->GetSoundState().wave == 1) ||
-		(rhythm->GetSoundState().measureCount >= 80 && rhythm->GetSoundState().wave == 2)) {
+		(rhythm->GetSoundState().measureCount >= 80 && rhythm->GetSoundState().wave == 2) ||
+		 hp <= 0 && rhythm->GetSoundState().wave == 3) {
 
 		if (rotation < maxDegree) {
 			rotation += 6.0f;
@@ -458,7 +462,7 @@ void UIManager::Update(Rhythm* rhythm, Player* player, Input* input, int isDead)
 			position.y += moveSpeed;
 		}
 		UIPrintf({ window_width / 2 - 600, position.y }, { 3.5f,4.0f }, { 0.0f,1.0f,1.0f,1.0f }, 9, " GAMEOVER");
-		UIPrintf({ window_width / 2 ,position.y + 400 }, { 1.7f,1.0f }, { 0.0f,1.0f,1.0f,1.0f }, 10, " push to R");
+		UIPrintf({ window_width / 2 ,position.y + 400 }, { 1.7f,1.0f }, { 0.0f,1.0f,1.0f,1.0f }, 10, " PUSH  TO R");
 	}
 
 	//ポーズ画面の処理
@@ -502,7 +506,7 @@ void UIManager::Update(Rhythm* rhythm, Player* player, Input* input, int isDead)
 
 }
 
-void UIManager::Draw(Rhythm* rhythm) {
+void UIManager::Draw(Rhythm* rhythm, int hp) {
 	//オプションの背景
 	optionBGSprite->Draw();
 
@@ -514,7 +518,8 @@ void UIManager::Draw(Rhythm* rhythm) {
 	}
 
 	if (rhythm->GetSoundState().measureCount >= 72 && rhythm->GetSoundState().wave == 1 ||
-		rhythm->GetSoundState().measureCount >= 80 && rhythm->GetSoundState().wave == 2) {
+		rhythm->GetSoundState().measureCount >= 80 && rhythm->GetSoundState().wave == 2 ||
+		hp <= 0 && rhythm->GetSoundState().wave == 3) {
 		clearSprite->Draw();
 	}
 
@@ -561,4 +566,9 @@ void UIManager::UIPrintf(XMFLOAT2 pos, XMFLOAT2 scale, XMFLOAT4 color, int size,
 		spriteIndex++;
 
 	}
+}
+
+void UIManager::PlusScore(Rhythm* rhythm) {
+	int comboBonus = rhythm->GetSoundState().combo / 10 + 1;
+	score += comboBonus * 100;
 }

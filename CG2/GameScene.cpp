@@ -129,7 +129,15 @@ void GameScene::Update() {
 			}
 
 			if (sceneShiftFlame <= 0) {
-				rhythm->ResetRhythm();
+				if (scene_ == Scene::Title) {
+					Reset();
+					scene_ = Scene::Stage;
+				}
+				else if (scene_ == Scene::Stage) {
+					Reset();
+					scene_ = Scene::Title;
+				}
+
 				isSceneChange = false;
 			}
 		}
@@ -176,7 +184,6 @@ void GameScene::TitleUpdate() {
 
 	if (sceneShiftFlame <= 0) {
 		Reset();
-		scene_ = Scene::Stage;
 	}
 
 	if (rhythm->GetSoundState().timer == 0) {
@@ -217,7 +224,7 @@ void GameScene::StageUpdate()
 	viewProjection_.UpdateView();
 
 	//UI更新
-	UIManager.Update(rhythm, player, &input_, player->GetIsDead());
+	UIManager.Update(rhythm, player, &input_, player->GetIsDead(), boss->GetHP());
 
 	rhythm->Update(&input_, player->GetPos(), reilCamera->GetWorldTransform().rotation, player->GetIsDead(), stage, scene_, UIManager.GetSceneInTitle());
 
@@ -230,11 +237,13 @@ void GameScene::StageUpdate()
 		}
 		else
 		{
-			if (input_.PushKey(DIK_R)) {
-				scene_ = Scene::Title;
+			if (input_.TriggerKey(DIK_R)) {
+				isSceneChange = true;
+				rhythm->DecisionSoundPlay();
+				/*scene_ = Scene::Title;
 				rhythm->ResetRhythm();
 				viewProjection_.Initialize();
-				UIManager.Init();
+				UIManager.Init();*/
 			}
 		}
 
@@ -246,28 +255,6 @@ void GameScene::StageUpdate()
 
 		crosshair->SetPosition({ player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y });
 		crosshair->Sprite::SetSize({ 1,1 });
-
-		//アイテムの更新処理
-		for (std::unique_ptr<Item>& item : items_) {
-			item->Update();
-		}
-
-		//デスフラグの立ったアイテムを削除
-		items_.remove_if([](std::unique_ptr<Item>& item) {
-			return item->GetIsDead();
-			});
-
-		//アイテム生成
-		if (input_.TriggerKey(DIK_T)) {
-			std::uniform_int_distribution<> dist(0, 2);
-			int value = dist(engine);
-			//アイテムを生成し、初期化
-			std::unique_ptr<Item>item = std::make_unique<Item>();
-			item->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", { player->GetPos().x,player->GetPos().y,player->GetPos().z + 20.0f }, value);
-
-			//アイテムを登録する
-			items_.push_back(std::move(item));
-		}
 
 		//敵の更新処理
 		for (std::unique_ptr<Enemy>& enemy : enemys1) {
@@ -387,27 +374,28 @@ void GameScene::StageUpdate()
 
 		if (boss->GetSceneChange() == true)
 		{
-			scene_ = Scene::Title;
-			rhythm->ResetRhythm();
-			viewProjection_.Initialize();
-			UIManager.Init();
+			//scene_ = Scene::Title;
+			//rhythm->ResetRhythm();
+			//viewProjection_.Initialize();
+			//UIManager.Init();
+		}
+
+		//クリア後タイトルに戻る
+		if (boss->GetHP() <= 0) {
+
+			clearTimer--;
+
+			if (clearTimer <= 0) {
+				isSceneChange = true;
+				rhythm->StopBGM();
+			}
 		}
 	}
 	else {
 		if (input_.TriggerKey(DIK_T)) {
-
-			Reset();
+		
 			isSceneChange = true;
 			rhythm->DecisionSoundPlay();
-		}
-
-		if (sceneShiftFlame <= 0) {
-			
-			scene_ = Scene::Title;
-			rhythm->ResetRhythm();
-			player->SetPos({ 0.0f,0.0f,20.0f });
-			viewProjection_.Initialize();
-			UIManager.Init();
 		}
 	}
 
@@ -437,7 +425,7 @@ void GameScene::TitleDraw() {
 
 	//スプライト描画
 	Sprite::PreDraw(dx12base_.GetCmdList().Get());
-	UIManager.Draw(rhythm);
+	UIManager.Draw(rhythm,boss->GetHP());
 
 	//シーン切り替えの描画
 	sceneChangeSprite->Draw();
@@ -492,7 +480,7 @@ void GameScene::StageDraw() {
 
 	crosshair->Draw();
 
-	UIManager.Draw(rhythm);
+	UIManager.Draw(rhythm, boss->GetHP());
 
 	// デバッグテキストの描画
 	debugText.DrawAll(dx12base_.GetCmdList().Get());
@@ -505,8 +493,9 @@ void GameScene::StageDraw() {
 }
 
 void GameScene::Reset() {
-	UIManager.ResetCountDown();
-	UIManager.ResetScore();
+	viewProjection_.Initialize();
+	UIManager.Init();
+	clearTimer = 500;
 	reilCamera->Initialize({ 0,0,-50 }, { 0,0,0 });
 	rhythm->ResetRhythm();
 	player->Reset();
@@ -581,6 +570,7 @@ void GameScene::Collisions() {
 						enemy->OnCollision(rhythm);
 						aimCount = 0;
 						rhythm->ComboUp();
+						UIManager.PlusScore(rhythm);
 					}
 				}
 			}
