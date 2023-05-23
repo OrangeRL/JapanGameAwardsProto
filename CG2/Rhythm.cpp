@@ -75,7 +75,9 @@ void Rhythm::PlayBGM() {
 		}
 	}
 	else if (soundState.wave == 3) {
-		stage1_bossBGM.pSourceVoice->Start();
+		if (stage1_bossBGM.pSourceVoice) {
+			stage1_bossBGM.pSourceVoice->Start();
+		}
 	}
 }
 
