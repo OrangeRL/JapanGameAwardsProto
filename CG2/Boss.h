@@ -9,7 +9,7 @@ enum BossPhase {
 	spown,
 	attack,
 	attack2,
-	defence,
+	end,
 };
 
 class Boss
@@ -21,7 +21,9 @@ public:
 	//↓行動指示用
 	void Attack();
 	void Attack2();
-	void Defence();
+	void End();
+
+	void Reset();
 
 	float Random(float minValue, float maxValue);
 
@@ -36,6 +38,7 @@ public:
 	bool GetIsDead();
 	int GetHP();
 	int SetHP(int HP) { return this->HP = HP; }
+	bool GetSceneChange() {return sceneChange; }
 
 	//死亡用
 	void OnCollision();
@@ -55,6 +58,8 @@ private:
 
 	float attackSpeed = 200.0f;
 	bool isAttack = false;
+
+	bool sceneChange = false;
 };
 
 

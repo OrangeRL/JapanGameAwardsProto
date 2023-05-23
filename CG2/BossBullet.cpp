@@ -8,26 +8,26 @@ void BossBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProject
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
 
+	for (int i = 0; i < 4; i++)
+	{
+		gameObject2[i] = new GameObject3D();
+		gameObject2[i]->PreLoadTexture(L"Resources/white1x1.png");
+		gameObject2[i]->SetViewProjection(viewProjection);
+		gameObject2[i]->SetMatProjection(matProjection);
+		gameObject2[i]->Initialize();
+	}
+
 	Aim(player, enemy);
 }
 
-void BossBullet::Update(BossPhase phase)
+void BossBullet::Update(BossPhase phase, Vector3 player)
 {
 	if (phase == attack) {
 		gameObject->worldTransform.translation -= posC;
 	}
 	else if (phase == attack2) {
-		if (gameObject->worldTransform.scale.x <= 2 && gameObject->worldTransform.scale.y <= 2 && gameObject->worldTransform.scale.z <= 2) {
-			gameObject->worldTransform.scale += {0.1f, 0.1f, 0.1f};
-		}
-		gameObject->worldTransform.translation -= {0.0f,0.0f,1.0f};
-	}
-	else
-	{
 		gameObject->worldTransform.translation -= posC;
-		gameObject->worldTransform.translation -= {0.0f, 0.0f, 1.0f};
 	}
-	
 
 	if (--deleteTimer_ <= 0) {
 		isDelete_ = true;

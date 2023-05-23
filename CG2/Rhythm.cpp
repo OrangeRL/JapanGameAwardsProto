@@ -423,7 +423,7 @@ void Rhythm::NormalShot(SoundState s, Input* input) {
 
 				soundState.isFireSucces = 1;
 				soundState.judge = Judge::Good;
-				soundState.combo++;
+				//soundState.combo++;
 				SoundPlayWave(shotSound, s.normalSEVolume);
 			}
 			//それ以外のタイミングは失敗
@@ -617,4 +617,8 @@ void Rhythm::LaserShot(SoundState s, Input* input) {
 		laserSound.pSourceVoice->Stop(0);
 	}
 
+}
+
+void Rhythm::ComboUp() {
+	soundState.combo++;
 }

@@ -11,16 +11,27 @@ Enemy::~Enemy() {
 void Enemy::Spawn() {
 	spawnFlag = true;
 }
+void Enemy::AimCheck() {
+	aimFlag = true;
+}
 void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName) {
-	pManager.Initialize(viewProjection, matProjection, L"Resources/red1x1.png");
 	gameObject = new GameObject3D();
 	gameObject->PreLoadTexture(textureFileName);
 	gameObject->PreLoadModel("Resources/enemy/enemy.obj");
 	gameObject->SetViewProjection(viewProjection);
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
+	pManager.Initialize(viewProjection, matProjection, L"Resources/red1x1.png", gameObject->worldTransform.translation);
 
 	gameObject->worldTransform.scale = { 2 , 2 , 2 };
+
+	aimObject = new GameObject3D();
+	aimObject->PreLoadModel("Resources/square/square.obj");
+	aimObject->PreLoadTexture(L"Resources/blue1x1.png");
+	aimObject->SetViewProjection(viewProjection);
+	aimObject->SetMatProjection(matProjection);
+	aimObject->Initialize();
+	aimObject->worldTransform.scale = { 2.5f,2.5f,2.5f };
 
 	attackSpeed = 100.0f;
 	phaseTimer = 300.0f;
@@ -31,7 +42,8 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 	isCoolDown = true;
 	isAttack = false;
 	spawnFlag = false;
-	pManager.Initialize(viewProjection, matProjection, L"Resources/purple1x1.png");
+	aimFlag = false;
+	//pManager.Initialize(viewProjection, matProjection);
 	//spManager.Initialize(viewProjection, matProjection);
 }
 
@@ -52,32 +64,32 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 		//移動関連
 		switch (moveNum)
 		{
-		case 1:
+		case 1: //前
 			moveSpeed.x = 0.0f;
 			moveSpeed.y = 0.0f;
 			moveSpeed.z = 0.3f;
 			break;
-		case 2:
+		case 2: //後
 			moveSpeed.x = 0.0f;
 			moveSpeed.y = 0.0f;
 			moveSpeed.z = -0.1f;
 			break;
-		case 3:
+		case 3: //上
 			moveSpeed.x = 0.0f;
 			moveSpeed.y = 0.1f;
 			moveSpeed.z = 0.0f;
 			break;
-		case 4:
+		case 4: //下
 			moveSpeed.x = 0.0f;
 			moveSpeed.y = -0.1f;
 			moveSpeed.z = 0.0f;
 			break;
-		case 5:
+		case 5: //右
 			moveSpeed.x = 0.1f;
 			moveSpeed.y = 0.0f;
 			moveSpeed.z = 0.0f;
 			break;
-		case 6:
+		case 6: //左
 			moveSpeed.x = -0.1f;
 			moveSpeed.y = 0.0f;
 			moveSpeed.z = 0.0f;
@@ -121,7 +133,15 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 			}
 			break;
 		}
+		if (aimFlag == true)
+		{
+			aimObject->worldTransform.translation.x = gameObject->worldTransform.translation.x + 0.1;
+			aimObject->worldTransform.translation.y = gameObject->worldTransform.translation.y;
+			aimObject->worldTransform.translation.z = gameObject->worldTransform.translation.z - 1;
+			aimObject->worldTransform.rotation.z += 0.01;
+		}
 		gameObject->Update();
+		aimObject->Update();
 	}
 }
 
@@ -129,6 +149,12 @@ void Enemy::Draw() {
 	if (pManager.GetIsDead() == true) {
 		gameObject->Draw();
 	}
+	if (aimFlag == true) 
+	{
+		aimObject->Draw();
+	}
+
+
 	//gameObject->Draw();
 	pManager.Draw();
 	//spManager.Draw();
@@ -136,12 +162,19 @@ void Enemy::Draw() {
 }
 
 void Enemy::Reset() {
-	pManager.Reset();
+	pManager.Reset(gameObject->worldTransform.translation);
 	phase = Phase::Attack;
 	phaseTimer = 300.0f;
-	spawnFlag = false;
-	gameObject->worldTransform.translation = { 2 , 2 , 2 };
-
+	deleteTimer_ = 60 * 15;
+	if (spawnFlag == true)
+	{
+		spawnFlag = false;
+	}
+	if (isDelete_ == true) 
+	{
+		isDelete_ = false;
+	}
+	aimFlag = false;
 }
 //反復
 void Enemy::Repetition()
@@ -243,6 +276,11 @@ bool Enemy::GetIsDead()
 int Enemy::GetSpownFlag()
 {
 	return spawnFlag;
+}
+
+int Enemy::GetAimFlag()
+{
+	return aimFlag;
 }
 
 Phase Enemy::GetPhase()

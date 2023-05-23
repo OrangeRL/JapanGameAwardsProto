@@ -40,20 +40,22 @@ void Player::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 	gameObject->PreLoadTexture(L"Resources/playerdemo/player.png");
 	gameObject->SetViewProjection(viewProjection_);
 	gameObject->SetMatProjection(matProjection);
+	gameObject->worldTransform.scale = { 2.5f,1.5f,1.5f };
 	gameObject->Initialize();
-
+#pragma region AimObject
 	aimObject = new GameObject3D();
 	aimObject->PreLoadModel("Resources/square/square.obj");
 	aimObject->PreLoadTexture(L"Resources/red.png");
 	aimObject->SetViewProjection(viewProjection_);
 	aimObject->SetMatProjection(matProjection);
 	aimObject->Initialize();
-
+	aimObject->worldTransform.scale = { 2.5f,2.5f,2.5f };
 	aimObject2 = new GameObject3D();
 	aimObject2->PreLoadModel("Resources/square/square.obj");
 	aimObject2->PreLoadTexture(L"Resources/red.png");
 	aimObject2->SetViewProjection(viewProjection_);
 	aimObject2->SetMatProjection(matProjection);
+
 	aimObject2->Initialize();
 
 	aimObject3 = new GameObject3D();
@@ -69,7 +71,12 @@ void Player::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 	aimObject4->SetViewProjection(viewProjection_);
 	aimObject4->SetMatProjection(matProjection);
 	aimObject4->Initialize();
-	
+
+
+	aimObject2->worldTransform.scale = { 1.0f,1.0f,1.0f };
+	aimObject3->worldTransform.scale = { 0.5f,0.5f,0.5f };
+	aimObject4->worldTransform.scale = { 0.5f,0.5f,0.5f };
+#pragma endregion
 	Reset();
 
 	//3Dレティクルのワールドトランスフォーム初期化
@@ -144,6 +151,7 @@ void Player::Update(WorldTransform wt, Vector3 vec) {
 	Collision();
 
 	//SetPos({ 0.0f,0.0f,5.0f });
+
 }
 
 void Player::AimHit() {
@@ -152,7 +160,7 @@ void Player::AimHit() {
 	aimObject2->color = { 1.0f,0.0f,0.0f,0.0f };
 	aimObject3->color = { 1.0f,0.0f,0.0f,0.0f };
 	aimObject4->color = { 1.0f,0.0f,0.0f,0.0f };
-	aimObject->worldTransform.scale = { 1.5f,1.5f,1.5f };
+	//aimObject->worldTransform.scale = { 1.5f,1.5f,1.5f };
 	aimObject2->worldTransform.scale = { 1.0f,1.0f,1.0f };
 	aimObject3->worldTransform.scale = { 0.5f,0.5f,0.5f };
 	aimObject4->worldTransform.scale = { 0.5f,0.5f,0.5f };
@@ -163,7 +171,7 @@ void Player::NotAimHit() {
 	//aimObject2->color = { 0.0f,0.0f,0.0f,1.0f };
 	//aimObject3->color = { 0.0f,0.0f,0.0f,1.0f };
 	//aimObject4->color = { 0.0f,0.0f,0.0f,1.0f };
-	aimObject->worldTransform.scale = { 1.5f, 1.5f, 1.5f };
+	//aimObject->worldTransform.scale = { 1.5f, 1.5f, 1.5f };
 	aimObject2->worldTransform.scale = { 1.0f,1.0f,1.0f };
 	aimObject3->worldTransform.scale = { 0.5f,0.5f,0.5f };
 	aimObject4->worldTransform.scale = { 0.5f,0.5f,0.5f };
@@ -179,7 +187,7 @@ void Player::Aim(Vector3 player, Vector3 enemy, Vector3 vec, float shotAngle) {
 	if (aimObject->worldTransform.translation.z > GetPos().z + 40) {
 		aimObject->worldTransform.translation.z = GetPos().z;
 	}
-	aimObject->worldTransform.translation.x = gameObject->worldTransform.translation.x +0.1;
+	aimObject->worldTransform.translation.x = gameObject->worldTransform.translation.x + 0.1;
 	aimObject->worldTransform.translation.y = gameObject->worldTransform.translation.y;
 	aimObject->worldTransform.translation.z = GetPos().z - velocity.z * 1;
 	aimObject->worldTransform.rotation.z += 0.01;
@@ -199,7 +207,7 @@ void Player::Aim(Vector3 player, Vector3 enemy, Vector3 vec, float shotAngle) {
 	aimObject4->worldTransform.translation.y = gameObject->worldTransform.translation.y;
 	aimObject4->worldTransform.translation.z = GetPos().z - velocity.z * 9;
 
-	aimObject->worldTransform.scale = { 1.5f,1.5f,1.5f };
+	//aimObject->worldTransform.scale = { 1.5f,1.5f,1.5f };
 	aimObject2->worldTransform.scale = { 1.0f,1.0f,1.0f };
 	aimObject3->worldTransform.scale = { 0.5f,0.5f,0.5f };
 	aimObject4->worldTransform.scale = { 0.5f,0.5f,0.5f };
@@ -400,53 +408,10 @@ void Player::NewBullet(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 //	}
 //
 //}
+
 void Player::Collision() {
 
-	//const std::list < std::unique_ptr<Enemy>>& enemyLoads = GetEnemyBullets();
-	//for (const std::unique_ptr<Enemy>& enemy : enemyLoads) {
-
-	////enemy-player
-	//if (enemy->GetWorldTransform().translation.x - gameObject->worldTransform.translation.x < 2 &&
-	//	-2 < enemy->GetWorldTransform().translation.x - gameObject->worldTransform.translation.x) {
-	//	if (enemy->GetWorldTransform().translation.y - gameObject->worldTransform.translation.y < 3 &&
-	//		-3 < enemy->GetWorldTransform().translation.y - gameObject->worldTransform.translation.y) {
-	//		if (enemy->GetWorldTransform().translation.z - gameObject->worldTransform.translation.z < 3 &&
-	//			-3 < enemy->GetWorldTransform().translation.z - gameObject->worldTransform.translation.z) {
-	//			if (life > 0) {
-	//				life -= 10;
-	//			}
-	//			else {
-	//				isDead = true;
-	//			}
-	//		}
-	//	}
-	//}
-	////bullet-enemy
-	//
-	//
-	//
-
-	//const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = GetBullets();
-	//for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
-	//		if (input.PushKey(DIK_P)) {
-	//			isDead = true;
-	//			bulletA->OnCollision();
-	//		}
-	//	if (enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x < 2 &&
-	//		-2 < enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x) {
-	//		if (enemy->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y < 3 &&
-	//			-3 < enemy->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y) {
-	//			if (enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z < 3 &&
-	//				-3 < enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z) {
-	//
-	//				bulletA->OnCollision();
-	//				enemy->Reset();
-	//				isDead=true;
-	//			}
-	//		}
-	//	}
-	//}
-	//}
+	
 
 }
 

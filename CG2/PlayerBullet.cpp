@@ -94,7 +94,7 @@ void PlayerBullet::Update(Vector3 vec, float shotAngle) {
 	
 }
 
-void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos, Vector3 vec, float shotAngle) {
+void PlayerBullet::Attack(Vector3 enemyPos, Vector3 playerPos, Vector3 vec, float shotAngle) {
 	const float rotationSpeed = MathFunc::Utility::Deg2Rad(60.0f);
 
 	Vector3 rotation = { 0 , 0 , 0 };
@@ -110,12 +110,14 @@ void PlayerBullet::Attack(Vector3 playerPos, Vector3 bossPos, Vector3 vec, float
 		isShot = true;
 		isDead_ = false;
 		//それと同時に同番号のオブジェクトの座標をボスの座標に持っていく
-		newPlayerPos = playerPos;
-		newEnemyPos = bossPos;
+		newPlayerPos = enemyPos;
+		newEnemyPos = playerPos;
 		//gameObject->worldTransform.translation = bossPos;
 		//ボスと自機の差分ベクトルを求める
 		//velocity = newPlayerPos - newEnemyPos;
-		velocity = { sin(vec.y + shotAngle),-vec.x,cos(vec.y + shotAngle)};
+		//velocity = { sin(vec.y + shotAngle),-vec.x,cos(vec.y + shotAngle)};
+		velocity = newPlayerPos-newEnemyPos;
+		velocity.nomalize();
 		//ベクトルの長さを速さに合わせる
 		velocity.x *= speed;
 		velocity.y *= speed;

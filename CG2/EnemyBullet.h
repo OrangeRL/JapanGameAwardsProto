@@ -23,6 +23,8 @@ public:
 
 	bool IsDead()const { return isDelete_; }
 	bool GetIsDead();
+	void SetIsDead(bool isDelete) { this->isDelete_ = isDelete; }
+
 private:
 	GameObject3D* gameObject = nullptr;
 	//キー入力
