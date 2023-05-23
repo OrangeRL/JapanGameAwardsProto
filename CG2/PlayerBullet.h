@@ -43,7 +43,7 @@ private:	//メンバ変数
 	//カウント
 	int bulletCount = 0;
 	//弾の移動速度
-	float speed = -5.0f;
+	float speed = -1.0f;
 	//弾のベクトル
 	Vector3 velocity;
 	Vector3 vec1;

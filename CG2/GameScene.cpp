@@ -190,7 +190,7 @@ void GameScene::TitleUpdate() {
 			skydome->color = { 0.8f,0.8f,0.8f,1.0f };
 		}
 	}
-	
+
 
 }
 
@@ -204,7 +204,7 @@ void GameScene::StageUpdate()
 		LoadCsv(enemyVal);
 		LoadCsv2(enemyVal);
 	}
-	else if(loadCount == false)
+	else if (loadCount == false)
 	{
 		loadCount = true;
 	}
@@ -363,9 +363,13 @@ void GameScene::StageUpdate()
 		}*/
 
 		Collisions();
-
+		if (waitTime > 0) {
+			waitTime--;
+		}
 		//プレイヤーの弾発射処理
+		const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = player->GetBullets();
 		if (input_.TriggerKey(DIK_SPACE) && rhythm->GetSoundState().isFireSucces) {
+
 			for (std::unique_ptr<Enemy>& enemy : enemys1) {
 				if (enemy->GetAimFlag() == true)
 				{
@@ -395,7 +399,7 @@ void GameScene::StageUpdate()
 		}
 
 		if (sceneShiftFlame <= 0) {
-			
+
 			scene_ = Scene::Title;
 			rhythm->ResetRhythm();
 			player->SetPos({ 0.0f,0.0f,20.0f });
@@ -563,15 +567,20 @@ void GameScene::Collisions() {
 
 #pragma region bulletToEnemyCollisions
 		for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
-			if (enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x < 2 &&
-				-2 < enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x) {
-				if (enemy->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y < 2 &&
-					-2 < enemy->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y) {
-					if (enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z < 2 &&
-						-2 < enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z) {
+			if (enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x < 3 &&
+				-3 < enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x) {
+				if (enemy->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y < 3 &&
+					-3 < enemy->GetWorldTransform().translation.y - bulletA->GetWorldTransform().translation.y) {
+					if (enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z < 3 &&
+						-3 < enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z) {
 
-						bulletA->OnCollision();
+						//bulletA->OnCollision();
+
+						if (enemy->GetAimFlag() == true) 
+						{
 						enemy->OnCollision(rhythm);
+						}
+
 						aimCount = 0;
 						rhythm->ComboUp();
 					}
@@ -682,15 +691,15 @@ void GameScene::Collisions() {
 	}
 #pragma endregion
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
-	
+
 		if (enemy->GetWorldTransform().translation.x - player->GetAimPos().x < 2 &&
 			-2 < enemy->GetWorldTransform().translation.x - player->GetAimPos().x) {
 			if (enemy->GetWorldTransform().translation.y - player->GetAimPos().y < 2 &&
 				-2 < enemy->GetWorldTransform().translation.y - player->GetAimPos().y) {
-				if (enemy->GetWorldTransform().translation.z - player->GetAimPos().z < 200 &&
-					-200 < enemy->GetWorldTransform().translation.z - player->GetAimPos().z) {
+				if (enemy->GetWorldTransform().translation.z - player->GetAimPos().z < 60      &&
+					-2 < enemy->GetWorldTransform().translation.z - player->GetAimPos().z) {
 					player->AimHit();
-					if (enemy->GetAimFlag()==false && aimCount < 5) {
+					if (enemy->GetAimFlag() == false && aimCount < 5) {
 						aimCount++;
 						enemy->AimCheck();
 					}
@@ -806,109 +815,73 @@ void GameScene::LoadCsv(int obstacleVal)
 	spawntime += 1;
 	for (std::unique_ptr<Enemy>& newEnemy : enemys1) {
 		if (spawntime == spawntimer[0]) {
-			if (i < obstaclePos.size() && i < 12 && i >= 0) {
+			if (i < obstaclePos.size() && i < 15 && i >= 0) {
 				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
 				//if (newEnemy->GetSpownFlag() == false) {
-					newEnemy->Spawn();
+				newEnemy->Spawn();
 				//}
 			}
 			i++;
 		}
-		if (spawntime == spawntimer[12]) {
-			if (i < obstaclePos.size() && i < 16 && i > 11) {
+		if (spawntime == spawntimer[15]) {
+			if (i < obstaclePos.size() && i < 30 && i >= 15) {
 				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
 				//if (newEnemy->GetSpownFlag() == false) {
-					newEnemy->Spawn();
+				newEnemy->Spawn();
 				//}
 			}
 			i++;
 		}
-		if (spawntime == spawntimer[16]) {
-			if (i < obstaclePos.size() && i < 24 && i > 15) {
+		if (spawntime == spawntimer[30]) {
+			if (i < obstaclePos.size() && i < 45 && i >= 30) {
 				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
 				//if (newEnemy->GetSpownFlag() == false) {
-					newEnemy->Spawn();
+				newEnemy->Spawn();
 				//}
 			}
 			i++;
 		}
-		if (spawntime == spawntimer[24]) {
-			if (i < obstaclePos.size() && i < 34 && i > 23) {
+		if (spawntime == spawntimer[45]) {
+			if (i < obstaclePos.size() && i < 60 && i >= 45) {
 				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
 				//if (newEnemy->GetSpownFlag() == false) {
-					newEnemy->Spawn();
+				newEnemy->Spawn();
 				//}
 			}
 			i++;
 		}
-		if (spawntime == spawntimer[34]) {
-			if (i < obstaclePos.size() && i < 37 && i > 33) {
+		if (spawntime == spawntimer[60]) {
+			if (i < obstaclePos.size() && i < 75 && i >= 60) {
 				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
 				//if (newEnemy->GetSpownFlag() == false) {
-					newEnemy->Spawn();
+				newEnemy->Spawn();
 				//}
 			}
 			i++;
 		}
-		if (spawntime == spawntimer[37]) {
-			if (i < obstaclePos.size() && i < 40 && i > 36) {
+		if (spawntime == spawntimer[75]) {
+			if (i < obstaclePos.size() && i < 90 && i > 75) {
 				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
 				//if (newEnemy->GetSpownFlag() == false) {
-					newEnemy->Spawn();
-				//}
-			}
-			i++;
-		}
-		if (spawntime == spawntimer[40]) {
-			if (i < obstaclePos.size() && i < 44 && i > 39) {
-				newEnemy->Settransform(obstaclePos[i]);
-				newEnemy->SetBulletNum(bulletNum[i]);
-				newEnemy->SetMoveNum(moveNum[i]);
-				newEnemy->SetSpeed(0, 0, 0);
-				//if (newEnemy->GetSpownFlag() == false) {
-					newEnemy->Spawn();
-				//}
-			}
-			i++;
-		}
-		if (spawntime == spawntimer[44]) {
-			if (i < obstaclePos.size() && i < 48 && i > 43) {
-				newEnemy->Settransform(obstaclePos[i]);
-				newEnemy->SetBulletNum(bulletNum[i]);
-				newEnemy->SetMoveNum(moveNum[i]);
-				newEnemy->SetSpeed(0, 0, 0);
-				//if (newEnemy->GetSpownFlag() == false) {
-					newEnemy->Spawn();
-				//
-			}
-			i++;
-		}
-		if (spawntime == spawntimer[48]) {
-			if (i < obstaclePos.size() && i < 52 && i > 47) {
-				newEnemy->Settransform(obstaclePos[i]);
-				newEnemy->SetBulletNum(bulletNum[i]);
-				newEnemy->SetMoveNum(moveNum[i]);
-				newEnemy->SetSpeed(0, 0, 0);
-				//if (newEnemy->GetSpownFlag() == false) {
-					newEnemy->Spawn();
+				newEnemy->Spawn();
 				//}
 			}
 			i++;
@@ -968,112 +941,113 @@ void GameScene::LoadCsv2(int obstacleVal)
 	//spawntime += 1;
 	for (std::unique_ptr<Enemy>& newEnemy : enemys1) {
 		if (spawntime == spawntimer[0]) {
-			if (i < obstaclePos.size() && i <= 4 && i >= 0) {
+			if (i < obstaclePos.size() && i < 15 && i >= 0) {
 				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
-					newEnemy->Spawn();
-				}
+				//if (newEnemy->GetSpownFlag() == false) {
+				newEnemy->Spawn();
+				//}
 			}
 			i++;
 		}
-		if (spawntime == spawntimer[4]) {
-			if (i < obstaclePos.size() && i < 8 && i > 3) {
+		if (spawntime == spawntimer[15]) {
+			if (i < obstaclePos.size() && i < 30 && i > 15) {
 				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
-					newEnemy->Spawn();
-				}
+				//if (newEnemy->GetSpownFlag() == false) {
+				newEnemy->Spawn();
+				//}
 			}
 			i++;
 		}
-		if (spawntime == spawntimer[8]) {
-			if (i < obstaclePos.size() && i < 16 && i > 7) {
-				newEnemy->Settransform(obstaclePos[i]);
-				newEnemy->SetBulletNum(bulletNum[i]);
-				newEnemy->SetMoveNum(moveNum[i]);
-				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
-					newEnemy->Spawn();
-				}
-			}
-			i++;
-		}
-		if (spawntime == spawntimer[16]) {
-			if (i < obstaclePos.size() && i < 20 && i > 15) {
-				newEnemy->Settransform(obstaclePos[i]);
-				newEnemy->SetBulletNum(bulletNum[i]);
-				newEnemy->SetMoveNum(moveNum[i]);
-				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
-					newEnemy->Spawn();
-				}
-			}
-			i++;
-		}
-		if (spawntime == spawntimer[20]) {
-			if (i < obstaclePos.size() && i < 24 && i > 20) {
-				newEnemy->Settransform(obstaclePos[i]);
-				newEnemy->SetBulletNum(bulletNum[i]);
-				newEnemy->SetMoveNum(moveNum[i]);
-				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
-					newEnemy->Spawn();
-				}
-			}
-			i++;
-		}
-		if (spawntime == spawntimer[24]) {
-			if (i < obstaclePos.size() && i < 32 && i > 23) {
-				newEnemy->Settransform(obstaclePos[i]);
-				newEnemy->SetBulletNum(bulletNum[i]);
-				newEnemy->SetMoveNum(moveNum[i]);
-				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
-					newEnemy->Spawn();
-				}
-			}
-			i++;
-		}
-		if (spawntime == spawntimer[32]) {
-			if (i < obstaclePos.size() && i < 40 && i > 31) {
-				newEnemy->Settransform(obstaclePos[i]);
-				newEnemy->SetBulletNum(bulletNum[i]);
-				newEnemy->SetMoveNum(moveNum[i]);
-				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
-					newEnemy->Spawn();
-				}
-			}
-			i++;
-		}
-		if (spawntime == spawntimer[40]) {
-			if (i < obstaclePos.size() && i < 45 && i > 39) {
-				newEnemy->Settransform(obstaclePos[i]);
-				newEnemy->SetBulletNum(bulletNum[i]);
-				newEnemy->SetMoveNum(moveNum[i]);
-				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
-					newEnemy->Spawn();
-				}
-			}
-			i++;
-		}
-		if (spawntime == spawntimer[45]) {
-			if (i < obstaclePos.size() && i < 50 && i > 44) {
-				newEnemy->Settransform(obstaclePos[i]);
-				newEnemy->SetBulletNum(bulletNum[i]);
-				newEnemy->SetMoveNum(moveNum[i]);
-				newEnemy->SetSpeed(0, 0, 0);
-				if (newEnemy->GetSpownFlag() == false) {
-					newEnemy->Spawn();
-				}
-			}
-			i++;
-		}
+
+		//if (spawntime == spawntimer[30]) {
+		//	if (i < obstaclePos.size() && i < 45 && i >= 30) {
+		//		newEnemy->Settransform(obstaclePos[i]);
+		//		newEnemy->SetBulletNum(bulletNum[i]);
+		//		newEnemy->SetMoveNum(moveNum[i]);
+		//		newEnemy->SetSpeed(0, 0, 0);
+		//		//if (newEnemy->GetSpownFlag() == false) {
+		//		newEnemy->Spawn();
+		//		//}
+		//	}
+		//	i++;
+		//}
+		//if (spawntime == spawntimer[16]) {
+		//	if (i < obstaclePos.size() && i < 20 && i > 15) {
+		//		newEnemy->Settransform(obstaclePos[i]);
+		//		newEnemy->SetBulletNum(bulletNum[i]);
+		//		newEnemy->SetMoveNum(moveNum[i]);
+		//		newEnemy->SetSpeed(0, 0, 0);
+		//		if (newEnemy->GetSpownFlag() == false) {
+		//			newEnemy->Spawn();
+		//		}
+		//	}
+		//	i++;
+		//}
+		//if (spawntime == spawntimer[20]) {
+		//	if (i < obstaclePos.size() && i < 24 && i > 20) {
+		//		newEnemy->Settransform(obstaclePos[i]);
+		//		newEnemy->SetBulletNum(bulletNum[i]);
+		//		newEnemy->SetMoveNum(moveNum[i]);
+		//		newEnemy->SetSpeed(0, 0, 0);
+		//		if (newEnemy->GetSpownFlag() == false) {
+		//			newEnemy->Spawn();
+		//		}
+		//	}
+		//	i++;
+		//}
+		//if (spawntime == spawntimer[24]) {
+		//	if (i < obstaclePos.size() && i < 32 && i > 23) {
+		//		newEnemy->Settransform(obstaclePos[i]);
+		//		newEnemy->SetBulletNum(bulletNum[i]);
+		//		newEnemy->SetMoveNum(moveNum[i]);
+		//		newEnemy->SetSpeed(0, 0, 0);
+		//		if (newEnemy->GetSpownFlag() == false) {
+		//			newEnemy->Spawn();
+		//		}
+		//	}
+		//	i++;
+		//}
+		//if (spawntime == spawntimer[32]) {
+		//	if (i < obstaclePos.size() && i < 40 && i > 31) {
+		//		newEnemy->Settransform(obstaclePos[i]);
+		//		newEnemy->SetBulletNum(bulletNum[i]);
+		//		newEnemy->SetMoveNum(moveNum[i]);
+		//		newEnemy->SetSpeed(0, 0, 0);
+		//		if (newEnemy->GetSpownFlag() == false) {
+		//			newEnemy->Spawn();
+		//		}
+		//	}
+		//	i++;
+		//}
+		//if (spawntime == spawntimer[40]) {
+		//	if (i < obstaclePos.size() && i < 45 && i > 39) {
+		//		newEnemy->Settransform(obstaclePos[i]);
+		//		newEnemy->SetBulletNum(bulletNum[i]);
+		//		newEnemy->SetMoveNum(moveNum[i]);
+		//		newEnemy->SetSpeed(0, 0, 0);
+		//		if (newEnemy->GetSpownFlag() == false) {
+		//			newEnemy->Spawn();
+		//		}
+		//	}
+		//	i++;
+		//}
+		//if (spawntime == spawntimer[45]) {
+		//	if (i < obstaclePos.size() && i < 50 && i > 44) {
+		//		newEnemy->Settransform(obstaclePos[i]);
+		//		newEnemy->SetBulletNum(bulletNum[i]);
+		//		newEnemy->SetMoveNum(moveNum[i]);
+		//		newEnemy->SetSpeed(0, 0, 0);
+		//		if (newEnemy->GetSpownFlag() == false) {
+		//			newEnemy->Spawn();
+		//		}
+		//	}
+		//	i++;
+		//}
 	}
 }

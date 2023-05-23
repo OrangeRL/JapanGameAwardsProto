@@ -207,12 +207,14 @@ private: // メンバ変数
 	bool loadCount = false;
 	int aimCount = 0;
 	bool collisionOccurred = false;  // 判定をトラッキングする
+	float waitTime = 0;
+	float space = 0;
 // 敵コマンド関係
 //------------------------------------
 	std::stringstream enemyPopCommand;
 	bool waitFlag = true;
 	float waitTime_=10;
-	size_t enemyVal = 90;
+	size_t enemyVal = 180;
 	int fileNum = 1;
 //------------------------------------
 
