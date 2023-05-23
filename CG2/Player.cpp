@@ -280,7 +280,7 @@ void Player::Rotate() {
 
 void Player::Move() {
 
-	moveSpeed = 0.2f;
+	moveSpeed = 0.5f;
 	move = { 0,0,0 };
 
 	if (input.PushKey(DIK_W) || input.PushKey(DIK_S) || input.PushKey(DIK_D) || input.PushKey(DIK_A) || input.PushKey(DIK_E) || input.PushKey(DIK_Q))
