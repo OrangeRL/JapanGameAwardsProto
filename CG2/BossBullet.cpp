@@ -12,33 +12,10 @@ void BossBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProject
 	Aim(player, enemy);
 }
 
-void BossBullet::Update(BossPhase phase, Vector3 player)
-{
-	if (phase == attack) {
-		gameObject->worldTransform.scale = { 1,1,1 };
-		gameObject->worldTransform.translation -= posC;
-	}
-	else if (phase == attack2) {
-		if (isSelect = false)
-		{
-			isSelect = true;
-		}
-		if (selectPos == 0)
-		{
-			gameObject->worldTransform.scale = { 15,1,1 };
-			gameObject->worldTransform.translation = { 0,9,player.z };
-		}
-		else if (selectPos == 1)
-		{
-			gameObject->worldTransform.scale = { 15,1,1 };
-			gameObject->worldTransform.translation = { 0,-9,player.z };
-		}
-		else
-		{
-			gameObject->worldTransform.scale = { 15,1,1 };
-			gameObject->worldTransform.translation = { 0,0,player.z };
-		}
-	}
+void BossBullet::Update()
+{	
+	gameObject->worldTransform.scale = { 1,1,1 };
+	gameObject->worldTransform.translation -= posC;
 
 	if (--deleteTimer_ <= 0) {
 		isDelete_ = true;
@@ -56,11 +33,6 @@ WorldTransform BossBullet::GetWorldTransform()
 {
 	return gameObject->worldTransform;
 }
-
-//WorldTransform BossBullet::GetWorldTransform()
-//{
-//	return gameObject->worldTransform;
-//}
 
 Vector3 BossBullet::SetTransform(Vector3 transform)
 {

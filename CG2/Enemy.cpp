@@ -201,14 +201,6 @@ WorldTransform Enemy::GetWorldTransform() {
 	return gameObject->worldTransform;
 }
 
-WorldTransform Enemy::Settransform(float x, float y, float z)
-{
-	this->gameObject->worldTransform.translation.x = x;
-	this->gameObject->worldTransform.translation.y = y;
-	this->gameObject->worldTransform.translation.z = z;
-
-	return gameObject->worldTransform;
-}
 WorldTransform Enemy::Settransform(Vector3 x)
 {
 	this->gameObject->worldTransform.translation = x;

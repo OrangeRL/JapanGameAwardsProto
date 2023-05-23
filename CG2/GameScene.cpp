@@ -291,9 +291,7 @@ void GameScene::StageUpdate()
 
 			
 			for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
-				if (enemy->GetIsAttack() == true) {
-					bullet->Update(enemy->GetIsDead());
-				}
+				bullet->Update(enemy->GetIsDead());
 			}
 
 			//弾&敵を削除する
@@ -328,17 +326,10 @@ void GameScene::StageUpdate()
 					}
 				}
 				if (boss->GetPhase() == BossPhase::attack2) {
-					std::unique_ptr<BossBullet> bullet = std::make_unique<BossBullet>();
-					bullet->Initialize(&viewProjection_, &matProjection_, player->GetPos(), boss->GetWorldTransform().translation);
-					bossBullet1.push_back(std::move(bullet));
-					boss->SetAttackSpeed(25.0f);
-					if (boss->GetIsAttack() == false) {
-						boss->SetIsAttack(true);
-					}
-				}
-
-				for (std::unique_ptr<BossBullet>& bullet : bossBullet1) {
 					
+				}
+				for (std::unique_ptr<BossBullet>& bullet : bossBullet1) {
+					bullet->Update();
 				}
 
 				//弾&敵を削除する
