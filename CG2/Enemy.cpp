@@ -170,6 +170,10 @@ void Enemy::Reset() {
 	{
 		spawnFlag = false;
 	}
+	if (isDelete_ == true) 
+	{
+		isDelete_ = false;
+	}
 	aimFlag = false;
 }
 //反復

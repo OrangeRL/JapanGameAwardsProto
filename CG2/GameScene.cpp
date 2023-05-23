@@ -289,8 +289,9 @@ void GameScene::StageUpdate()
 				}
 			}
 
-			if (enemy->GetIsAttack() == true) {
-				for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
+			
+			for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
+				if (enemy->GetIsAttack() == true) {
 					bullet->Update(enemy->GetIsDead());
 				}
 			}
@@ -314,7 +315,7 @@ void GameScene::StageUpdate()
 					bullet->Initialize(&viewProjection_, &matProjection_, player->GetPos(), boss->GetWorldTransform().translation);
 					bullet->SetTransform(boss->GetWorldTransform().translation);
 					bossBullet1.push_back(std::move(bullet));
-					boss->SetAttackSpeed(50.0f);
+					boss->SetAttackSpeed(20.0f);
 					if (boss->GetIsAttack() == false) {
 						boss->SetIsAttack(true);
 					}
@@ -324,7 +325,7 @@ void GameScene::StageUpdate()
 					std::unique_ptr<BossBullet> bullet = std::make_unique<BossBullet>();
 					bullet->Initialize(&viewProjection_, &matProjection_, player->GetPos(), boss->GetWorldTransform().translation);
 					bullet->SetTransform(boss->GetWorldTransform().translation);
-					bossBullet2.push_back(std::move(bullet));
+					bossBullet1.push_back(std::move(bullet));
 					boss->SetAttackSpeed(150.0f);
 					if (boss->GetIsAttack() == false) {
 						boss->SetIsAttack(true);
@@ -333,10 +334,10 @@ void GameScene::StageUpdate()
 
 				if (boss->GetIsAttack() == true) {
 					for (std::unique_ptr<BossBullet>& bullet : bossBullet1) {
-						bullet->Update(boss->GetPhase());
+						bullet->Update(boss->GetPhase(),player->GetWorldTransform().translation);
 					}
 					for (std::unique_ptr<BossBullet>& bullet : bossBullet2) {
-						bullet->Update(boss->GetPhase());
+						bullet->Update(boss->GetPhase(), player->GetWorldTransform().translation);
 					}
 				}
 				//弾&敵を削除する
@@ -375,10 +376,6 @@ void GameScene::StageUpdate()
 				player->NewBullet(&viewProjection_, &matProjection_, boss->GetWorldTransform().translation, player->GetWorldTransform().translation, rhythm->GetSoundState().weapon);
 			}
 			//player->NewBulletAim(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
-		}
-
-		if (boss->GetHP() <= 0) {
-			//boss->SetPhase(end);
 		}
 
 		if (boss->GetSceneChange() == true)
@@ -771,10 +768,7 @@ void GameScene::LoadCsv(int obstacleVal)
 
 	//1行分の文字列
 	std::string line;
-	std::vector<Vector3> obstaclePos;
-	std::vector<int32_t> spawntimer;
-	std::vector<int32_t> bulletNum;
-	std::vector<int32_t> moveNum;
+
 	//コマンド実行
 	while (std::getline(obstaclePosList, line)) {
 		//1行分の文字列をストリームに変換
@@ -1081,6 +1075,5 @@ void GameScene::LoadCsv2(int obstacleVal)
 			}
 			i++;
 		}
-
 	}
 }

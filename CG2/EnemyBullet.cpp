@@ -28,7 +28,7 @@ void EnemyBullet::Update(bool enemy)
 		gameObject->worldTransform.translation -= posC;
 	}
 
-	if (--deleteTimer_ <= 0) {
+	if (--deleteTimer_ <= 0 || enemy == true) {
 		isDelete_ = true;
 	}
 

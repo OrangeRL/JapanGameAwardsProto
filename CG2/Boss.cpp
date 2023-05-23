@@ -28,7 +28,7 @@ void Boss::Update()
 	}
 	if (HP > 0) {
 		attackSpeed -= 0.5f;
-		phaseTimer -= 0.1f;
+		phaseTimer -= 0.5f;
 		switch (phase)
 		{
 		case BossPhase::spown:	// 誕生
@@ -54,25 +54,18 @@ void Boss::Update()
 				phase = BossPhase::attack;
 			}
 			break;
-		case BossPhase::end:	//死亡
-			// ↓防御処理	ダメージ軽減効果を出す
-			End();
-			//-----------------------
-			if (phaseTimer <= 0.0f) {
-				phaseTimer = 300.0f;
-				phase = BossPhase::attack;
-			}
-			break;
 		}
+	}
+	else
+	{
+		End();
 	}
 	gameObject->Update();
 }
 
 void Boss::Draw()
 {
-	if (HP > 0) {
-		gameObject->Draw();
-	}
+	gameObject->Draw();
 }
 
 void Boss::Attack()	//ライン状に弾を展開回転させる : 自機を回転させる
@@ -84,30 +77,28 @@ void Boss::Attack()	//ライン状に弾を展開回転させる : 自機を回転させる
 
 void Boss::Attack2()	//移動場所を制限する&ランダムショット : 
 {
-	
-	gameObject->worldTransform.translation += moveSpeed;
 
-	if (gameObject->worldTransform.translation.x >= 5.0f|| gameObject->worldTransform.translation.x <= -5.0f) {
-		moveSpeed = -moveSpeed;
-	}
 }
 
-void Boss::End()	//ダメージを軽減させる : 
+void Boss::End()	//死亡演出: 
 {
 	if (gameObject->worldTransform.translation.x != 0.0f) {
 		gameObject->worldTransform.translation.x = 0.0f;
 	}
 
-	gameObject->worldTransform.rotation.y += 0.01f;
 	if (gameObject->worldTransform.scale.x != 0 && gameObject->worldTransform.scale.y != 0 && gameObject->worldTransform.scale.z != 0)
 	{
-		gameObject->worldTransform.scale -= {0.1f, 0.1f, 0.1f};
+		gameObject->worldTransform.rotation.y += 0.1f;
+		gameObject->worldTransform.scale.z -= 0.03f;
+		gameObject->worldTransform.scale.x -= 0.03f;
+		gameObject->worldTransform.scale.y -= 0.03f;
 	}
-	else//スケールが無くなったら
-	{
-		if (sceneChange == false)
-		{
-			sceneChange = true;
+	if (gameObject->worldTransform.scale.z <= 0) {
+		if (gameObject->worldTransform.scale.y <= 0) {
+			if (gameObject->worldTransform.scale.x <= 0) {
+				
+				sceneChange = true;
+			}
 		}
 	}
 }
@@ -122,6 +113,7 @@ void Boss::Reset()
 	isDead = false;
 	attackSpeed = 200.0f;
 	isAttack = false;
+	sceneChange = false;
 }
 
 float Boss::Random(float minValue, float maxValue)

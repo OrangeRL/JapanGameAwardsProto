@@ -6,7 +6,7 @@ class BossBullet
 {
 public:
 	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 player, Vector3 enemy);
-	void Update(BossPhase phase);
+	void Update(BossPhase phase,Vector3 player);
 	void Draw();
 
 	WorldTransform GetWorldTransform();
@@ -19,6 +19,7 @@ public:
 	void Aim(Vector3 player, Vector3 enemy);
 private:
 	GameObject3D* gameObject = nullptr;
+	GameObject3D* gameObject2[4] = {};
 
 	//è¡Ç¶ÇÈÇ‹Ç≈ÇÃéûä‘
 	// 60 * è¡Ç¶ÇÈÇ‹Ç≈ÇÃéûä‘:

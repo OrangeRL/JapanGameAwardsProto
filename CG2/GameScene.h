@@ -223,4 +223,9 @@ private: // メンバ変数
 
 	const float maxFlame = 50.0f;
 	float sceneShiftFlame = 0.0f;
+
+	std::vector<Vector3> obstaclePos;
+	std::vector<int32_t> spawntimer;
+	std::vector<int32_t> bulletNum;
+	std::vector<int32_t> moveNum;
 };
