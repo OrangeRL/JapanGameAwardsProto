@@ -273,7 +273,7 @@ void GameScene::StageUpdate()
 		for (std::unique_ptr<Enemy>& enemy : enemys1) {
 			enemy->Update(&viewProjection_, &matProjection_, 0);
 #pragma region makeEnemyBullet
-			if (enemy->GetBulletNum() != 2 && enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::Attack) {
+			if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::Attack) {
 				//弾を生成
 				std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
 				//初期化
@@ -523,6 +523,7 @@ void GameScene::Reset() {
 	for (int i = 1; i <= enemyVal; i++) {
 		for (std::unique_ptr<Enemy>& newEnemy : enemys1) {
 			newEnemy->Reset();
+			
 		}
 	}
 	for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
@@ -568,7 +569,6 @@ void GameScene::Collisions() {
 #pragma endregion
 
 #pragma region bulletToEnemyCollisions
-		const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = player->GetBullets();
 		for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
 			if (enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x < 2 &&
 				-2 < enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x) {
