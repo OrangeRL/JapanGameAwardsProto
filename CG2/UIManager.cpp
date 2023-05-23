@@ -458,6 +458,7 @@ void UIManager::Update(Rhythm* rhythm, Player* player, Input* input, int isDead)
 			position.y += moveSpeed;
 		}
 		UIPrintf({ window_width / 2 - 600, position.y }, { 3.5f,4.0f }, { 0.0f,1.0f,1.0f,1.0f }, 9, " GAMEOVER");
+		UIPrintf({ window_width / 2 ,position.y + 400 }, { 1.7f,1.0f }, { 0.0f,1.0f,1.0f,1.0f }, 10, " push to R");
 	}
 
 	//É|Å[ÉYâÊñ ÇÃèàóù

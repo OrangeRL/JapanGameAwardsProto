@@ -81,6 +81,9 @@ public:
 	void DecisionSoundPlay(){ soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(),decisionSound, false, soundState.normalSEVolume); };
 	void SelectSoundPlay(){ soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(),selectSound, false, soundState.normalSEVolume); };
 
+	void PlayBGM();
+	void StopBGM();
+
 	void NormalShot(SoundState s, Input* input);
 	void RapidShot(SoundState s, Input* input);
 	void ThreeWayShot(SoundState s, Input* input);
@@ -91,6 +94,7 @@ public:
 	void SetBGMVolume(float volume) { soundState.BGMVolume = volume; }
 	void SetSEVolume(float volume) { soundState.normalSEVolume = volume; }
 	void SetGSEVolume(float volume) { soundState.guideSEVolume = volume; }
+
 
 	void ResetRhythm();
 
@@ -125,7 +129,7 @@ private:
 
 	float colorChange = 0.0f;
 
-	float pitch = 1.0003f;
+	float pitch = 1.0005f;
 
 	//サウンドマネージャー
 	SoundManager* soundManager_ = nullptr;

@@ -24,29 +24,25 @@ void EnemyBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjec
 void EnemyBullet::Update(bool enemy)
 {
 	//プレイヤーを狙う
-	if (bulletNum == 0){
-		gameObject->worldTransform.translation -= posC;
-	}
-	/*else if(bulletNum == 1){
-		gameObject->worldTransform.translation.x += bulletSpeed;
-		gameObject->worldTransform.translation.z -= 0.01f;
-		countSpeed += bulletSpeed;
-		if (countSpeed >= 3.0f || countSpeed <= -3.0f) {
-			countSpeed = 0.0f;
-			bulletSpeed = -bulletSpeed;
-		}
-	}
-	else
+	//gameObject->worldTransform.translation -= posC;
+	switch (bulletNum)
 	{
+	case 0: //手前
+		gameObject->worldTransform.translation.z -= 0.3f;
+		break;
+	case 1://左
+		gameObject->worldTransform.translation.x += 0.2f;
+		break;
+	case 2://右
+		gameObject->worldTransform.translation.x -= 0.2f;
+		break;
+	}
 
-	}*/
-
-	if (--deleteTimer_ <= 0) {
+	if (--deleteTimer_ <= 0 || enemy == true) {
 		isDelete_ = true;
 	}
 
 	gameObject->Update();
-
 }
 
 

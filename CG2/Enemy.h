@@ -1,6 +1,5 @@
 #pragma once
 #include "GameObject3D.h"
-#include "EnemyBullet.h"
 #include "Rhythm.h"
 #include "SpawnParticleManager.h"
 #include "Particle2.h"
@@ -29,6 +28,8 @@ public:
 	
 	void Reset();
 	void SetPosition(Vector3 pos) { position = pos; }
+	void Rythem();
+	void ReSize();
 	//反復
 	void Repetition();
 	//離脱

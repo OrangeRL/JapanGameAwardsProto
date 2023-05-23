@@ -45,7 +45,7 @@ void Rhythm::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 	circle[0]->worldTransform.scale = { 2.0f,2.0f,1.0f };
 	circle[1]->worldTransform.scale = { 5.0f,5.0f,0.0f };
 
-	pitch = 1.0003f;
+	pitch = 1.001f;
 	ResetRhythm();
 }
 
@@ -62,6 +62,41 @@ void Rhythm::ResetRhythm() {
 	soundState.judge = Judge::None;
 	circle[1]->worldTransform.scale = { 5.0f,5.0f,0.0f };
 	circle[1]->color.z = 1.0f;
+}
+
+void Rhythm::PlayBGM() {
+
+	if (soundState.wave == 1) {
+		stage1_1BGM.pSourceVoice->Start();
+	}
+	else if (soundState.wave == 2) {
+		if (stage1_2BGM.pSourceVoice) {
+			stage1_2BGM.pSourceVoice->Start();
+		}
+	}
+	else if (soundState.wave == 3) {
+		if (stage1_bossBGM.pSourceVoice) {
+			stage1_bossBGM.pSourceVoice->Start();
+		}
+	}
+}
+
+void Rhythm::StopBGM() {
+	if (soundState.wave == 1) {
+		if (stage1_1BGM.pSourceVoice) {
+			stage1_1BGM.pSourceVoice->Stop(0);
+		}
+	}
+	else if (soundState.wave == 2) {
+		if (stage1_2BGM.pSourceVoice) {
+			stage1_2BGM.pSourceVoice->Stop(0);
+		}
+	}
+	else if (soundState.wave == 3) {
+		if (stage1_bossBGM.pSourceVoice) {
+			stage1_bossBGM.pSourceVoice->Stop(0);
+		}
+	}
 }
 
 void Rhythm::Update(Input* input, Vector3 pos, Vector3 rot, int isDead, int stage, Scene scene, int select) {
@@ -165,7 +200,7 @@ void Rhythm::Update(Input* input, Vector3 pos, Vector3 rot, int isDead, int stag
 
 		if (isDead == 0) {
 
-			pitch = 1.0003f;
+			pitch = 1.01f;
 
 			//•Ší•ÏX
 			if (input->TriggerKey(DIK_0)) {

@@ -42,7 +42,7 @@ void Player::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 	gameObject->SetMatProjection(matProjection);
 	gameObject->worldTransform.scale = { 2.5f,1.5f,1.5f };
 	gameObject->Initialize();
-	
+#pragma region AimObject
 	aimObject = new GameObject3D();
 	aimObject->PreLoadModel("Resources/square/square.obj");
 	aimObject->PreLoadTexture(L"Resources/red.png");
@@ -72,10 +72,11 @@ void Player::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 	aimObject4->SetMatProjection(matProjection);
 	aimObject4->Initialize();
 
-	
+
 	aimObject2->worldTransform.scale = { 1.0f,1.0f,1.0f };
 	aimObject3->worldTransform.scale = { 0.5f,0.5f,0.5f };
 	aimObject4->worldTransform.scale = { 0.5f,0.5f,0.5f };
+#pragma endregion
 	Reset();
 
 	//3Dレティクルのワールドトランスフォーム初期化

@@ -98,26 +98,7 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 			moveSpeed.z = 0.0f;
 			break;
 		}
-		//if (moveNum == 1) { //正面
-		//	moveSpeed.x = 0.0f;
-		//	moveSpeed.y = 0.0f;
-		//	moveSpeed.z = 0.3f;
-		//}
-		//else if (moveNum == 2) { //後退
-		//	moveSpeed.x = 0.0f;
-		//	moveSpeed.y = 0.0f;
-		//	moveSpeed.z = -0.3f;
-		//}
-		//else if (moveNum == 3) { //上
-		//	moveSpeed.x = 0.0f;
-		//	moveSpeed.y = 0.3f;
-		//	moveSpeed.z = 0.0f;
-		//}
-		//else if (moveNum == 4) { //下
-		//	moveSpeed.x = 0.0f;
-		//	moveSpeed.y = -0.3f;
-		//	moveSpeed.z = 0.0f;
-		//}
+		
 	//攻撃関連
 		switch (phase)
 		{
@@ -173,7 +154,23 @@ void Enemy::Reset() {
 	{
 		spawnFlag = false;
 	}
-  aimFlag = false;
+	if (isDelete_ == true) 
+	{
+		isDelete_ = false;
+	}
+	aimFlag = false;
+}
+void Enemy::Rythem()
+{
+	gameObject->worldTransform.scale.x += 1.5;
+	gameObject->worldTransform.scale.y += 1.5;
+	gameObject->worldTransform.scale.z += 1.5;
+}
+void Enemy::ReSize()
+{
+	if (gameObject->worldTransform.scale.x >= 2 && gameObject->worldTransform.scale.y >= 2 && gameObject->worldTransform.scale.z >= 2) {
+		gameObject->worldTransform.scale = { 2,2,2 };
+	}
 }
 //反復
 void Enemy::Repetition()

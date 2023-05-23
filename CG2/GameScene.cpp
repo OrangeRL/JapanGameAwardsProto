@@ -273,7 +273,7 @@ void GameScene::StageUpdate()
 		for (std::unique_ptr<Enemy>& enemy : enemys1) {
 			enemy->Update(&viewProjection_, &matProjection_, 0);
 #pragma region makeEnemyBullet
-			if (enemy->GetBulletNum() != 2 && enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::Attack) {
+			if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::Attack) {
 				//弾を生成
 				std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
 				//初期化
@@ -289,19 +289,27 @@ void GameScene::StageUpdate()
 				}
 			}
 
-			if (enemy->GetIsAttack() == true) {
-				for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
+			
+			for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
+				if (enemy->GetIsAttack() == true) {
 					bullet->Update(enemy->GetIsDead());
 				}
 			}
 
 			//弾&敵を削除する
+			//rhythm->StopBGM();
 			bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
+			//rhythm->PlayBGM();
 #pragma endregion
 			enemyPos = enemy->GetWorldTransform().translation;
 		}
+    
+    //音ズレ関係
+		rhythm->StopBGM();
+    
 		//敵の削除
 		enemys1.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
+		rhythm->PlayBGM();
 
 		//ボス関連
 		if (rhythm->GetSoundState().wave == 3) {
@@ -314,34 +322,27 @@ void GameScene::StageUpdate()
 					bullet->Initialize(&viewProjection_, &matProjection_, player->GetPos(), boss->GetWorldTransform().translation);
 					bullet->SetTransform(boss->GetWorldTransform().translation);
 					bossBullet1.push_back(std::move(bullet));
-					boss->SetAttackSpeed(50.0f);
+					boss->SetAttackSpeed(20.0f);
 					if (boss->GetIsAttack() == false) {
 						boss->SetIsAttack(true);
 					}
 				}
-				if (boss->GetPhase() == BossPhase::attack2 && boss->GetAttackSpeed() <= 0.0f) {
-					//弾を生成
+				if (boss->GetPhase() == BossPhase::attack2) {
 					std::unique_ptr<BossBullet> bullet = std::make_unique<BossBullet>();
 					bullet->Initialize(&viewProjection_, &matProjection_, player->GetPos(), boss->GetWorldTransform().translation);
-					bullet->SetTransform(boss->GetWorldTransform().translation);
-					bossBullet2.push_back(std::move(bullet));
-					boss->SetAttackSpeed(150.0f);
+					bossBullet1.push_back(std::move(bullet));
+					boss->SetAttackSpeed(25.0f);
 					if (boss->GetIsAttack() == false) {
 						boss->SetIsAttack(true);
 					}
 				}
 
-				if (boss->GetIsAttack() == true) {
-					for (std::unique_ptr<BossBullet>& bullet : bossBullet1) {
-						bullet->Update(boss->GetPhase());
-					}
-					for (std::unique_ptr<BossBullet>& bullet : bossBullet2) {
-						bullet->Update(boss->GetPhase());
-					}
+				for (std::unique_ptr<BossBullet>& bullet : bossBullet1) {
+					
 				}
+
 				//弾&敵を削除する
 				bossBullet1.remove_if([](std::unique_ptr<BossBullet>& bullet) { return bullet->IsDead(); });
-				bossBullet2.remove_if([](std::unique_ptr<BossBullet>& bullet) { return bullet->IsDead(); });
 
 			}
 #pragma endregion
@@ -381,13 +382,12 @@ void GameScene::StageUpdate()
 			//player->NewBulletAim(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
 		}
 
-		if (boss->GetHP() <= 0) {
+		if (boss->GetSceneChange() == true)
+		{
 			scene_ = Scene::Title;
 			rhythm->ResetRhythm();
-			player->SetPos({ 0.0f,0.0f,20.0f });
 			viewProjection_.Initialize();
 			UIManager.Init();
-			loadCount = false;
 		}
 	}
 	else {
@@ -460,6 +460,11 @@ void GameScene::StageDraw() {
 			enemy->Draw();
 		}
 	}
+	for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
+		if (bullet->GetIsDead() == false) {
+			bullet->Draw();
+		}
+	}
 
 	if (rhythm->GetSoundState().wave == 3) {
 		boss->Draw();
@@ -472,11 +477,7 @@ void GameScene::StageDraw() {
 		}
 	}
 
-	for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
-		if (bullet->GetIsDead() == false) {
-			bullet->Draw();
-		}
-	}
+	
 
 	//アイテム描画
 	for (std::unique_ptr<Item>& item : items_) { item->Draw(); }
@@ -519,6 +520,7 @@ void GameScene::Reset() {
 	for (int i = 1; i <= enemyVal; i++) {
 		for (std::unique_ptr<Enemy>& newEnemy : enemys1) {
 			newEnemy->Reset();
+			
 		}
 	}
 	for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
@@ -564,7 +566,6 @@ void GameScene::Collisions() {
 #pragma endregion
 
 #pragma region bulletToEnemyCollisions
-		const std::list < std::unique_ptr<PlayerBullet>>& playerBullets = player->GetBullets();
 		for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
 			if (enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x < 3 &&
 				-3 < enemy->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x) {
@@ -586,7 +587,8 @@ void GameScene::Collisions() {
 				}
 			}
 		}
-
+		
+		
 		for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
 			if (boss->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x < 40 &&
 				-40 < boss->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x) {
@@ -775,10 +777,7 @@ void GameScene::LoadCsv(int obstacleVal)
 
 	//1行分の文字列
 	std::string line;
-	std::vector<Vector3> obstaclePos;
-	std::vector<int32_t> spawntimer;
-	std::vector<int32_t> bulletNum;
-	std::vector<int32_t> moveNum;
+
 	//コマンド実行
 	while (std::getline(obstaclePosList, line)) {
 		//1行分の文字列をストリームに変換
@@ -965,6 +964,7 @@ void GameScene::LoadCsv2(int obstacleVal)
 			}
 			i++;
 		}
+
 		//if (spawntime == spawntimer[30]) {
 		//	if (i < obstaclePos.size() && i < 45 && i >= 30) {
 		//		newEnemy->Settransform(obstaclePos[i]);
@@ -1049,6 +1049,5 @@ void GameScene::LoadCsv2(int obstacleVal)
 		//	}
 		//	i++;
 		//}
-
 	}
 }

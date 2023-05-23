@@ -13,6 +13,7 @@ void Boss::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 	gameObject->worldTransform.rotation = { 0,90,0 };
 	gameObject->worldTransform.translation = { 0 , 0 , 1200 };
 	HP = 25;
+	sceneChange = false;
 }
 
 void Boss::Update()
@@ -27,7 +28,7 @@ void Boss::Update()
 	}
 	if (HP > 0) {
 		attackSpeed -= 0.5f;
-		phaseTimer -= 0.1f;
+		phaseTimer -= 0.5f;
 		switch (phase)
 		{
 		case BossPhase::spown:	// ’a¶
@@ -53,25 +54,18 @@ void Boss::Update()
 				phase = BossPhase::attack;
 			}
 			break;
-		case BossPhase::end:	//€–S
-			// «–hŒäˆ—	ƒ_ƒ[ƒWŒyŒ¸Œø‰Ê‚ğo‚·
-			End();
-			//-----------------------
-			if (phaseTimer <= 0.0f) {
-				phaseTimer = 300.0f;
-				phase = BossPhase::attack;
-			}
-			break;
 		}
+	}
+	else
+	{
+		End();
 	}
 	gameObject->Update();
 }
 
 void Boss::Draw()
 {
-	if (HP > 0) {
-		gameObject->Draw();
-	}
+	gameObject->Draw();
 }
 
 void Boss::Attack()	//ƒ‰ƒCƒ“ó‚É’e‚ğ“WŠJ‰ñ“]‚³‚¹‚é : ©‹@‚ğ‰ñ“]‚³‚¹‚é
@@ -83,24 +77,29 @@ void Boss::Attack()	//ƒ‰ƒCƒ“ó‚É’e‚ğ“WŠJ‰ñ“]‚³‚¹‚é : ©‹@‚ğ‰ñ“]‚³‚¹‚é
 
 void Boss::Attack2()	//ˆÚ“®êŠ‚ğ§ŒÀ‚·‚é&ƒ‰ƒ“ƒ_ƒ€ƒVƒ‡ƒbƒg : 
 {
-	
-	gameObject->worldTransform.translation += moveSpeed;
 
-	if (gameObject->worldTransform.translation.x >= 5.0f|| gameObject->worldTransform.translation.x <= -5.0f) {
-		moveSpeed = -moveSpeed;
-	}
 }
 
-void Boss::End()	//ƒ_ƒ[ƒW‚ğŒyŒ¸‚³‚¹‚é : 
+void Boss::End()	//€–S‰‰o: 
 {
 	if (gameObject->worldTransform.translation.x != 0.0f) {
 		gameObject->worldTransform.translation.x = 0.0f;
 	}
 
-	gameObject->worldTransform.rotation.y += 0.01f;
 	if (gameObject->worldTransform.scale.x != 0 && gameObject->worldTransform.scale.y != 0 && gameObject->worldTransform.scale.z != 0)
 	{
-		gameObject->worldTransform.scale -= {0.1f, 0.1f, 0.1f};
+		gameObject->worldTransform.rotation.y += 0.1f;
+		gameObject->worldTransform.scale.z -= 0.03f;
+		gameObject->worldTransform.scale.x -= 0.03f;
+		gameObject->worldTransform.scale.y -= 0.03f;
+	}
+	if (gameObject->worldTransform.scale.z <= 0) {
+		if (gameObject->worldTransform.scale.y <= 0) {
+			if (gameObject->worldTransform.scale.x <= 0) {
+				
+				sceneChange = true;
+			}
+		}
 	}
 }
 
@@ -114,6 +113,7 @@ void Boss::Reset()
 	isDead = false;
 	attackSpeed = 200.0f;
 	isAttack = false;
+	sceneChange = false;
 }
 
 float Boss::Random(float minValue, float maxValue)
