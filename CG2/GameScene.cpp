@@ -327,29 +327,22 @@ void GameScene::StageUpdate()
 						boss->SetIsAttack(true);
 					}
 				}
-				if (boss->GetPhase() == BossPhase::attack2 && boss->GetAttackSpeed() <= 0.0f) {
-					//弾を生成
+				if (boss->GetPhase() == BossPhase::attack2) {
 					std::unique_ptr<BossBullet> bullet = std::make_unique<BossBullet>();
 					bullet->Initialize(&viewProjection_, &matProjection_, player->GetPos(), boss->GetWorldTransform().translation);
-					bullet->SetTransform(boss->GetWorldTransform().translation);
 					bossBullet1.push_back(std::move(bullet));
-					boss->SetAttackSpeed(150.0f);
+					boss->SetAttackSpeed(25.0f);
 					if (boss->GetIsAttack() == false) {
 						boss->SetIsAttack(true);
 					}
 				}
 
-				if (boss->GetIsAttack() == true) {
-					for (std::unique_ptr<BossBullet>& bullet : bossBullet1) {
-						bullet->Update(boss->GetPhase(),player->GetWorldTransform().translation);
-					}
-					for (std::unique_ptr<BossBullet>& bullet : bossBullet2) {
-						bullet->Update(boss->GetPhase(), player->GetWorldTransform().translation);
-					}
+				for (std::unique_ptr<BossBullet>& bullet : bossBullet1) {
+					
 				}
+
 				//弾&敵を削除する
 				bossBullet1.remove_if([](std::unique_ptr<BossBullet>& bullet) { return bullet->IsDead(); });
-				bossBullet2.remove_if([](std::unique_ptr<BossBullet>& bullet) { return bullet->IsDead(); });
 
 			}
 #pragma endregion
