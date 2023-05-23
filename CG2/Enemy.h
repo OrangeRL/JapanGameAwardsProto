@@ -45,7 +45,6 @@ public:
 	//座標取得用
 	WorldTransform GetWorldTransform();
 	//生成される場所を設定
-	WorldTransform Settransform(float x,float y,float z);
 	WorldTransform Settransform(Vector3 x);
 	float GetAttackSpeed();
 	float SetAttackSpeed(float speed);

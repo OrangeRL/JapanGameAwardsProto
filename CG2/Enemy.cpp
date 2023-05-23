@@ -54,10 +54,13 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 	if (spawnFlag == true)
 	{
 		if (--deleteTimer_ <= 0) {
-			isDelete_ = true;
+			//isDelete_ = true;
+			gameObject->worldTransform.translation = { -1000,-1000,-1000 };
+			spawnFlag = false;
+			aimFlag = false;
 		}
 
-		pManager.Update(gameObject->worldTransform.translation);
+		//pManager.Update(gameObject->worldTransform.translation);
 
 		attackSpeed -= 0.5f;
 		gameObject->worldTransform.translation += moveSpeed;
@@ -137,7 +140,7 @@ void Enemy::Draw() {
 
 
 	//gameObject->Draw();
-	pManager.Draw();
+	//pManager.Draw();
 	//spManager.Draw();
 	gameObject->Draw();
 }
@@ -198,14 +201,6 @@ WorldTransform Enemy::GetWorldTransform() {
 	return gameObject->worldTransform;
 }
 
-WorldTransform Enemy::Settransform(float x, float y, float z)
-{
-	this->gameObject->worldTransform.translation.x = x;
-	this->gameObject->worldTransform.translation.y = y;
-	this->gameObject->worldTransform.translation.z = z;
-
-	return gameObject->worldTransform;
-}
 WorldTransform Enemy::Settransform(Vector3 x)
 {
 	this->gameObject->worldTransform.translation = x;
@@ -282,6 +277,9 @@ Phase Enemy::GetPhase()
 }
 
 void Enemy::OnCollision(Rhythm* rhythm) {
-	isDelete_ = true;
+	//isDelete_ = true;
+	gameObject->worldTransform.translation = { -1000,-1000,-1000 };
+	spawnFlag = false;
+	aimFlag = false;
 	rhythm->KnockSoundPlay();
 }
