@@ -23,11 +23,12 @@ public:
 	void Init();
 
 	void TitleUpdate(Rhythm* rhythm,Input* input);
-	void Update(Rhythm* rhythm,Player* player,Input* input, int isDead);
+	void Update(Rhythm* rhythm,Player* player,Input* input, int isDead, int hp);
 
-	void Draw(Rhythm* rhythm);
+	void Draw(Rhythm* rhythm, int hp);
 
 	void UIPrintf(XMFLOAT2 pos,XMFLOAT2 scale, XMFLOAT4 color, int size, const char* fmt, ...);
+	void PlusScore(Rhythm* rhythm);
 
 	float GetOptionPos() { return optionPos; }
 	int GetSceneInTitle() { return sceneInTitle; }

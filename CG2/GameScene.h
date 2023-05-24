@@ -230,4 +230,6 @@ private: // メンバ変数
 	std::vector<int32_t> spawntimer;
 	std::vector<int32_t> bulletNum;
 	std::vector<int32_t> moveNum;
+
+	int clearTimer = 500;
 };

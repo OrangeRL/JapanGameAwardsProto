@@ -129,7 +129,15 @@ void GameScene::Update() {
 			}
 
 			if (sceneShiftFlame <= 0) {
-				rhythm->ResetRhythm();
+				if (scene_ == Scene::Title) {
+					Reset();
+					scene_ = Scene::Stage;
+				}
+				else if (scene_ == Scene::Stage) {
+					Reset();
+					scene_ = Scene::Title;
+				}
+
 				isSceneChange = false;
 			}
 		}
@@ -176,7 +184,6 @@ void GameScene::TitleUpdate() {
 
 	if (sceneShiftFlame <= 0) {
 		Reset();
-		scene_ = Scene::Stage;
 	}
 
 	if (rhythm->GetSoundState().timer == 0) {
@@ -217,7 +224,7 @@ void GameScene::StageUpdate()
 	viewProjection_.UpdateView();
 
 	//UI更新
-	UIManager.Update(rhythm, player, &input_, player->GetIsDead());
+	UIManager.Update(rhythm, player, &input_, player->GetIsDead(), boss->GetHP());
 
 	rhythm->Update(&input_, player->GetPos(), reilCamera->GetWorldTransform().rotation, player->GetIsDead(), stage, scene_, UIManager.GetSceneInTitle());
 
@@ -230,11 +237,13 @@ void GameScene::StageUpdate()
 		}
 		else
 		{
-			if (input_.PushKey(DIK_R)) {
-				scene_ = Scene::Title;
+			if (input_.TriggerKey(DIK_R)) {
+				isSceneChange = true;
+				rhythm->DecisionSoundPlay();
+				/*scene_ = Scene::Title;
 				rhythm->ResetRhythm();
 				viewProjection_.Initialize();
-				UIManager.Init();
+				UIManager.Init();*/
 			}
 		}
 
@@ -247,54 +256,32 @@ void GameScene::StageUpdate()
 		crosshair->SetPosition({ player->GetWorldTransform().translation.x, player->GetWorldTransform().translation.y });
 		crosshair->Sprite::SetSize({ 1,1 });
 
-		//アイテムの更新処理
-		for (std::unique_ptr<Item>& item : items_) {
-			item->Update();
-		}
-
-		//デスフラグの立ったアイテムを削除
-		items_.remove_if([](std::unique_ptr<Item>& item) {
-			return item->GetIsDead();
-
-			});
-
-		//アイテム生成
-		if (input_.TriggerKey(DIK_T)) {
-			std::uniform_int_distribution<> dist(0, 2);
-			int value = dist(engine);
-			//アイテムを生成し、初期化
-			std::unique_ptr<Item>item = std::make_unique<Item>();
-			item->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", { player->GetPos().x,player->GetPos().y,player->GetPos().z + 20.0f }, value);
-
-			//アイテムを登録する
-			items_.push_back(std::move(item));
-		}
-
 		//敵の更新処理
 		for (std::unique_ptr<Enemy>& enemy : enemys1) {
 			enemy->Update(&viewProjection_, &matProjection_, 0);
 #pragma region makeEnemyBullet
-			if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::Attack) {
-				//弾を生成
-				std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
-				//初期化
-				bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetPos(), enemy->GetWorldTransform().translation);
-				bullet->SetTransform(enemy->GetWorldTransform().translation);
-				//使う弾の設定
-				bullet->SetBullet(enemy->GetBulletNum());
-				bullets1.push_back(std::move(bullet));
-				//攻撃頻度の設定 1(速い)~ >1(遅い)
-				enemy->SetAttackSpeed(100.0f);
-				if (enemy->GetIsAttack() == false) {
-					enemy->SetIsAttack(true);
+			if (enemy->GetBulletNum() < 3)
+			{
+				if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::Attack) {
+					//弾を生成
+					std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
+					//初期化
+					bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetPos(), enemy->GetWorldTransform().translation);
+					bullet->SetTransform(enemy->GetWorldTransform().translation);
+					//使う弾の設定
+					bullet->SetBullet(enemy->GetBulletNum());
+					bullets1.push_back(std::move(bullet));
+					//攻撃頻度の設定 1(速い)~ >1(遅い)
+					enemy->SetAttackSpeed(100.0f);
+					if (enemy->GetIsAttack() == false) {
+						enemy->SetIsAttack(true);
+					}
 				}
-			}
 
+			}
 			
 			for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
-				if (enemy->GetIsAttack() == true) {
-					bullet->Update(enemy->GetIsDead());
-				}
+				bullet->Update(enemy->GetIsDead());
 			}
 
 			//弾&敵を削除する
@@ -302,7 +289,7 @@ void GameScene::StageUpdate()
 			bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
 			//rhythm->PlayBGM();
 #pragma endregion
-			enemyPos = enemy->GetWorldTransform().translation;
+			//enemyPos = enemy->GetWorldTransform().translation;
 		}
     
     //音ズレ関係
@@ -329,17 +316,10 @@ void GameScene::StageUpdate()
 					}
 				}
 				if (boss->GetPhase() == BossPhase::attack2) {
-					std::unique_ptr<BossBullet> bullet = std::make_unique<BossBullet>();
-					bullet->Initialize(&viewProjection_, &matProjection_, player->GetPos(), boss->GetWorldTransform().translation);
-					bossBullet1.push_back(std::move(bullet));
-					boss->SetAttackSpeed(25.0f);
-					if (boss->GetIsAttack() == false) {
-						boss->SetIsAttack(true);
-					}
-				}
-
-				for (std::unique_ptr<BossBullet>& bullet : bossBullet1) {
 					
+				}
+				for (std::unique_ptr<BossBullet>& bullet : bossBullet1) {
+					bullet->Update();
 				}
 
 				//弾&敵を削除する
@@ -385,40 +365,47 @@ void GameScene::StageUpdate()
 
 		if (boss->GetSceneChange() == true)
 		{
-			scene_ = Scene::Title;
-			rhythm->ResetRhythm();
-			viewProjection_.Initialize();
-			UIManager.Init();
+			//scene_ = Scene::Title;
+			//rhythm->ResetRhythm();
+			//viewProjection_.Initialize();
+			//UIManager.Init();
+		}
+
+		//クリア後タイトルに戻る
+		if (boss->GetHP() <= 0) {
+
+			clearTimer--;
+
+			if (clearTimer <= 0) {
+				isSceneChange = true;
+				rhythm->StopBGM();
+			}
 		}
 	}
 	else {
 		if (input_.TriggerKey(DIK_T)) {
-
-			Reset();
+		
 			isSceneChange = true;
 			rhythm->DecisionSoundPlay();
 		}
 
-		if (sceneShiftFlame <= 0) {
+
+		/*if (sceneShiftFlame <= 0) {
 
 			scene_ = Scene::Title;
 			rhythm->ResetRhythm();
 			player->SetPos({ 0.0f,0.0f,20.0f });
 			viewProjection_.Initialize();
 			UIManager.Init();
-		}
+		}*/
 	}
 
 #pragma region DebugText
 	//debugText.Printf(0, 100, 1.0f, 6, " HP:%d", boss->GetHP());
-	//debugText.Printf(0, 200, 1.0f, 16, " Player:%f,%f,%f",
-	//	playerBullet->GetWorldTransform().translation.x, playerBullet->GetWorldTransform().translation.y, playerBullet->GetWorldTransform().translation.z);
+	////debugText.Printf(0, 200, 1.0f, 16, " Player:%f,%f,%f",
+	////	playerBullet->GetWorldTransform().translation.x, playerBullet->GetWorldTransform().translation.y, playerBullet->GetWorldTransform().translation.z);
 	//debugText.Printf(0, 150, 1.0f, 14, " Boss:%2f,%2f,%2f",
 	//	boss->GetWorldTransform().translation.x, boss->GetWorldTransform().translation.y, boss->GetWorldTransform().translation.z);
-	debugText.Printf(0, 230, 1.0f, 27, " %f,%f,%f",
-		player->GetWorldTransform().matWorld.m[3][0],
-		player->GetWorldTransform().matWorld.m[3][1],
-		player->GetWorldTransform().matWorld.m[3][2]);
 	debugText.Printf(0, 200, 1.0f, 12, "Enemy:%d", spawntime);
 	debugText.Printf(0, 250, 1.0f, 12, "AimCount:%d", aimCount);
 #pragma endregion
@@ -439,7 +426,7 @@ void GameScene::TitleDraw() {
 
 	//スプライト描画
 	Sprite::PreDraw(dx12base_.GetCmdList().Get());
-	UIManager.Draw(rhythm);
+	UIManager.Draw(rhythm,boss->GetHP());
 
 	//シーン切り替えの描画
 	sceneChangeSprite->Draw();
@@ -494,7 +481,7 @@ void GameScene::StageDraw() {
 
 	crosshair->Draw();
 
-	UIManager.Draw(rhythm);
+	UIManager.Draw(rhythm, boss->GetHP());
 
 	// デバッグテキストの描画
 	debugText.DrawAll(dx12base_.GetCmdList().Get());
@@ -507,8 +494,9 @@ void GameScene::StageDraw() {
 }
 
 void GameScene::Reset() {
-	UIManager.ResetCountDown();
-	UIManager.ResetScore();
+	viewProjection_.Initialize();
+	UIManager.Init();
+	clearTimer = 500;
 	reilCamera->Initialize({ 0,0,-50 }, { 0,0,0 });
 	rhythm->ResetRhythm();
 	player->Reset();
@@ -583,10 +571,12 @@ void GameScene::Collisions() {
 
 						if (enemy->GetAimFlag() == true) 
 						{
-						enemy->OnCollision(rhythm); aimCount -= 1;
+						enemy->OnCollision(rhythm);
 						}
-						//aimCount = 0;
+
+						aimCount = 0;
 						rhythm->ComboUp();
+						UIManager.PlusScore(rhythm);
 					}
 				}
 			}
@@ -957,7 +947,7 @@ void GameScene::LoadCsv2(int obstacleVal)
 			i++;
 		}
 		if (spawntime == spawntimer[15]) {
-			if (i < obstaclePos.size() && i < 30 && i >= 15) {
+			if (i < obstaclePos.size() && i < 30 && i > 15) {
 				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
@@ -969,18 +959,18 @@ void GameScene::LoadCsv2(int obstacleVal)
 			i++;
 		}
 
-		if (spawntime == spawntimer[30]) {
-			if (i < obstaclePos.size() && i < 45 && i > 30) {
-				newEnemy->Settransform(obstaclePos[i]);
-				newEnemy->SetBulletNum(bulletNum[i]);
-				newEnemy->SetMoveNum(moveNum[i]);
-				newEnemy->SetSpeed(0, 0, 0);
-				//if (newEnemy->GetSpownFlag() == false) {
-				newEnemy->Spawn();
-				//}
-			}
-			i++;
-		}
+		//if (spawntime == spawntimer[30]) {
+		//	if (i < obstaclePos.size() && i < 45 && i >= 30) {
+		//		newEnemy->Settransform(obstaclePos[i]);
+		//		newEnemy->SetBulletNum(bulletNum[i]);
+		//		newEnemy->SetMoveNum(moveNum[i]);
+		//		newEnemy->SetSpeed(0, 0, 0);
+		//		//if (newEnemy->GetSpownFlag() == false) {
+		//		newEnemy->Spawn();
+		//		//}
+		//	}
+		//	i++;
+		//}
 		//if (spawntime == spawntimer[16]) {
 		//	if (i < obstaclePos.size() && i < 20 && i > 15) {
 		//		newEnemy->Settransform(obstaclePos[i]);

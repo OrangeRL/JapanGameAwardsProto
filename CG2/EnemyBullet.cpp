@@ -38,7 +38,7 @@ void EnemyBullet::Update(bool enemy)
 		break;
 	}
 
-	if (--deleteTimer_ <= 0 || enemy == true) {
+	if (--deleteTimer_ <= 0) {
 		isDelete_ = true;
 	}
 

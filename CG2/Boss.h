@@ -3,7 +3,6 @@
 #include "MathFunc.h"
 #include <memory>
 #include <list>
-#include <random>
 
 enum BossPhase {
 	spown,
@@ -24,8 +23,6 @@ public:
 	void End();
 
 	void Reset();
-
-	float Random(float minValue, float maxValue);
 
 	//À•Wæ“¾—p
 	WorldTransform GetWorldTransform();

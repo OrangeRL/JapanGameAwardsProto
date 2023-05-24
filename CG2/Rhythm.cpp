@@ -67,7 +67,9 @@ void Rhythm::ResetRhythm() {
 void Rhythm::PlayBGM() {
 
 	if (soundState.wave == 1) {
-		stage1_1BGM.pSourceVoice->Start();
+		if (stage1_1BGM.pSourceVoice) {
+			stage1_1BGM.pSourceVoice->Start();
+		}
 	}
 	else if (soundState.wave == 2) {
 		if (stage1_2BGM.pSourceVoice) {
@@ -110,7 +112,7 @@ void Rhythm::Update(Input* input, Vector3 pos, Vector3 rot, int isDead, int stag
 		}
 
 		//Å‰‚Ì‰¹ºÄ¶ˆ—
-		if (soundState.timer == 0 && soundState.measureCount <= 0) {
+		if (soundState.timer == 1 && soundState.measureCount <= 0 && select == 0) {
 			soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), titleBGM, false, soundState.BGMVolume);
 		}
 
@@ -154,7 +156,7 @@ void Rhythm::Update(Input* input, Vector3 pos, Vector3 rot, int isDead, int stag
 			circle[1]->color.z = 1.0f;
 		}
 
-		if (select == 5) {
+		if (select == 5 && input->TriggerKey(DIK_SPACE)) {
 			if (titleBGM.pSourceVoice) {
 				titleBGM.pSourceVoice->Stop(0);
 			}
@@ -200,7 +202,7 @@ void Rhythm::Update(Input* input, Vector3 pos, Vector3 rot, int isDead, int stag
 
 		if (isDead == 0) {
 
-			pitch = 1.01f;
+			pitch = 1.001f;
 
 			//•Ší•ÏX
 			if (input->TriggerKey(DIK_0)) {

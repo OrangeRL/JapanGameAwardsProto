@@ -46,7 +46,7 @@ void Boss::Update()
 			}
 			break;
 		case BossPhase::attack2:	//攻撃2 移動場所を絞らせる & ランダムショット
-			// ↓攻撃処理2　
+			// ↓攻撃処理2
 			Attack2();
 			//-----------------------
 			if (phaseTimer <= 0.0f) {
@@ -77,7 +77,7 @@ void Boss::Attack()	//ライン状に弾を展開回転させる : 自機を回転させる
 
 void Boss::Attack2()	//移動場所を制限する&ランダムショット : 
 {
-
+	
 }
 
 void Boss::End()	//死亡演出: 
@@ -114,18 +114,6 @@ void Boss::Reset()
 	attackSpeed = 200.0f;
 	isAttack = false;
 	sceneChange = false;
-}
-
-float Boss::Random(float minValue, float maxValue)
-{
-	//シード値乱数生成器
-	std::random_device rnd;
-	//メルセンヌ・ツイスタ方を使って乱数を作る
-	std::mt19937_64 mt64(rnd());
-	//範囲内の離散分布を作る
-	std::uniform_real_distribution<float> genRandFloat(minValue, maxValue);
-	//分布の中から生成した乱数を使って1つだけ値を取り出す
-	return genRandFloat(mt64);
 }
 
 WorldTransform Boss::GetWorldTransform()
