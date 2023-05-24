@@ -260,22 +260,25 @@ void GameScene::StageUpdate()
 		for (std::unique_ptr<Enemy>& enemy : enemys1) {
 			enemy->Update(&viewProjection_, &matProjection_, 0);
 #pragma region makeEnemyBullet
-			if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::Attack) {
-				//弾を生成
-				std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
-				//初期化
-				bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetPos(), enemy->GetWorldTransform().translation);
-				bullet->SetTransform(enemy->GetWorldTransform().translation);
-				//使う弾の設定
-				bullet->SetBullet(enemy->GetBulletNum());
-				bullets1.push_back(std::move(bullet));
-				//攻撃頻度の設定 1(速い)~ >1(遅い)
-				enemy->SetAttackSpeed(100.0f);
-				if (enemy->GetIsAttack() == false) {
-					enemy->SetIsAttack(true);
+			if (enemy->GetBulletNum() < 3)
+			{
+				if (enemy->GetAttackSpeed() <= 0.0f && enemy->GetPhase() == Phase::Attack) {
+					//弾を生成
+					std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
+					//初期化
+					bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetPos(), enemy->GetWorldTransform().translation);
+					bullet->SetTransform(enemy->GetWorldTransform().translation);
+					//使う弾の設定
+					bullet->SetBullet(enemy->GetBulletNum());
+					bullets1.push_back(std::move(bullet));
+					//攻撃頻度の設定 1(速い)~ >1(遅い)
+					enemy->SetAttackSpeed(100.0f);
+					if (enemy->GetIsAttack() == false) {
+						enemy->SetIsAttack(true);
+					}
 				}
-			}
 
+			}
 			
 			for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
 				bullet->Update(enemy->GetIsDead());
@@ -286,7 +289,7 @@ void GameScene::StageUpdate()
 			bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
 			//rhythm->PlayBGM();
 #pragma endregion
-			enemyPos = enemy->GetWorldTransform().translation;
+			//enemyPos = enemy->GetWorldTransform().translation;
 		}
     
     //音ズレ関係
