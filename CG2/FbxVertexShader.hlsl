@@ -60,7 +60,7 @@ VSOutput main(VSInput input)
 	//行列による座標返還
 	//output.svpos = mul(mul(viewproj, world), input.pos);
 	output.svpos = mul(mul(viewproj, world), skinned.pos);
-	//ワールド法線を次のステージに渡す
+	//ワールド法線を次のステージに渡
 	output.normal = wnormal.xyz;
 	//入力値をそのまま次のステージ渡す
 	output.uv = input.uv;
