@@ -279,7 +279,7 @@ void GameScene::StageUpdate()
 				}
 
 			}
-			
+
 			for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
 				bullet->Update(enemy->GetIsDead());
 			}
@@ -291,10 +291,10 @@ void GameScene::StageUpdate()
 #pragma endregion
 			//enemyPos = enemy->GetWorldTransform().translation;
 		}
-    
-    //音ズレ関係
+
+		//音ズレ関係
 		rhythm->StopBGM();
-    
+
 		//敵の削除
 		enemys1.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
 		rhythm->PlayBGM();
@@ -316,7 +316,7 @@ void GameScene::StageUpdate()
 					}
 				}
 				if (boss->GetPhase() == BossPhase::attack2) {
-					
+
 				}
 				for (std::unique_ptr<BossBullet>& bullet : bossBullet1) {
 					bullet->Update();
@@ -384,7 +384,7 @@ void GameScene::StageUpdate()
 	}
 	else {
 		if (input_.TriggerKey(DIK_T)) {
-		
+
 			isSceneChange = true;
 			rhythm->DecisionSoundPlay();
 		}
@@ -406,6 +406,10 @@ void GameScene::StageUpdate()
 	////	playerBullet->GetWorldTransform().translation.x, playerBullet->GetWorldTransform().translation.y, playerBullet->GetWorldTransform().translation.z);
 	//debugText.Printf(0, 150, 1.0f, 14, " Boss:%2f,%2f,%2f",
 	//	boss->GetWorldTransform().translation.x, boss->GetWorldTransform().translation.y, boss->GetWorldTransform().translation.z);
+	debugText.Printf(0, 230, 1.0f, 27, " %f,%f,%f",
+		player->GetWorldTransform().matWorld.m[3][0],
+		player->GetWorldTransform().matWorld.m[3][1],
+		player->GetWorldTransform().matWorld.m[3][2]);
 	debugText.Printf(0, 200, 1.0f, 12, "Enemy:%d", spawntime);
 	debugText.Printf(0, 250, 1.0f, 12, "AimCount:%d", aimCount);
 #pragma endregion
@@ -426,7 +430,7 @@ void GameScene::TitleDraw() {
 
 	//スプライト描画
 	Sprite::PreDraw(dx12base_.GetCmdList().Get());
-	UIManager.Draw(rhythm,boss->GetHP());
+	UIManager.Draw(rhythm, boss->GetHP());
 
 	//シーン切り替えの描画
 	sceneChangeSprite->Draw();
@@ -469,7 +473,7 @@ void GameScene::StageDraw() {
 		}
 	}
 
-	
+
 
 	//アイテム描画
 	for (std::unique_ptr<Item>& item : items_) { item->Draw(); }
@@ -513,7 +517,7 @@ void GameScene::Reset() {
 	for (int i = 1; i <= enemyVal; i++) {
 		for (std::unique_ptr<Enemy>& newEnemy : enemys1) {
 			newEnemy->Reset();
-			
+
 		}
 	}
 	for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
@@ -569,9 +573,9 @@ void GameScene::Collisions() {
 
 						//bulletA->OnCollision();
 
-						if (enemy->GetAimFlag() == true) 
+						if (enemy->GetAimFlag() == true)
 						{
-						enemy->OnCollision(rhythm);
+							enemy->OnCollision(rhythm);
 						}
 
 						aimCount = 0;
@@ -581,8 +585,8 @@ void GameScene::Collisions() {
 				}
 			}
 		}
-		
-		
+
+
 		for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
 			if (boss->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x < 40 &&
 				-40 < boss->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x) {
@@ -690,7 +694,7 @@ void GameScene::Collisions() {
 			-2 < enemy->GetWorldTransform().translation.x - player->GetAimPos().x) {
 			if (enemy->GetWorldTransform().translation.y - player->GetAimPos().y < 2 &&
 				-2 < enemy->GetWorldTransform().translation.y - player->GetAimPos().y) {
-				if (enemy->GetWorldTransform().translation.z - player->GetAimPos().z < 60      &&
+				if (enemy->GetWorldTransform().translation.z - player->GetAimPos().z < 60 &&
 					-2 < enemy->GetWorldTransform().translation.z - player->GetAimPos().z) {
 					player->AimHit();
 					if (enemy->GetAimFlag() == false && aimCount < 5) {
@@ -931,6 +935,14 @@ void GameScene::LoadCsv2(int obstacleVal)
 			moveNum.push_back(enemyMove);
 		}
 	}
+	if (spawntime == 10000) {
+		for (int y = 1; y <= enemyVal; y++) {
+			for (std::unique_ptr<Enemy>& newEnemy : enemys1) {
+				newEnemy->Reset();
+
+			}
+		}
+	}
 	int i = 0;
 	//spawntime += 1;
 	for (std::unique_ptr<Enemy>& newEnemy : enemys1) {
@@ -947,7 +959,7 @@ void GameScene::LoadCsv2(int obstacleVal)
 			i++;
 		}
 		if (spawntime == spawntimer[15]) {
-			if (i < obstaclePos.size() && i < 30 && i > 15) {
+			if (i < obstaclePos.size() && i < 30 && i >= 15) {
 				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
@@ -959,42 +971,42 @@ void GameScene::LoadCsv2(int obstacleVal)
 			i++;
 		}
 
-		//if (spawntime == spawntimer[30]) {
-		//	if (i < obstaclePos.size() && i < 45 && i >= 30) {
-		//		newEnemy->Settransform(obstaclePos[i]);
-		//		newEnemy->SetBulletNum(bulletNum[i]);
-		//		newEnemy->SetMoveNum(moveNum[i]);
-		//		newEnemy->SetSpeed(0, 0, 0);
-		//		//if (newEnemy->GetSpownFlag() == false) {
-		//		newEnemy->Spawn();
-		//		//}
-		//	}
-		//	i++;
-		//}
-		//if (spawntime == spawntimer[16]) {
-		//	if (i < obstaclePos.size() && i < 20 && i > 15) {
-		//		newEnemy->Settransform(obstaclePos[i]);
-		//		newEnemy->SetBulletNum(bulletNum[i]);
-		//		newEnemy->SetMoveNum(moveNum[i]);
-		//		newEnemy->SetSpeed(0, 0, 0);
-		//		if (newEnemy->GetSpownFlag() == false) {
-		//			newEnemy->Spawn();
-		//		}
-		//	}
-		//	i++;
-		//}
-		//if (spawntime == spawntimer[20]) {
-		//	if (i < obstaclePos.size() && i < 24 && i > 20) {
-		//		newEnemy->Settransform(obstaclePos[i]);
-		//		newEnemy->SetBulletNum(bulletNum[i]);
-		//		newEnemy->SetMoveNum(moveNum[i]);
-		//		newEnemy->SetSpeed(0, 0, 0);
-		//		if (newEnemy->GetSpownFlag() == false) {
-		//			newEnemy->Spawn();
-		//		}
-		//	}
-		//	i++;
-		//}
+		if (spawntime == spawntimer[30]) {
+			if (i < obstaclePos.size() && i < 45 && i >= 30) {
+				newEnemy->Settransform(obstaclePos[i]);
+				newEnemy->SetBulletNum(bulletNum[i]);
+				newEnemy->SetMoveNum(moveNum[i]);
+				newEnemy->SetSpeed(0, 0, 0);
+				//if (newEnemy->GetSpownFlag() == false) {
+				newEnemy->Spawn();
+				//}
+			}
+			i++;
+		}
+		if (spawntime == spawntimer[45]) {
+			if (i < obstaclePos.size() && i < 60 && i >= 45) {
+				newEnemy->Settransform(obstaclePos[i]);
+				newEnemy->SetBulletNum(bulletNum[i]);
+				newEnemy->SetMoveNum(moveNum[i]);
+				newEnemy->SetSpeed(0, 0, 0);
+				//if (newEnemy->GetSpownFlag() == false) {
+				newEnemy->Spawn();
+				//}
+			}
+			i++;
+		}
+		if (spawntime == spawntimer[60]) {
+			if (i < obstaclePos.size() && i < 93 && i > 60) {
+				newEnemy->Settransform(obstaclePos[i]);
+				newEnemy->SetBulletNum(bulletNum[i]);
+				newEnemy->SetMoveNum(moveNum[i]);
+				newEnemy->SetSpeed(0, 0, 0);
+				//if (newEnemy->GetSpownFlag() == false) {
+				newEnemy->Spawn();
+				//}
+			}
+			i++;
+		}
 		//if (spawntime == spawntimer[24]) {
 		//	if (i < obstaclePos.size() && i < 32 && i > 23) {
 		//		newEnemy->Settransform(obstaclePos[i]);
