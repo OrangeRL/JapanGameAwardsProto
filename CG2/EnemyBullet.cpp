@@ -21,7 +21,7 @@ void EnemyBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjec
 	
 }
 
-void EnemyBullet::Update(bool enemy)
+void EnemyBullet::Update()
 {
 	//プレイヤーを狙う
 	//gameObject->worldTransform.translation -= posC;

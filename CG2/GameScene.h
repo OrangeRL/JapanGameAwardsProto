@@ -108,7 +108,7 @@ public: // メンバ関数
 	Vector3 GetHitboxPosition1() { return hitboxPosition1; }
 	Vector3 GetHitboxRotation1() { return hitboxRotation1; }
 	Vector3 GetHitboxScale1() { return hitboxScale1; }
-  
+	int AimCountDown() { return aimCount -= 1; }
 	/// <summary>
 	/// 敵発生データの読み込み
 	/// </summary>
