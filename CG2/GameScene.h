@@ -214,7 +214,7 @@ private: // メンバ変数
 	std::stringstream enemyPopCommand;
 	bool waitFlag = true;
 	float waitTime_=10;
-	size_t enemyVal = 190;
+	size_t enemyVal = 180;
 	int fileNum = 1;
 //------------------------------------
 
