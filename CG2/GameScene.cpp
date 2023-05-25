@@ -279,7 +279,6 @@ void GameScene::StageUpdate()
 				}
 
 			}
-
 			for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
 				bullet->Update(enemy->GetIsDead());
 			}
@@ -289,10 +288,18 @@ void GameScene::StageUpdate()
 			bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
 			//rhythm->PlayBGM();
 #pragma endregion
-			//enemyPos = enemy->GetWorldTransform().translation;
 		}
 
-		//音ズレ関係
+		for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
+			bullet->Update();
+		}
+
+		//弾&敵を削除する
+		//rhythm->StopBGM();
+		bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
+		//rhythm->PlayBGM();
+    
+    //音ズレ関係
 		rhythm->StopBGM();
 
 		//敵の削除
