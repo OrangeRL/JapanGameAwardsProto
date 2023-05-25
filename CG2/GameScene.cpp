@@ -280,7 +280,7 @@ void GameScene::StageUpdate()
 
 			}
 			for (std::unique_ptr<EnemyBullet>& bullet : bullets1) {
-				bullet->Update(enemy->GetIsDead());
+				bullet->Update();
 			}
 
 			//弾&敵を削除する

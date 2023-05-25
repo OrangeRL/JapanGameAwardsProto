@@ -4,7 +4,8 @@
 void BossBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 player, Vector3 enemy)
 {
 	gameObject = new GameObject3D();
-	gameObject->PreLoadTexture(L"Resources/white1x1.png");
+	gameObject->PreLoadModel("Resources/bullet/bullet.obj");
+	gameObject->PreLoadTexture(L"Resources/purple1x1.png");
 	gameObject->SetViewProjection(viewProjection);
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();

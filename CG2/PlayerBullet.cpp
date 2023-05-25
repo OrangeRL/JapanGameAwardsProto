@@ -19,8 +19,8 @@ void PlayerBullet::OnCollision() {
 void PlayerBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, Vector3 playerPos, Vector3 bossPos, Weapons weapon)
 {
 	gameObject = new GameObject3D();
-	//gameObject->PreLoadModel("Resources/star/star.obj");
-	//gameObject->PreLoadTexture(L"Resources/red.png");
+	gameObject->PreLoadModel("Resources/bullet/bullet.obj");
+	gameObject->PreLoadTexture(L"Resources/yellow1x1.png");
 	gameObject->SetViewProjection(viewProjection);
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
