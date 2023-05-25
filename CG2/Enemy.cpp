@@ -23,7 +23,7 @@ void Enemy::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, 
 	gameObject->Initialize();
 	pManager.Initialize(viewProjection, matProjection, L"Resources/red1x1.png", gameObject->worldTransform.translation);
 
-	gameObject->worldTransform.scale = { 2 , 2 , 2 };
+	gameObject->worldTransform.scale = { 0 , 0 , 0 };
 
 	aimObject = new GameObject3D();
 	aimObject->PreLoadModel("Resources/square/square.obj");
@@ -58,6 +58,18 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 			gameObject->worldTransform.translation = { -1000,-1000,-1000 };
 			spawnFlag = false;
 			aimFlag = false;
+		}
+		if (gameObject->worldTransform.scale.z <= 2) 
+		{
+			gameObject->worldTransform.scale.x += 0.2;
+			gameObject->worldTransform.scale.y += 0.2;
+			gameObject->worldTransform.scale.z += 0.2;
+			if (gameObject->worldTransform.scale.z <= 1)
+			{
+				gameObject->worldTransform.scale.x += 0.05;
+				gameObject->worldTransform.scale.y += 0.05;
+				gameObject->worldTransform.scale.z += 0.05;
+			}
 		}
 
 		//pManager.Update(gameObject->worldTransform.translation);
@@ -98,8 +110,8 @@ void Enemy::Update(ViewProjection* viewProjection, XMMATRIX* matProjection, int 
 			moveSpeed.z = 0.0f;
 			break;
 		}
-		
-	//攻撃関連
+
+		//攻撃関連
 		switch (phase)
 		{
 		case Phase::Attack:
@@ -133,7 +145,7 @@ void Enemy::Draw() {
 	if (pManager.GetIsDead() == true) {
 		gameObject->Draw();
 	}
-	if (aimFlag == true) 
+	if (aimFlag == true)
 	{
 		aimObject->Draw();
 	}
@@ -146,6 +158,7 @@ void Enemy::Draw() {
 }
 
 void Enemy::Reset() {
+	gameObject->worldTransform.scale = { 0 , 0 , 0 };
 	pManager.Reset(gameObject->worldTransform.translation);
 	phase = Phase::Attack;
 	phaseTimer = 300.0f;
@@ -154,7 +167,7 @@ void Enemy::Reset() {
 	{
 		spawnFlag = false;
 	}
-	if (isDelete_ == true) 
+	if (isDelete_ == true)
 	{
 		isDelete_ = false;
 	}

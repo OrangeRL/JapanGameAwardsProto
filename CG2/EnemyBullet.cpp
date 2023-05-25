@@ -28,13 +28,13 @@ void EnemyBullet::Update()
 	switch (bulletNum)
 	{
 	case 0: //手前
-		gameObject->worldTransform.translation.z -= 0.3f;
+		gameObject->worldTransform.translation.z -= 0.01f;
 		break;
 	case 1://左
-		gameObject->worldTransform.translation.x += 0.2f;
+		gameObject->worldTransform.translation.x += 0.01f;
 		break;
 	case 2://右
-		gameObject->worldTransform.translation.x -= 0.2f;
+		gameObject->worldTransform.translation.x -= 0.01f;
 		break;
 	}
 
