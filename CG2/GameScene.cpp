@@ -15,6 +15,8 @@ GameScene::~GameScene() {
 	delete particle;
 	delete particle2;
 	delete reilCamera;
+	delete object1;
+
 	//delete UIManager;
 }
 
@@ -89,7 +91,7 @@ void GameScene::Initialize(WinApp* winApp)
 	//particle3->Initialize(&viewProjection_, &matProjection_, player);
 	//loadEnemyPopData();
 	//モデル名を指定してファイル読み込み
-	model1 = FbxLoader::GetInstance()->LoadModelFromFile("cube");
+	model1 = FbxLoader::GetInstance()->LoadModelFromFile("boneTest");
 
 	//デバイスをセット
 	FbxObject3D::SetDevice(dx12base_.GetDevice());
@@ -101,6 +103,7 @@ void GameScene::Initialize(WinApp* winApp)
 	object1->SetMatProjection(&matProjection_);
 	object1->Initialize();
 	object1->SetModel(model1);
+	object1->PlayAnimation();
 
 	//rhythm = new Rhythm();
 	//rhythm->Initialize(&viewProjection_, &matProjection_);
@@ -173,6 +176,7 @@ void GameScene::Update()
 //			//アイテムを登録する
 //			items_.push_back(std::move(item));
 //		}
+// 
 //
 //		//敵の更新処理
 //		for (std::unique_ptr<Enemy>& enemy : enemys1) {

@@ -6,7 +6,6 @@
 #include<wrl.h>
 #include<d3d12.h>
 #include<d3dx12.h>
-#include<DirectXMath.h>
 #include<string>
 #include "DX12base.h"
 
@@ -21,12 +20,20 @@ protected:	//エイリアス
 	using XMFLOAT4 = DirectX::XMFLOAT4;
 	using XMMATRIX = DirectX::XMMATRIX;
 public:
+	//定数
+	static const int MAX_BONES = 32;
+
 	struct ConstBufferDataTransform
 	{
 		Matrix4 viewproj;
 		Matrix4 world;
 		//XMFLOAT3 cameraPos;
 		Matrix4 mat; //3D変換行列
+	};
+	//定数バッファ用データ構造体(スキニング)
+	struct ConstBufferDataSkin
+	{
+		XMMATRIX bones[MAX_BONES];
 	};
 	struct ConstBufferDataMaterial {
 		Vector4 color; //色(RGBA)
@@ -55,6 +62,14 @@ public://メンバ関数
 
 	void SetViewProjection(ViewProjection* viewProjection);
 	void SetMatProjection(XMMATRIX* matProjection);
+
+	//アニメーション開始
+	void PlayAnimation();
+
+	//セッター
+	void SetPosition(XMFLOAT3 pos) { position = pos; }
+	void SetRotation(XMFLOAT3 rot) { rotation = rot; }
+	void SetScale(XMFLOAT3 sca) { scale = sca; }
 private://メンバ変数
 	//定数バッファ
 	//ComPtr<ID3D12Resource>constBuffTransform;
@@ -80,6 +95,21 @@ private:
 	XMMATRIX matWorld;
 	//モデル
 	FbxModel* model = nullptr;
+
+	//定数バッファ
+	ComPtr<ID3D12Resource>constBuffSkin;
+
+	//1フレームの時間
+	FbxTime frameTime;
+	//アニメーション開始時間
+	FbxTime startTime;
+	//アニメーション終了時間
+	FbxTime endTime;
+	//現在時間
+	FbxTime currentTime;
+	//アニメーション再生中
+	bool isPlay = false;
+
 	//ワールド変換
 	WorldTransform worldTransform;
 	XMMATRIX* matProjection;

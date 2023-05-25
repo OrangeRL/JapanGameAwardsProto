@@ -8,6 +8,7 @@
 #include<d3d12.h>
 #include<d3dx12.h>
 #include "DX12base.h"
+#include "fbxsdk.h"
 struct Node
 {
 	//名前
@@ -29,6 +30,9 @@ struct Node
 class FbxModel
 {
 public:
+	//定数
+	//ボーンインデックスの最大数
+	static const int MAX_BONE_INDICES = 4;
 	//フレンドクラス
 	friend class FbxLoader;
 
@@ -37,6 +41,24 @@ public:
 		DirectX::XMFLOAT3 pos;	//座標
 		DirectX::XMFLOAT3 normal;	//法線ベクトル
 		DirectX::XMFLOAT2 uv;	//uv座標
+		UINT boneIndex[MAX_BONE_INDICES];
+		float boneWeight[MAX_BONE_INDICES];
+	};
+
+	//ボーン構造体
+	struct Bone
+	{
+		//名前
+		std::string name;
+		//初期姿勢の逆行列
+		DirectX::XMMATRIX invInitialPose;
+		//クラスター
+		FbxCluster* fbxCluster;
+		//コンストラクタ
+		Bone(const std::string& name)
+		{
+			this->name = name;
+		}
 	};
 	//メッシュを持つノード
 	Node* meshNode = nullptr;
@@ -100,4 +122,18 @@ public:
 	void Draw(ID3D12GraphicsCommandList* cmdList);
 	//モデルの変形行列のゲッター
 	const XMMATRIX& GetModelTransform() { return meshNode->globalTransform; }
+
+private:
+	//ボーン配列
+	std::vector<Bone>bones;
+public:
+	//getter
+	std::vector<Bone>& GetBones() { return bones; }
+
+private:
+	//FBXシーン
+	FbxScene* fbxScene = nullptr;
+public:
+	//getter
+	FbxScene* GetFbxScene() { return fbxScene; }
 };

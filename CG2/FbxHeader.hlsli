@@ -1,5 +1,5 @@
 ////ボーンの最大数
-//static const int MAX_BONES = 32;
+static const int MAX_BONES = 32;
 
 cbuffer cbuff0 : register(b0)
 {
@@ -7,10 +7,10 @@ cbuffer cbuff0 : register(b0)
 	matrix world;	//ワールド行列
 }
 
-//cbuffer skinning:register(b3)	//ボーンのスキニング行列が入る
-//{
-//	matrix matSkinning[MAX_BONES];
-//};
+cbuffer skinning:register(b3)	//ボーンのスキニング行列が入る
+{
+	matrix matSkinning[MAX_BONES];
+};
 
 //バーテックスバッファの入力
 struct VSInput
@@ -18,8 +18,8 @@ struct VSInput
 	float4 pos : POSITION;	//位置
 	float3 normal : NORMAL;	//頂点法線
 	float2 uv : TEXCOORD;	//テクスチャー座標
-	//uint4 boneIndices : BONEINDICES;	//ボーンの番号
-	//float4 boneWeights : BONEWEIGHTS;	//ボーンのスキンウェイト
+	uint4 boneIndices : BONEINDICES;	//ボーンの番号
+	float4 boneWeights : BONEWEIGHTS;	//ボーンのスキンウェイト
 };
 
 //頂点シェーダーからピクセルシェーダーへのやり取りに使用する構造体

@@ -1,5 +1,5 @@
 #include "FbxObject3D.h"
-
+#include "FbxLoader.h"
 #include <d3dcompiler.h>
 #pragma comment(lib,"d3dcompiler.lib")
 
@@ -14,10 +14,14 @@ ViewProjection* FbxObject3D::camera = nullptr;
 ID3D12GraphicsCommandList* FbxObject3D::cmdList = nullptr;
 void FbxObject3D::Initialize()
 {
+	//1フレーム分の時間を60FPSで設定
+	frameTime.SetTime(0, 0, 0, 1, 0, FbxTime::EMode::eFrames60);
+
 	HRESULT result;
 	//定数バッファの生成
 	CD3DX12_HEAP_PROPERTIES v1 = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	CD3DX12_RESOURCE_DESC v2 = CD3DX12_RESOURCE_DESC::Buffer((sizeof(ConstBufferDataTransform) + 0xff) & ~0xff);
+	CD3DX12_RESOURCE_DESC v3 = CD3DX12_RESOURCE_DESC::Buffer((sizeof(ConstBufferDataSkin) + 0xff) & ~0xff);
 	result = device->CreateCommittedResource(
 		&v1,
 		D3D12_HEAP_FLAG_NONE,
@@ -26,26 +30,88 @@ void FbxObject3D::Initialize()
 		nullptr,
 		IID_PPV_ARGS(&constBuffTransform)
 	);
+	result = device->CreateCommittedResource(
+		&v1,	//アップロード可能
+		D3D12_HEAP_FLAG_NONE,
+		&v3,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&constBuffSkin)
+	);
 	InitializeConstMapTransform();
 	InitializeConstMapMaterial();
 	//ワールド変換の初期化
 	worldTransform.initialize();
+
+	//定数バッファへデータ転送
+	ConstBufferDataSkin* constMapSkin = nullptr;
+	result = constBuffSkin->Map(0, nullptr, (void**)&constMapSkin);
+	for (int i = 0; i < MAX_BONES; i++)
+	{
+		constMapSkin->bones[i] = XMMatrixIdentity();
+	}
+	constBuffSkin->Unmap(0, nullptr);
 }
 
 void FbxObject3D::Update()
 {
 	HRESULT result;
 
+	//アニメーション
+	if (isPlay)
+	{
+		//1フレーム進める
+		currentTime += frameTime;
+		//最後まで再生したら先頭に戻す
+		if (currentTime > endTime)
+		{
+			currentTime = startTime;
+		}
+	}
+
+	//ボーン配列
+	std::vector<FbxModel::Bone>& bones = model->GetBones();
+
+	//定数バッファへデータ転送
+	ConstBufferDataSkin* constMapSkin = nullptr;
+	result = constBuffSkin->Map(0, nullptr, (void**)&constMapSkin);
+	for (int i = 0; i < bones.size(); i++)
+	{
+		//今の姿勢行列
+		XMMATRIX matCurrentPose;
+		//今の姿勢行列を取得
+		FbxAMatrix fbxCurrentPose = bones[i].fbxCluster->GetLink()->EvaluateGlobalTransform(currentTime);
+		//XMMATRIX1に変換
+		FbxLoader::ConvertMatrixFromFbx(&matCurrentPose, fbxCurrentPose);
+		//合成してスキニング行列に
+		constMapSkin->bones[i] = model->GetModelTransform() * bones[i].invInitialPose * matCurrentPose * XMMatrixInverse(nullptr, model->GetModelTransform());
+		//XMMatrixInverse(nullptr, model->GetModelTransform());
+		
+	}
+	constBuffSkin->Unmap(0, nullptr);
+
 	worldTransform.UpdateMatWorld();
 	//定数バッファへデータ転送
 	constMapTransform->world = worldTransform.matWorld;
 	constMapTransform->viewproj = camera->matView;
-	constMapTransform->viewproj *= MathFunc::Utility::ConvertXMMATRIXtoMatrix4(*matProjection);;
+	constMapTransform->viewproj *= MathFunc::Utility::ConvertXMMATRIXtoMatrix4(*matProjection);
 	//constMapTransform->viewproj *= MathFunc::Utility::ConvertXMMATRIXtoMatrix4(*matProjection);
 	
 	//モデルのメッシュトランスフォーム
 	const XMMATRIX& modelTransform = model->GetModelTransform();
 	//constMapMaterial->color = color;
+
+	//定数バッファへデータ転送
+	ConstBufferDataTransform* constMap = nullptr;
+	result = constBuffTransform->Map(0, nullptr, (void**)&constMap);
+	if (SUCCEEDED(result))
+	{
+		constMap->viewproj = camera->matView;
+		constMap->world = worldTransform.matWorld;
+		constMap->viewproj *= MathFunc::Utility::ConvertXMMATRIXtoMatrix4(*matProjection);
+		constBuffTransform->Unmap(0, nullptr);
+	}
+
 }
 
 void FbxObject3D::Draw(ID3D12GraphicsCommandList* CmdList)
@@ -64,12 +130,7 @@ void FbxObject3D::Draw(ID3D12GraphicsCommandList* CmdList)
 	dx12base.GetCmdList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//定数バッファビューをセット
 	dx12base.GetCmdList()->SetGraphicsRootConstantBufferView(0,constBuffTransform->GetGPUVirtualAddress());
-	
-	////頂点バッファ―ビューをセットするコマンド
-	//dx12base.GetCmdList()->SetGraphicsRootConstantBufferView(0, constBuffMaterial->GetGPUVirtualAddress());
-
-	////定数バッファビュー(CBV)の設定コマンド
-	//dx12base.GetCmdList()->SetGraphicsRootConstantBufferView(2, constBuffTransform->GetGPUVirtualAddress());
+	dx12base.GetCmdList()->SetGraphicsRootConstantBufferView(2, constBuffSkin->GetGPUVirtualAddress());
 
 	//モデル描画
 	model->Draw(CmdList);
@@ -321,6 +382,27 @@ void FbxObject3D::InitializeConstMapMaterial() {
 	constMapMaterial->color = color;
 
 }
+
+void FbxObject3D::PlayAnimation()
+{
+	FbxScene* fbxScene = model->GetFbxScene();
+	//0番アニメーション取得
+	FbxAnimStack* animstack = fbxScene->GetSrcObject<FbxAnimStack>(0);
+	//アニメーションの名前取得
+	const char* animstackname = animstack->GetName();
+	//アニメーションの時間情報
+	FbxTakeInfo* takeinfo = fbxScene->GetTakeInfo(animstackname);
+
+	//開始時間取得
+	startTime = takeinfo->mLocalTimeSpan.GetStart();
+	//終了時間取得
+	endTime = takeinfo->mLocalTimeSpan.GetStop();
+	//開始時間に合わせる
+	currentTime = startTime;
+	//再生中状態にする
+	isPlay = true;
+}
+
 
 void FbxObject3D::SetViewProjection(ViewProjection* viewProjection) {
 	this->viewProjection = viewProjection;
