@@ -3,14 +3,14 @@
 void Boss::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 {
 	gameObject = new GameObject3D();
-	gameObject->PreLoadModel("Resources/tree/tree.obj");
-	gameObject->PreLoadTexture(L"Resources/tree/tree.png");
+	gameObject->PreLoadModel("Resources/enemy/enemy.obj");
+	gameObject->PreLoadTexture(L"Resources/enemy/Boss.png");
 	gameObject->SetViewProjection(viewProjection);
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();
 
-	gameObject->worldTransform.scale = { 3 , 3 , 3 };
-	gameObject->worldTransform.rotation = { 0,90,0 };
+	gameObject->worldTransform.scale = { 30 , 30 , 30 };
+	gameObject->worldTransform.rotation = { 0,0,0 };
 	gameObject->worldTransform.translation = { 0 , 0 , 1200 };
 	HP = 25;
 	sceneChange = false;
@@ -105,8 +105,8 @@ void Boss::End()	//Ž€–S‰‰o:
 
 void Boss::Reset()
 {
-	gameObject->worldTransform.scale = { 3 , 3 , 3 };
-	gameObject->worldTransform.rotation = { 0,90,0 };
+	gameObject->worldTransform.scale = { 30 , 30 , 30 };
+	gameObject->worldTransform.rotation = { 0,0,0 };
 	gameObject->worldTransform.translation = { 0 , 0 , 1200 };
 	HP = 25;
 	trueDead = false;

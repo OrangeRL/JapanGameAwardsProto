@@ -106,7 +106,7 @@ void GameScene::Initialize(WinApp* winApp)
 	for (int i = 1; i <= enemyVal; i++)
 	{
 		std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
-		newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/red.png");
+		newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/enemy/enemy.png");
 		newEnemy->Settransform({ 0.0f, 0.0f, -1000.0f });
 		//pManager[i].Initialize(&viewProjection_, &matProjection_, L"Resources/purple1x1.png");
 		//敵を登録
