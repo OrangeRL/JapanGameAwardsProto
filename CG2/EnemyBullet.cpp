@@ -8,13 +8,14 @@ EnemyBullet::~EnemyBullet() {
 	delete gameObject;
 }
 
-void EnemyBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName,Vector3 player, Vector3 enemy)
+void EnemyBullet::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection,Vector3 player, Vector3 enemy)
 {
 	//自機狙い用座標取得
 	Aim(player, enemy);
 
 	gameObject = new GameObject3D();
-	gameObject->PreLoadTexture(textureFileName);
+	gameObject->PreLoadModel("Resources/bullet/bullet.obj");
+	gameObject->PreLoadTexture(L"Resources/red1x1.png");
 	gameObject->SetViewProjection(viewProjection);
 	gameObject->SetMatProjection(matProjection);
 	gameObject->Initialize();

@@ -9,7 +9,7 @@ public:
 	EnemyBullet();
 	~EnemyBullet();
 
-	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection, const wchar_t* textureFileName,Vector3 player, Vector3 enemy);
+	void Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection,Vector3 player, Vector3 enemy);
 	void Update();
 	void Draw();
 	void OnCollision();
