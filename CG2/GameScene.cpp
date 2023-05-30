@@ -202,7 +202,10 @@ void GameScene::StageUpdate()
 
 	spawntime += 2;
 	if (loadCount = true) {
-		LoadCsv(enemyVal);
+				//敵の数			csvファイル		開始時間
+		LoadCsv(30, L"Resources/wave1.csv",0);
+		LoadCsv(30, L"Resources/wave1Part2.csv",2900);
+		LoadCsv(30, L"Resources/wave1Part3.csv",5400);
 		LoadCsv2(enemyVal);
 	}
 	else if (loadCount == false)
@@ -360,6 +363,7 @@ void GameScene::StageUpdate()
 		}
 
 	}
+	debugText.Printf(0, 200, 1.0f, 12, "Enemy:%d", spawntime);
 #ifdef DEBUG
 #pragma region DebugText
 	/*debugText.Printf(0, 100, 1.0f, 6, " HP:%d", boss->GetHP());
@@ -371,7 +375,7 @@ void GameScene::StageUpdate()
 		player->GetWorldTransform().matWorld.m[3][0],
 		player->GetWorldTransform().matWorld.m[3][1],
 		player->GetWorldTransform().matWorld.m[3][2]);
-	debugText.Printf(0, 200, 1.0f, 12, "Enemy:%d", spawntime);
+	
 	debugText.Printf(0, 250, 1.0f, 12, "AimCount:%d", aimCount);*/
 #pragma endregion
 #endif // DEBUG
@@ -714,18 +718,21 @@ void GameScene::Collisions() {
 	}
 }
 
-void GameScene::LoadCsv(int obstacleVal)
+void GameScene::LoadCsv(int obstacleVal, const wchar_t* fileName, int startTime)
 {
 	// open file
 	std::ifstream file;
-	file.open(L"Resources/wave1.csv");
+	file.open(fileName);
 	std::stringstream obstaclePosList;    // string stream
 	obstaclePosList << file.rdbuf();
 	file.close();
 
 	//1行分の文字列
 	std::string line;
-
+	std::vector<Vector3> obstaclePos;
+	std::vector<int32_t> spawntimer;
+	std::vector<int32_t> bulletNum;
+	std::vector<int32_t> moveNum;
 	//コマンド実行
 	while (std::getline(obstaclePosList, line)) {
 		//1行分の文字列をストリームに変換
@@ -759,6 +766,15 @@ void GameScene::LoadCsv(int obstacleVal)
 			moveNum.push_back(enemyMove);
 		}
 	}
+	if (spawntime == startTime) {
+		for (int y = 1; y <= enemyVal; y++) {
+			for (std::unique_ptr<Enemy>& newEnemy : enemys1) {
+				newEnemy->Reset();
+
+			}
+		}
+	}
+
 	int i = 0;
 	for (std::unique_ptr<Enemy>& newEnemy : enemys1) {
 		if (spawntime == spawntimer[0]) {
@@ -773,46 +789,6 @@ void GameScene::LoadCsv(int obstacleVal)
 		}
 		if (spawntime == spawntimer[15]) {
 			if (i < obstaclePos.size() && i < 30 && i >= 15) {
-				newEnemy->Settransform(obstaclePos[i]);
-				newEnemy->SetBulletNum(bulletNum[i]);
-				newEnemy->SetMoveNum(moveNum[i]);
-				newEnemy->SetSpeed(0, 0, 0);
-				newEnemy->Spawn();
-			}
-			i++;
-		}
-		if (spawntime == spawntimer[30]) {
-			if (i < obstaclePos.size() && i < 45 && i >= 30) {
-				newEnemy->Settransform(obstaclePos[i]);
-				newEnemy->SetBulletNum(bulletNum[i]);
-				newEnemy->SetMoveNum(moveNum[i]);
-				newEnemy->SetSpeed(0, 0, 0);
-				newEnemy->Spawn();
-			}
-			i++;
-		}
-		if (spawntime == spawntimer[45]) {
-			if (i < obstaclePos.size() && i < 60 && i >= 45) {
-				newEnemy->Settransform(obstaclePos[i]);
-				newEnemy->SetBulletNum(bulletNum[i]);
-				newEnemy->SetMoveNum(moveNum[i]);
-				newEnemy->SetSpeed(0, 0, 0);
-				newEnemy->Spawn();
-			}
-			i++;
-		}
-		if (spawntime == spawntimer[60]) {
-			if (i < obstaclePos.size() && i < 75 && i >= 60) {
-				newEnemy->Settransform(obstaclePos[i]);
-				newEnemy->SetBulletNum(bulletNum[i]);
-				newEnemy->SetMoveNum(moveNum[i]);
-				newEnemy->SetSpeed(0, 0, 0);
-				newEnemy->Spawn();
-			}
-			i++;
-		}
-		if (spawntime == spawntimer[75]) {
-			if (i < obstaclePos.size() && i < 90 && i > 75) {
 				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
