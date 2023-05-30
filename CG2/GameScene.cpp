@@ -200,7 +200,7 @@ void GameScene::StageUpdate()
 	skydome->worldTransform.rotation = { 0.0f,0.0f,0.0f };
 	skydome->color = { 0.8f,0.8f,0.8f,1.0f };
 
-	spawntime += 1;
+	spawntime += 2;
 	if (loadCount = true) {
 		LoadCsv(enemyVal);
 		LoadCsv2(enemyVal);
@@ -760,7 +760,6 @@ void GameScene::LoadCsv(int obstacleVal)
 		}
 	}
 	int i = 0;
-	spawntime += 1;
 	for (std::unique_ptr<Enemy>& newEnemy : enemys1) {
 		if (spawntime == spawntimer[0]) {
 			if (i < obstaclePos.size() && i < 15 && i >= 0) {
