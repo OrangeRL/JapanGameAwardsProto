@@ -84,9 +84,6 @@ void GameScene::Initialize(WinApp* winApp)
 
 	viewProjection_ = reilCamera->GetViewProjection();
 
-	//player->SetMap(map);
-	//player->SetGoal(goal);
-
 	particle = new Particle;
 	particle->Initialize(&viewProjection_, &matProjection_, player);
 
@@ -95,8 +92,6 @@ void GameScene::Initialize(WinApp* winApp)
 
 	particle3 = new Particle;
 	particle3->Initialize(&viewProjection_, &matProjection_, player);
-
-	//loadEnemyPopData();
 
 	rhythm = new Rhythm();
 	rhythm->Initialize(&viewProjection_, &matProjection_);
@@ -108,7 +103,6 @@ void GameScene::Initialize(WinApp* winApp)
 		std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
 		newEnemy->Initialize(&viewProjection_, &matProjection_, L"Resources/enemy/enemy.png");
 		newEnemy->Settransform({ 0.0f, 0.0f, -1000.0f });
-		//pManager[i].Initialize(&viewProjection_, &matProjection_, L"Resources/purple1x1.png");
 		//敵を登録
 		enemys1.push_back(std::move(newEnemy));
 	}
@@ -240,10 +234,6 @@ void GameScene::StageUpdate()
 			if (input_.TriggerKey(DIK_R)) {
 				isSceneChange = true;
 				rhythm->DecisionSoundPlay();
-				/*scene_ = Scene::Title;
-				rhythm->ResetRhythm();
-				viewProjection_.Initialize();
-				UIManager.Init();*/
 			}
 		}
 
@@ -284,9 +274,7 @@ void GameScene::StageUpdate()
 			}
 
 			//弾&敵を削除する
-			//rhythm->StopBGM();
 			bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
-			//rhythm->PlayBGM();
 #pragma endregion
 		}
 
@@ -295,9 +283,7 @@ void GameScene::StageUpdate()
 		}
 
 		//弾&敵を削除する
-		//rhythm->StopBGM();
 		bullets1.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
-		//rhythm->PlayBGM();
     
     //音ズレ関係
 		rhythm->StopBGM();
@@ -336,20 +322,6 @@ void GameScene::StageUpdate()
 #pragma endregion
 		}
 
-		/*if (player->GetIsDead() == true && particle->GetIsDead() == true) {
-			if (gameoverTimer <= 0) {
-				gameoverTimer = 5;
-			}
-			else {
-				gameoverTimer--;
-				if (gameoverTimer <= 0) {
-					stage = 1;
-					Reset();
-					scene_ = Scene::Title;
-				}
-			}
-		}*/
-
 		Collisions();
 		if (waitTime > 0) {
 			waitTime--;
@@ -367,15 +339,6 @@ void GameScene::StageUpdate()
 			if (rhythm->GetSoundState().wave == 3) {
 				player->NewBullet(&viewProjection_, &matProjection_, boss->GetWorldTransform().translation, player->GetWorldTransform().translation, rhythm->GetSoundState().weapon);
 			}
-			//player->NewBulletAim(&viewProjection_, &matProjection_, enemyPos, player->GetWorldTransform().translation);
-		}
-
-		if (boss->GetSceneChange() == true)
-		{
-			//scene_ = Scene::Title;
-			//rhythm->ResetRhythm();
-			//viewProjection_.Initialize();
-			//UIManager.Init();
 		}
 
 		//クリア後タイトルに戻る
@@ -396,20 +359,22 @@ void GameScene::StageUpdate()
 			rhythm->DecisionSoundPlay();
 		}
 
-
-		/*if (sceneShiftFlame <= 0) {
-
-			scene_ = Scene::Title;
-			rhythm->ResetRhythm();
-			player->SetPos({ 0.0f,0.0f,20.0f });
-			viewProjection_.Initialize();
-			UIManager.Init();
-		}*/
 	}
-
+#ifdef DEBUG
 #pragma region DebugText
-
+	/*debugText.Printf(0, 100, 1.0f, 6, " HP:%d", boss->GetHP());
+	debugText.Printf(0, 200, 1.0f, 16, " Player:%f,%f,%f",
+		playerBullet->GetWorldTransform().translation.x, playerBullet->GetWorldTransform().translation.y, playerBullet->GetWorldTransform().translation.z);
+	debugText.Printf(0, 150, 1.0f, 14, " Boss:%2f,%2f,%2f",
+		boss->GetWorldTransform().translation.x, boss->GetWorldTransform().translation.y, boss->GetWorldTransform().translation.z);
+	debugText.Printf(0, 230, 1.0f, 27, " %f,%f,%f",
+		player->GetWorldTransform().matWorld.m[3][0],
+		player->GetWorldTransform().matWorld.m[3][1],
+		player->GetWorldTransform().matWorld.m[3][2]);
+	debugText.Printf(0, 200, 1.0f, 12, "Enemy:%d", spawntime);
+	debugText.Printf(0, 250, 1.0f, 12, "AimCount:%d", aimCount);*/
 #pragma endregion
+#endif // DEBUG
 }
 
 void GameScene::Draw() {
@@ -443,9 +408,6 @@ void GameScene::StageDraw() {
 	rhythm->Draw(player->GetIsDead());
 	particle->Draw();
 	particle2->Draw();
-	/*for (int i = 0; i < enemyVal; i++) {
-		pManager[i].Draw();
-	}*/
 	//敵の描画
 	for (std::unique_ptr<Enemy>& enemy : enemys1) {
 		if (enemy->GetSpownFlag() == true)
@@ -568,8 +530,6 @@ void GameScene::Collisions() {
 					if (enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z < 3 &&
 						-3 < enemy->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z) {
 
-						//bulletA->OnCollision();
-
 						if (enemy->GetAimFlag() == true)
 						{
 							enemy->OnCollision(rhythm);
@@ -607,7 +567,7 @@ void GameScene::Collisions() {
 	for (const std::unique_ptr<EnemyBullet>& bulletB : bullets1) {
 		for (const std::unique_ptr<PlayerBullet>& bulletA : playerBullets) {
 			if (input_.PushKey(DIK_P)) {
-				//player->OnCollision();
+
 				bulletA->OnCollision();
 			}
 			if (bulletB->GetWorldTransform().translation.x - bulletA->GetWorldTransform().translation.x < 2 &&
@@ -617,7 +577,6 @@ void GameScene::Collisions() {
 					if (bulletB->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z < 2 &&
 						-2 < bulletB->GetWorldTransform().translation.z - bulletA->GetWorldTransform().translation.z) {
 
-						//bulletA->OnCollision();
 						bulletB->OnCollision();
 
 					}
@@ -640,8 +599,6 @@ void GameScene::Collisions() {
 				if (player->GetPos().z - bulletB->GetWorldTransform().translation.z < 2 &&
 					-2 < player->GetPos().z - bulletB->GetWorldTransform().translation.z) {
 
-					//bulletB->OnCollision();
-					//enemy->Reset();
 					player->OnCollision(rhythm);
 				}
 			}
@@ -660,8 +617,6 @@ void GameScene::Collisions() {
 				if (player->GetPos().z - bulletB->GetWorldTransform().translation.z < 2 &&
 					-2 < player->GetPos().z - bulletB->GetWorldTransform().translation.z) {
 
-					//bulletB->OnCollision();
-					//enemy->Reset();
 					player->OnCollision(rhythm);
 				}
 			}
@@ -677,8 +632,6 @@ void GameScene::Collisions() {
 				if (player->GetPos().z - bulletB->GetWorldTransform().translation.z < 2 &&
 					-2 < player->GetPos().z - bulletB->GetWorldTransform().translation.z) {
 
-					//bulletB->OnCollision();
-					//enemy->Reset();
 					player->OnCollision(rhythm);
 				}
 			}
@@ -815,9 +768,7 @@ void GameScene::LoadCsv(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				//if (newEnemy->GetSpownFlag() == false) {
 				newEnemy->Spawn();
-				//}
 			}
 			i++;
 		}
@@ -827,9 +778,7 @@ void GameScene::LoadCsv(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				//if (newEnemy->GetSpownFlag() == false) {
 				newEnemy->Spawn();
-				//}
 			}
 			i++;
 		}
@@ -839,9 +788,7 @@ void GameScene::LoadCsv(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				//if (newEnemy->GetSpownFlag() == false) {
 				newEnemy->Spawn();
-				//}
 			}
 			i++;
 		}
@@ -851,9 +798,7 @@ void GameScene::LoadCsv(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				//if (newEnemy->GetSpownFlag() == false) {
 				newEnemy->Spawn();
-				//}
 			}
 			i++;
 		}
@@ -863,9 +808,7 @@ void GameScene::LoadCsv(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				//if (newEnemy->GetSpownFlag() == false) {
 				newEnemy->Spawn();
-				//}
 			}
 			i++;
 		}
@@ -875,9 +818,7 @@ void GameScene::LoadCsv(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				//if (newEnemy->GetSpownFlag() == false) {
 				newEnemy->Spawn();
-				//}
 			}
 			i++;
 		}
@@ -949,9 +890,7 @@ void GameScene::LoadCsv2(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				//if (newEnemy->GetSpownFlag() == false) {
 				newEnemy->Spawn();
-				//}
 			}
 			i++;
 		}
@@ -961,9 +900,7 @@ void GameScene::LoadCsv2(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				//if (newEnemy->GetSpownFlag() == false) {
 				newEnemy->Spawn();
-				//}
 			}
 			i++;
 		}
@@ -974,9 +911,7 @@ void GameScene::LoadCsv2(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				//if (newEnemy->GetSpownFlag() == false) {
 				newEnemy->Spawn();
-				//}
 			}
 			i++;
 		}
@@ -986,9 +921,7 @@ void GameScene::LoadCsv2(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				//if (newEnemy->GetSpownFlag() == false) {
 				newEnemy->Spawn();
-				//}
 			}
 			i++;
 		}
@@ -998,59 +931,9 @@ void GameScene::LoadCsv2(int obstacleVal)
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
-				//if (newEnemy->GetSpownFlag() == false) {
 				newEnemy->Spawn();
-				//}
 			}
 			i++;
 		}
-		//if (spawntime == spawntimer[24]) {
-		//	if (i < obstaclePos.size() && i < 32 && i > 23) {
-		//		newEnemy->Settransform(obstaclePos[i]);
-		//		newEnemy->SetBulletNum(bulletNum[i]);
-		//		newEnemy->SetMoveNum(moveNum[i]);
-		//		newEnemy->SetSpeed(0, 0, 0);
-		//		if (newEnemy->GetSpownFlag() == false) {
-		//			newEnemy->Spawn();
-		//		}
-		//	}
-		//	i++;
-		//}
-		//if (spawntime == spawntimer[32]) {
-		//	if (i < obstaclePos.size() && i < 40 && i > 31) {
-		//		newEnemy->Settransform(obstaclePos[i]);
-		//		newEnemy->SetBulletNum(bulletNum[i]);
-		//		newEnemy->SetMoveNum(moveNum[i]);
-		//		newEnemy->SetSpeed(0, 0, 0);
-		//		if (newEnemy->GetSpownFlag() == false) {
-		//			newEnemy->Spawn();
-		//		}
-		//	}
-		//	i++;
-		//}
-		//if (spawntime == spawntimer[40]) {
-		//	if (i < obstaclePos.size() && i < 45 && i > 39) {
-		//		newEnemy->Settransform(obstaclePos[i]);
-		//		newEnemy->SetBulletNum(bulletNum[i]);
-		//		newEnemy->SetMoveNum(moveNum[i]);
-		//		newEnemy->SetSpeed(0, 0, 0);
-		//		if (newEnemy->GetSpownFlag() == false) {
-		//			newEnemy->Spawn();
-		//		}
-		//	}
-		//	i++;
-		//}
-		//if (spawntime == spawntimer[45]) {
-		//	if (i < obstaclePos.size() && i < 50 && i > 44) {
-		//		newEnemy->Settransform(obstaclePos[i]);
-		//		newEnemy->SetBulletNum(bulletNum[i]);
-		//		newEnemy->SetMoveNum(moveNum[i]);
-		//		newEnemy->SetSpeed(0, 0, 0);
-		//		if (newEnemy->GetSpownFlag() == false) {
-		//			newEnemy->Spawn();
-		//		}
-		//	}
-		//	i++;
-		//}
 	}
 }
