@@ -45,7 +45,6 @@ void Rhythm::Initialize(ViewProjection* viewProjection, XMMATRIX* matProjection)
 	circle[0]->worldTransform.scale = { 2.0f,2.0f,1.0f };
 	circle[1]->worldTransform.scale = { 5.0f,5.0f,0.0f };
 
-	pitch = 1.001f;
 	ResetRhythm();
 }
 
@@ -112,7 +111,7 @@ void Rhythm::Update(Input* input, Vector3 pos, Vector3 rot, int isDead, int stag
 		}
 
 		//Å‰‚Ì‰¹ºÄ¶ˆ—
-		if (soundState.timer == 1 && soundState.measureCount <= 0 && select == 0) {
+		if (soundState.timer == 1 && soundState.measureCount <= 0 && select != 5) {
 			soundManager_->SoundPlayWave(soundManager_->xAudio2.Get(), titleBGM, false, soundState.BGMVolume);
 		}
 
@@ -165,7 +164,7 @@ void Rhythm::Update(Input* input, Vector3 pos, Vector3 rot, int isDead, int stag
 			soundState.timer = 0;
 		}
 
-		pitch = 1.0003f;
+		pitch = 1.001f;
 		if (titleBGM.pSourceVoice) {
 			titleBGM.pSourceVoice->SetVolume(soundState.BGMVolume);
 			titleBGM.pSourceVoice->SetFrequencyRatio(pitch);
@@ -202,24 +201,7 @@ void Rhythm::Update(Input* input, Vector3 pos, Vector3 rot, int isDead, int stag
 
 		if (isDead == 0) {
 
-			pitch = 1.001f;
-
-			//•Ší•ÏX
-			if (input->TriggerKey(DIK_0)) {
-				soundState.weapon = Weapons::Normal;
-			}
-			else if (input->TriggerKey(DIK_1)) {
-				soundState.weapon = Weapons::Rapid;
-			}
-			else if (input->TriggerKey(DIK_2)) {
-				soundState.weapon = Weapons::ThreeWay;
-			}
-			else if (input->TriggerKey(DIK_3)) {
-				soundState.weapon = Weapons::Explosion;
-			}
-			else if (input->TriggerKey(DIK_4)) {
-				soundState.weapon = Weapons::Laser;
-			}
+			pitch = 1.0005f;
 
 			if (soundState.isPause == false) {
 				if (soundState.measureCount >= 8 &&
