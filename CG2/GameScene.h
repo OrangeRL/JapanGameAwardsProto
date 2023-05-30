@@ -72,7 +72,7 @@ public: // メンバ関数
 	/// 敵発生コマンドの更新
 	/// </summary>
 	void UpdateEnemyPopCommand();
-	void LoadCsv(int obstacleVal);
+	void LoadCsv(int obstacleVal, const wchar_t* fileName, int startTime);
 	void LoadCsv2(int obstacleVal);
 	const std::list<std::unique_ptr<Enemy>>& GetEnemies() { return enemys1; }
 
@@ -214,7 +214,7 @@ private: // メンバ変数
 	std::stringstream enemyPopCommand;
 	bool waitFlag = true;
 	float waitTime_=10;
-	size_t enemyVal = 180;
+	size_t enemyVal = 95;
 	int fileNum = 1;
 //------------------------------------
 

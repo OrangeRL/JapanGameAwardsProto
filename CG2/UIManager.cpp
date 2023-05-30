@@ -89,7 +89,7 @@ void UIManager::TitleUpdate(Rhythm* rhythm, Input* input) {
 
 	if (sceneInTitle == 0) {
 
-		UIPrintf({ window_width / 2 - 350,500 }, { 1.5f,1.5f }, { 1.0f,1.0f,1.0f,3.0f / (30 - titleFlame) }, 14, " PUSH TO SPACE");
+		UIPrintf({ window_width / 2 - 350,500 }, { 1.5f,1.5f }, { 1.0f,1.0f,1.0f,3.0f / (30 - titleFlame) }, 13, "   PUSH SPACE");
 
 		if (input->TriggerKey(DIK_SPACE)) {
 			rhythm->DecisionSoundPlay();
@@ -462,7 +462,7 @@ void UIManager::Update(Rhythm* rhythm, Player* player, Input* input, int isDead,
 			position.y += moveSpeed;
 		}
 		UIPrintf({ window_width / 2 - 600, position.y }, { 3.5f,4.0f }, { 0.0f,1.0f,1.0f,1.0f }, 9, " GAMEOVER");
-		UIPrintf({ window_width / 2 ,position.y + 400 }, { 1.0f,1.0f }, { 0.0f,1.0f,1.0f,1.0f }, 10, " PUSH TO R");
+		UIPrintf({ window_width / 2 ,position.y + 400 }, { 1.0f,1.0f }, { 0.0f,1.0f,1.0f,1.0f }, 7, " PUSH R");
 	}
 
 	//É|Å[ÉYâÊñ ÇÃèàóù
