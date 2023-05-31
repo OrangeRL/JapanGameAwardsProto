@@ -260,7 +260,7 @@ void GameScene::StageUpdate()
 					//弾を生成
 					std::unique_ptr<EnemyBullet> bullet = std::make_unique<EnemyBullet>();
 					//初期化
-					bullet->Initialize(&viewProjection_, &matProjection_, L"Resources/white1x1.png", player->GetPos(), enemy->GetWorldTransform().translation);
+					bullet->Initialize(&viewProjection_, &matProjection_, player->GetPos(), enemy->GetWorldTransform().translation);
 					bullet->SetTransform(enemy->GetWorldTransform().translation);
 					//使う弾の設定
 					bullet->SetBullet(enemy->GetBulletNum());
