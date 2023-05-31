@@ -199,7 +199,7 @@ void GameScene::StageUpdate()
 {
 	skydome->worldTransform.rotation = { 0.0f,0.0f,0.0f };
 	skydome->color = { 0.8f,0.8f,0.8f,1.0f };
-
+	
 	spawntime += 2;
 	if (loadCount = true) {
 				//敵の数			csvファイル		開始時間
@@ -252,6 +252,7 @@ void GameScene::StageUpdate()
 		//敵の更新処理
 		for (std::unique_ptr<Enemy>& enemy : enemys1) {
 			enemy->Update(&viewProjection_, &matProjection_, 0);
+			
 #pragma region makeEnemyBullet
 			if (enemy->GetBulletNum() < 3)
 			{
@@ -293,6 +294,8 @@ void GameScene::StageUpdate()
 
 		//敵の削除
 		enemys1.remove_if([](std::unique_ptr<Enemy>& enemy) {return enemy->IsDead(); });
+		
+		
 		rhythm->PlayBGM();
 
 		//ボス関連
@@ -363,7 +366,13 @@ void GameScene::StageUpdate()
 		}
 
 	}
+	if (aimCount < 0) {
+		aimCount = 0;
+	}
+	
+
 	debugText.Printf(0, 200, 1.0f, 12, "Enemy:%d", spawntime);
+	debugText.Printf(0, 220, 1.0f, 12, "AimCount:%d", aimCount);
 #ifdef DEBUG
 #pragma region DebugText
 	/*debugText.Printf(0, 100, 1.0f, 6, " HP:%d", boss->GetHP());
@@ -778,6 +787,7 @@ void GameScene::LoadCsv(int obstacleVal, const wchar_t* fileName, int startTime)
 	int i = 0;
 	for (std::unique_ptr<Enemy>& newEnemy : enemys1) {
 		if (spawntime == spawntimer[0]) {
+			aimCount = 0;
 			if (i < obstaclePos.size() && i < 15 && i >= 0) {
 				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
@@ -788,14 +798,22 @@ void GameScene::LoadCsv(int obstacleVal, const wchar_t* fileName, int startTime)
 			i++;
 		}
 		if (spawntime == spawntimer[15]) {
+			
 			if (i < obstaclePos.size() && i < 30 && i >= 15) {
 				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
 				newEnemy->Spawn();
+				
 			}
 			i++;
+		}
+		if (spawntime == 7500) {
+			aimCount = 0;
+		}
+		if (spawntime == 4300) {
+			aimCount = 0;
 		}
 	}
 }
@@ -851,8 +869,7 @@ void GameScene::LoadCsv2(int obstacleVal)
 	if (spawntime == 10000) {
 		for (int y = 1; y <= enemyVal; y++) {
 			for (std::unique_ptr<Enemy>& newEnemy : enemys1) {
-				newEnemy->Reset();
-
+				aimCount = 0;
 			}
 		}
 	}
@@ -860,53 +877,63 @@ void GameScene::LoadCsv2(int obstacleVal)
 	//spawntime += 1;
 	for (std::unique_ptr<Enemy>& newEnemy : enemys1) {
 		if (spawntime == spawntimer[0]) {
+			aimCount = 0;
 			if (i < obstaclePos.size() && i < 15 && i >= 0) {
 				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
 				newEnemy->Spawn();
+				
 			}
 			i++;
 		}
 		if (spawntime == spawntimer[15]) {
+			aimCount = 0;
 			if (i < obstaclePos.size() && i < 30 && i >= 15) {
 				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
 				newEnemy->Spawn();
+				
 			}
 			i++;
 		}
 
 		if (spawntime == spawntimer[30]) {
+			aimCount = 0;
 			if (i < obstaclePos.size() && i < 45 && i >= 30) {
 				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
 				newEnemy->Spawn();
+				
 			}
 			i++;
 		}
 		if (spawntime == spawntimer[45]) {
+			aimCount = 0;
 			if (i < obstaclePos.size() && i < 60 && i >= 45) {
 				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
 				newEnemy->Spawn();
+				
 			}
 			i++;
 		}
 		if (spawntime == spawntimer[60]) {
+			aimCount = 0;
 			if (i < obstaclePos.size() && i < 93 && i > 60) {
 				newEnemy->Settransform(obstaclePos[i]);
 				newEnemy->SetBulletNum(bulletNum[i]);
 				newEnemy->SetMoveNum(moveNum[i]);
 				newEnemy->SetSpeed(0, 0, 0);
 				newEnemy->Spawn();
+				
 			}
 			i++;
 		}
